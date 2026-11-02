@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     siteName: 'BugMortem',
     images: [
       {
-        url: 'https://bugmortem.vercel.app/og-image.png',
+        url: 'https://bugmortem.vercel.app/1.jpeg',
         width: 1200,
         height: 630,
         alt: 'BugMortem – Digital Incident Morgue',
