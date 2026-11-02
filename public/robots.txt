@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://bugmortem.vercel.app/sitemap.xml
+
+# LLM & AI Agents Index
+# Context and structured machine-readable knowledge base:
+# https://bugmortem.vercel.app/llms.txt

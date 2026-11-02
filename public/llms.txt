@@ -1,0 +1,17 @@
+# BugMortem
+
+> Digital Incident Morgue & Automated Post-Mortem Report Generator for SRE and DevOps engineers.
+
+BugMortem is an open-source incident forensic investigation suite built for the Kiroween 2026 Hackathon by AWS & Devpost. It ingests production stack traces, conducts automated root cause autopsies, and generates production-grade SRE safe patterns with circuit breakers, retry storm mitigations, and exportable Markdown post-mortem protocols.
+
+## Canonical Incident Presets
+- [React Hydration Mismatch & DOM Tree Collapse](https://bugmortem.vercel.app/): Client-side state destruction via non-deterministic SSR execution.
+- [The Connection Pool Death Spiral](https://bugmortem.vercel.app/): Aurora PostgreSQL thread exhaustion from unindexed analytical scans.
+- [The OOM Reaper Awakening](https://bugmortem.vercel.app/): Kubernetes container memory limits blown by unbuffered 2.5M row CSV streaming.
+- [The Cascading Retry Storm](https://bugmortem.vercel.app/): Synchronous retry loops triggering 500% incoming traffic amplification and service collapse.
+
+## Core Capabilities
+- Automated Post-Mortem Protocol Generator: Outputs structured Markdown reports compliant with industry blameless SRE standards.
+- Custom Incident Autopsy Ingestion: Interactive modal supporting live paste of stack traces, cursed code snippets, and automated circuit breaker fallback generation.
+- Bilingual Localization: 100% Polish (PL) and English (EN) parity with typography orphan protection.
+- Privacy & Sovereignty: 100% local browser processing (localStorage) with zero telemetry and GDPR compliant cookie preference drawer.
