@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { IncidentPreset, TimelineEvent } from '../i18n/types';
 import { en as enNamed } from '../i18n/locales/en';
 import { pl as plNamed } from '../i18n/locales/pl';
+import { useTheme } from '@/context/ThemeContext';
 
 const enDict = enNamed || (enNamed as any)?.default;
 const plDict = plNamed || (plNamed as any)?.default;
@@ -15,6 +16,9 @@ export function fixOrphans(text: string): string {
 }
 
 export default function Home() {
+  // Global Theme Context
+  const { theme, toggleTheme } = useTheme();
+
   // Locale state
   const [locale, setLocaleState] = useState<'pl' | 'en'>('en');
   const t = locale === 'pl' ? plDict : enDict;
@@ -24,7 +28,6 @@ export default function Home() {
   const [customIncidents, setCustomIncidents] = useState<Record<string, IncidentPreset>>({});
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [exportNotice, setExportNotice] = useState<boolean>(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   // Dynamiczny, automatyczny zakres praw autorskich
   const [copyrightYears, setCopyrightYears] = useState<string>('2026');
@@ -59,14 +62,6 @@ export default function Home() {
       setLocaleState(savedLocale);
     }
 
-    const storedTheme = (localStorage.getItem('theme') as 'dark' | 'light') || 'dark';
-    setTheme(storedTheme);
-    if (storedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-
     const storedConsent = localStorage.getItem('bugmortem_cookie_consent');
     setCookieConsent(storedConsent);
 
@@ -92,27 +87,30 @@ export default function Home() {
     localStorage.setItem('bugmortem_locale', newLocale);
   };
 
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    localStorage.setItem('theme', nextTheme);
-    if (nextTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
   const presetsMap = t?.presets || enDict?.presets || {};
   const allIncidents: Record<string, IncidentPreset> = {
     ...presetsMap,
     ...customIncidents
   };
 
+  const defaultFallback: IncidentPreset = {
+    id: 'react-hydration',
+    badge: 'Frontend / SSR',
+    severity: 'P0',
+    title: 'React Hydration Mismatch',
+    desc: 'Incident active in production',
+    crashedCode: '// Crash state',
+    resurrectedCode: '// Resurrected SRE pattern',
+    stackTrace: 'Error trace',
+    timeline: [],
+    postMortemReport: { summary: '', impact: '', actionItems: [] }
+  };
+
   const activeIncident: IncidentPreset =
     allIncidents[selectedPreset] ||
     presetsMap['react-hydration'] ||
-    Object.values(presetsMap)[0];
+    Object.values(presetsMap)[0] ||
+    defaultFallback;
 
   const safeTimeline: TimelineEvent[] = Array.isArray(activeIncident?.timeline)
     ? activeIncident.timeline
