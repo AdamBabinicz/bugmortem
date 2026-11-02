@@ -2,9 +2,35 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Providers } from '@/components/Providers';
 
+const title = 'BugMortem: Incident Autopsy & Post-Mortem SRE Tool';
+const description = 'Digital incident morgue and automated post-mortem generator. Ingest stack traces, conduct autopsies, and export reliable SRE circuit breaker patterns.';
+
 export const metadata: Metadata = {
-  title: 'BugMortem – AI Incident Autopsy & Post-Mortem Studio',
-  description: 'Zautomatyzowane śledztwo i sekcja zwłok incydentów produkcyjnych dla inżynierów SRE i DevOps.',
+  title,
+  description,
+  metadataBase: new URL('https://bugmortem.vercel.app'),
+  openGraph: {
+    title,
+    description,
+    url: 'https://bugmortem.vercel.app',
+    siteName: 'BugMortem',
+    images: [
+      {
+        url: 'https://bugmortem.vercel.app/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'BugMortem – Digital Incident Morgue',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title,
+    description,
+    images: ['https://bugmortem.vercel.app/og-image.png'],
+  },
 };
 
 export default function RootLayout({
