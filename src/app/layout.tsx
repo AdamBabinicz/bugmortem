@@ -3,12 +3,24 @@ import './globals.css';
 import { Providers } from '@/components/Providers';
 
 const title = 'BugMortem: Incident Autopsy & Post-Mortem SRE Tool';
-const description = 'Digital incident morgue and automated post-mortem generator. Ingest stack traces, conduct autopsies, and export reliable SRE circuit breaker patterns.';
+const description =
+  'Digital incident morgue and automated post-mortem generator. Ingest stack traces, conduct autopsies, and export reliable SRE circuit breaker patterns.';
 
 export const metadata: Metadata = {
   title,
   description,
   metadataBase: new URL('https://bugmortem.vercel.app'),
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/site.webmanifest',
   openGraph: {
     title,
     description,
