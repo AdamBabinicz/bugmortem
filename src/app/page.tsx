@@ -1,483 +1,582 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useTranslation } from '@/i18n/context';
-import { useTheme } from '@/context/ThemeContext';
-import { SUPPORTED_LOCALES, Locale } from '@/i18n/config';
-import { LegalModal } from '@/components/legal/LegalModal';
-import {
-  Skull,
-  Flame,
-  Activity,
-  Terminal,
-  Clock,
-  Code2,
-  FileText,
-  Copy,
-  Check,
-  Moon,
-  Sun,
-  ShieldAlert,
-  Sparkles,
-} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { IncidentPreset, TimelineEvent } from '../i18n/types';
+import { en as enNamed } from '../i18n/locales/en';
+import { pl as plNamed } from '../i18n/locales/pl';
 
-type PresetKey = 'hydration' | 'oom' | 'cors' | 'dbpool';
+const enDict = enNamed || (enNamed as any)?.default;
+const plDict = plNamed || (plNamed as any)?.default;
 
-interface PresetCode {
-  crashedCode: string;
-  resurrectedCode: string;
-  stackTrace: string;
-  timeline: { time: string; event: string; level: 'info' | 'warn' | 'error' | 'fatal' }[];
-  postMortemReport: {
-    summary: string;
-    impact: string;
-    preventativeMeasures: string[];
-  };
+// Likwidacja wiszących spójników (sierotek typograficznych w języku polskim)
+export function fixOrphans(text: string): string {
+  if (!text || typeof text !== 'string') return text;
+  return text.replace(/(^|\s)([aiouwz]|do|na|od|po|ze|we|za|co|że|to)(\s+)/gi, '$1$2\u00A0');
 }
 
-const PRESET_DATA: Record<PresetKey, PresetCode> = {
-  hydration: {
-    crashedCode: `// ❌ KOD SKAZANY NA ŚMIERĆ (SSR mismatch)
-export default function UserCart() {
-  const theme = localStorage.getItem('theme') || 'light';
-  const timestamp = new Date().toLocaleTimeString();
+export default function Home() {
+  // Locale state
+  const [locale, setLocaleState] = useState<'pl' | 'en'>('en');
+  const t = locale === 'pl' ? plDict : enDict;
 
-  return (
-    <div className={theme}>
-      <h1>Koszyk klienta</h1>
-      <span>Wygenerowano: {timestamp}</span>
-    </div>
-  );
-}`,
-    resurrectedCode: `// ✅ KOD WSKRZESZONY (Identyczny render na serwerze i kliencie)
-'use client';
-import { useState, useEffect } from 'react';
+  // Incident state
+  const [selectedPreset, setSelectedPreset] = useState<string>('react-hydration');
+  const [customIncidents, setCustomIncidents] = useState<Record<string, IncidentPreset>>({});
+  const [isCopied, setIsCopied] = useState<boolean>(false);
+  const [exportNotice, setExportNotice] = useState<boolean>(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
-export default function UserCart() {
-  const [mounted, setMounted] = useState(false);
-  const [theme, setTheme] = useState('light');
+  // Dynamiczny, automatyczny zakres praw autorskich
+  const [copyrightYears, setCopyrightYears] = useState<string>('2026');
 
+  // Custom Autopsy Modal & Form State
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [formTitle, setFormTitle] = useState<string>('');
+  const [formCategory, setFormCategory] = useState<'frontend' | 'backend' | 'database' | 'infra'>('frontend');
+  const [formSeverity, setFormSeverity] = useState<'P0' | 'P1' | 'P2'>('P0');
+  const [formCrashedCode, setFormCrashedCode] = useState<string>('');
+  const [formStackTrace, setFormStackTrace] = useState<string>('');
+  const [formResurrectedCode, setFormResurrectedCode] = useState<string>('');
+  const [formError, setFormError] = useState<string>('');
+
+  // GDPR Cookie State
+  const [cookieConsent, setCookieConsent] = useState<string | null>(null);
+  const [isCookieDrawerOpen, setIsCookieDrawerOpen] = useState<boolean>(false);
+  const [analyticsCookies, setAnalyticsCookies] = useState<boolean>(true);
+  const [marketingCookies, setMarketingCookies] = useState<boolean>(false);
+
+  // Inicjalizacja z localStorage oraz bezpieczna kalkulacja daty
   useEffect(() => {
-    setMounted(true);
-    setTheme(localStorage.getItem('theme') || 'light');
+    const currentYear = new Date().getFullYear();
+    if (currentYear > 2026) {
+      setCopyrightYears(`2026 - ${currentYear}`);
+    } else {
+      setCopyrightYears('2026');
+    }
+
+    const savedLocale = localStorage.getItem('bugmortem_locale') as 'pl' | 'en';
+    if (savedLocale === 'pl' || savedLocale === 'en') {
+      setLocaleState(savedLocale);
+    }
+
+    const storedTheme = (localStorage.getItem('theme') as 'dark' | 'light') || 'dark';
+    setTheme(storedTheme);
+    if (storedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+
+    const storedConsent = localStorage.getItem('bugmortem_cookie_consent');
+    setCookieConsent(storedConsent);
+
+    try {
+      const storedIncidents = localStorage.getItem('bugmortem_custom_incidents');
+      if (storedIncidents) {
+        const parsed = JSON.parse(storedIncidents);
+        const valid: Record<string, IncidentPreset> = {};
+        Object.entries(parsed).forEach(([k, v]: [string, any]) => {
+          if (v && v.title && v.crashedCode) {
+            valid[k] = v;
+          }
+        });
+        setCustomIncidents(valid);
+      }
+    } catch {
+      localStorage.removeItem('bugmortem_custom_incidents');
+    }
   }, []);
 
-  if (!mounted) {
-    return <div className="skeleton-placeholder" aria-hidden="true" />;
-  }
+  const changeLocale = (newLocale: 'pl' | 'en') => {
+    setLocaleState(newLocale);
+    localStorage.setItem('bugmortem_locale', newLocale);
+  };
 
-  return (
-    <div className={theme}>
-      <h1>Koszyk klienta</h1>
-      <span>Bezpieczny stan po nawodnieniu</span>
-    </div>
-  );
-}`,
-    stackTrace: `Error: Hydration failed because the initial UI does not match what was rendered on the server.
-Warning: Expected server HTML to contain a matching <div> in <body>.
-    at UserCart (src/components/UserCart.tsx:4:17)
-FATAL: React Client DOM Mutation Aborted [Status: RIP]`,
-    timeline: [
-      { time: '14:23:01', event: 'Serwer SSR wyrenderował HTML z domyślnym motywem', level: 'info' },
-      { time: '14:23:02', event: 'Przeglądarka odebrała HTML i uruchomiła hydratację DOM', level: 'info' },
-      { time: '14:23:02.120', event: 'Wykryto niezgodność drzewa DOM: localStorage różni się od serwera', level: 'warn' },
-      { time: '14:23:02.340', event: 'React porzucił renderowanie i wyrzucił Hydration Error P0', level: 'fatal' },
-    ],
-    postMortemReport: {
-      summary: 'Krytyczny błąd hydratacji Reacta z powodu odwołania do localStorage w SSR.',
-      impact: '100% użytkowników z innym motywem napotkało biały ekran śmierci.',
-      preventativeMeasures: [
-        'Wymuszenie reguły ESLint no-restricted-globals dla localStorage.',
-        'Wprowadzenie ThemeProvidera z blokadą renderu przed nawodnieniem.',
-      ],
-    },
-  },
-  oom: {
-    crashedCode: `// ❌ KOD SKAZANY NA ŚMIERĆ (Wyciek w pętli zdarzeń)
-import { EventEmitter } from 'events';
-const globalBus = new EventEmitter();
-
-export async function handleLogStream(req: Request) {
-  const buffer: Buffer[] = [];
-  globalBus.on('telemetry', (data) => {
-    buffer.push(Buffer.from(data));
-  });
-  return new Response("Streaming...");
-}`,
-    resurrectedCode: `// ✅ KOD WSKRZESZONY (Cleanup przy przerwaniu połączenia)
-export async function handleLogStream(req: Request) {
-  const controller = new AbortController();
-  const stream = new ReadableStream({
-    start(controllerStream) {
-      const onData = (data: string) => controllerStream.enqueue(new TextEncoder().encode(data));
-      globalBus.on('telemetry', onData);
-      controller.signal.addEventListener('abort', () => globalBus.off('telemetry', onData));
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    localStorage.setItem('theme', nextTheme);
+    if (nextTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
-  });
-  return new Response(stream);
-}`,
-    stackTrace: `FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
-SIGABRT: Process killed by kernel OOM killer (exit code 137)`,
-    timeline: [
-      { time: '02:00:00', event: 'Wdrożenie v2.4.1 z nowym modułem telemetrii', level: 'info' },
-      { time: '03:15:20', event: 'Zużycie pamięci sterty przekroczyło próg 80% (3.2 GB)', level: 'warn' },
-      { time: '03:44:00', event: 'Jądro Linux wysłało sygnał SIGKILL (Out of Memory - exit 137)', level: 'fatal' },
-    ],
-    postMortemReport: {
-      summary: 'Proces Node.js ubity przez OOM z powodu braku cleanupu EventEmittera.',
-      impact: 'Awaria instancji produkcyjnej; 18 minut niedostępności.',
-      preventativeMeasures: [
-        'Dodanie limitu MaxListeners i automatycznych testów obciążeniowych k6.',
-      ],
-    },
-  },
-  cors: {
-    crashedCode: `// ❌ KOD SKAZANY NA ŚMIERĆ (Brak OPTIONS i nagłówków CORS)
-export async function POST(req: Request) {
-  const body = await req.json();
-  return Response.json({ status: "success", data: body });
-}`,
-    resurrectedCode: `// ✅ KOD WSKRZESZONY (Pełna obsługa Preflight)
-export async function OPTIONS() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGIN || '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
-  });
-}
-export async function POST(req: Request) {
-  const body = await req.json();
-  return Response.json({ status: "success", data: body }, {
-    headers: { 'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGIN || '*' },
-  });
-}`,
-    stackTrace: `Access to fetch at 'https://api.twojadomena.pl/v1/checkout' has been blocked by CORS policy:
-Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header.`,
-    timeline: [
-      { time: '11:00:00', event: 'Zapytanie preflight OPTIONS do api', level: 'info' },
-      { time: '11:00:00.120', event: 'API zwróciło błąd 405 Method Not Allowed', level: 'error' },
-      { time: '11:00:00.125', event: 'Przeglądarka zablokowała koszyk klienta', level: 'fatal' },
-    ],
-    postMortemReport: {
-      summary: 'Brak nagłówków CORS zablokował procedurę checkout.',
-      impact: 'Zerowa konwersja koszyka przez 45 minut.',
-      preventativeMeasures: [
-        'Konfiguracja globalnego middleware w Next.js z nagłówkami CORS.',
-      ],
-    },
-  },
-  dbpool: {
-    crashedCode: `// ❌ KOD SKAZANY NA ŚMIERĆ (Wiszące połączenie po wyjątku)
-const client = await pool.connect();
-const res = await client.query('SELECT * FROM audit_logs WHERE fatal = true');
-client.release();
-return res.rows;`,
-    resurrectedCode: `// ✅ KOD WSKRZESZONY (Gwarantowane zwolnienie w finally)
-const client = await pool.connect();
+  };
+
+  const presetsMap = t?.presets || enDict?.presets || {};
+  const allIncidents: Record<string, IncidentPreset> = {
+    ...presetsMap,
+    ...customIncidents
+  };
+
+  const activeIncident: IncidentPreset =
+    allIncidents[selectedPreset] ||
+    presetsMap['react-hydration'] ||
+    Object.values(presetsMap)[0];
+
+  const safeTimeline: TimelineEvent[] = Array.isArray(activeIncident?.timeline)
+    ? activeIncident.timeline
+    : [];
+
+  const safeActionItems: string[] = Array.isArray(activeIncident?.postMortemReport?.actionItems)
+    ? activeIncident.postMortemReport.actionItems
+    : [];
+
+  const handleCopyCode = async () => {
+    if (!activeIncident?.resurrectedCode) return;
+    try {
+      await navigator.clipboard.writeText(activeIncident.resurrectedCode);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch {
+      // Ignore clipboard restrictions
+    }
+  };
+
+  const handleExportReport = () => {
+    if (!activeIncident) return;
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const mdContent = `# 💀 BugMortem - ${t?.postMortemTitle || 'Incident Protocol'}
+**${t?.fieldIncidentTitle || 'Incident'}:** ${activeIncident.title || 'Untitled Incident'}
+**${t?.fieldCategory || 'Category'}:** ${activeIncident.badge || 'N/A'} | **${t?.fieldSeverity || 'Severity'}:** ${activeIncident.severity || 'P0'}
+**Timestamp:** ${new Date().toUTCString()}
+
+---
+
+## 1. ${t?.postMortemSummaryHeading || 'Summary'}
+${activeIncident.postMortemReport?.summary || ''}
+
+## 2. ${t?.postMortemImpactHeading || 'Impact'}
+${activeIncident.postMortemReport?.impact || ''}
+
+## 3. ${t?.postMortemActionsHeading || 'Actions'}
+${safeActionItems.map((item) => `- ${item}`).join('\n')}
+
+---
+
+## 4. ${t?.timelineTitle || 'Timeline'}
+${safeTimeline.map((evt) => `- [${evt.time}] ${evt.desc} ${evt.isFatal ? '⚠️ (FATAL CRASH)' : ''}`).join('\n')}
+
+---
+
+## 5. ${t?.stackTraceTitle || 'Stack Trace'}
+\`\`\`
+${activeIncident.stackTrace || ''}
+\`\`\`
+
+---
+
+## 6. ${t?.crashedCodeTitle || 'Cursed Code'}
+\`\`\`javascript
+${activeIncident.crashedCode || ''}
+\`\`\`
+
+---
+
+## 7. ${t?.resurrectedCodeTitle || 'Resurrected Code'}
+\`\`\`javascript
+${activeIncident.resurrectedCode || ''}
+\`\`\`
+
+*Report generated by BugMortem (Kiroween 2026 Hackathon Entry).*
+`;
+
+    const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `BugMortem-${activeIncident.id}-${timestamp}.md`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setExportNotice(true);
+    setTimeout(() => setExportNotice(false), 3000);
+  };
+
+  const handleCreateCustomAutopsy = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formTitle.trim() || !formStackTrace.trim()) {
+      setFormError(t?.validationErrorRequired || 'Please fill in required fields.');
+      return;
+    }
+
+    const customId = `custom-${Date.now()}`;
+    const now = new Date();
+    const timeStr = now.toTimeString().split(' ')[0];
+
+    const categoryBadge =
+      formCategory === 'frontend'
+        ? t?.categoryFrontend || 'Frontend'
+        : formCategory === 'backend'
+          ? t?.categoryBackend || 'Backend'
+          : formCategory === 'database'
+            ? t?.categoryDatabase || 'Database'
+            : t?.categoryInfra || 'Infra';
+
+    const severityLabel =
+      formSeverity === 'P0'
+        ? t?.severityP0 || 'Fatal (P0)'
+        : formSeverity === 'P1'
+          ? t?.severityP1 || 'Critical (P1)'
+          : t?.severityP2 || 'Major (P2)';
+
+    const fallbackResurrected =
+      formResurrectedCode.trim() ||
+      `// ✅ RESURRECTED SRE PATTERN (Auto-Generated Fallback)
 try {
-  const res = await client.query('SELECT * FROM audit_logs WHERE fatal = true');
-  return res.rows;
-} finally {
-  client.release();
-}`,
-    stackTrace: `error: remaining connection slots are reserved for non-replication superuser connections
-FATAL: 53300: too many connections for role "app_prod" (Max pool size exhausted: 100/100)`,
-    timeline: [
-      { time: '09:12:00', event: 'Nagły skok ruchu', level: 'info' },
-      { time: '09:14:15', event: 'PostgreSQL odrzucił połączenia (kod 53300)', level: 'error' },
-      { time: '09:14:30', event: 'Crash kaskadowy mikrousług', level: 'fatal' },
-    ],
-    postMortemReport: {
-      summary: 'Wyczerpanie puli połączeń PostgreSQL przez brak bloku finally.',
-      impact: 'Całkowity paraliż bazy danych.',
-      preventativeMeasures: [
-        'Wdrożenie bloku try/finally lub dedykowanego poolera PgBouncer.',
-      ],
-    },
-  },
-};
+  await executeWithCircuitBreaker(async () => {
+    ${formCrashedCode.trim() ? formCrashedCode.split('\n').map((l) => `  ${l}`).join('\n') : '  // Execute protected workload'}
+  });
+} catch (error) {
+  logger.error('Graceful degradation triggered', { error, incidentId: '${customId}' });
+  metrics.increment('incident.recovered', { severity: '${formSeverity}' });
+  return fallbackResponse();
+}`;
 
-export default function BugMortemDashboard() {
-  const { t, locale, setLocale } = useTranslation();
-  const { theme, toggleTheme } = useTheme();
+    const customTimeline: TimelineEvent[] = [
+      { time: timeStr, desc: `${categoryBadge} anomaly initiated under active workload` },
+      { time: `${timeStr}.250`, desc: `Exception bubbled up to runtime boundary`, isFatal: true },
+      { time: `${timeStr}.500`, desc: `Fatal crash handler terminated process execution`, isFatal: true }
+    ];
 
-  const [activePreset, setActivePreset] = useState<PresetKey>('hydration');
-  const [copied, setCopied] = useState(false);
-  const [legalType, setLegalType] = useState<'privacy' | 'terms' | null>(null);
+    const newIncident: IncidentPreset = {
+      id: customId,
+      badge: categoryBadge,
+      severity: severityLabel,
+      title: formTitle.trim(),
+      desc: formStackTrace.split('\n')[0].slice(0, 140) || formTitle.trim(),
+      crashedCode: formCrashedCode.trim() || `// ❌ CRASH STATE\n${formStackTrace.slice(0, 300)}`,
+      resurrectedCode: fallbackResurrected,
+      stackTrace: formStackTrace.trim(),
+      timeline: customTimeline,
+      postMortemReport: {
+        summary: `${severityLabel} incident in ${categoryBadge}: ${formTitle.trim()}. Captured via live autopsy ingestion.`,
+        impact: `Service interruption detected. Immediate mitigation executed via SRE safety guardrails.`,
+        actionItems: [
+          `Review stack trace root cause in ${categoryBadge} subsystem.`,
+          `Implement automated canary regression testing in deployment pipeline.`,
+          `Harden error boundaries and apply circuit breaker patterns.`
+        ]
+      }
+    };
 
-  const currentData = PRESET_DATA[activePreset];
+    const updatedCustom = { ...customIncidents, [customId]: newIncident };
+    setCustomIncidents(updatedCustom);
+    localStorage.setItem('bugmortem_custom_incidents', JSON.stringify(updatedCustom));
 
-  const handleCopy = (code: string) => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setSelectedPreset(customId);
+    setIsModalOpen(false);
+    setFormTitle('');
+    setFormCrashedCode('');
+    setFormStackTrace('');
+    setFormResurrectedCode('');
+    setFormError('');
   };
 
-  const handleOpenCookieBanner = () => {
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new Event('open_cookie_banner'));
-    }
+  const handleAcceptAllCookies = () => {
+    localStorage.setItem('bugmortem_cookie_consent', 'all');
+    setCookieConsent('all');
+  };
+
+  const handleAcceptEssential = () => {
+    localStorage.setItem('bugmortem_cookie_consent', 'essential');
+    setCookieConsent('essential');
+  };
+
+  const handleSaveCookiePreferences = () => {
+    const consentVal = `custom_analytics_${analyticsCookies}_marketing_${marketingCookies}`;
+    localStorage.setItem('bugmortem_cookie_consent', consentVal);
+    setCookieConsent(consentVal);
+    setIsCookieDrawerOpen(false);
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden bg-neutral-50 text-neutral-900 transition-colors duration-200 dark:bg-neutral-950 dark:text-neutral-100">
-      {/* RESPONSYWNY HEADER */}
-      <header className="sticky top-0 z-40 w-full border-b border-neutral-200/80 bg-white/90 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/80 shadow-xs">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3">
-          {/* LOGO & TYTUŁ */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white shadow-md shadow-rose-600/20">
-              <Skull className="h-5 w-5 sm:h-6 sm:w-6" />
-            </div>
+    <div className="min-h-screen bg-stone-100 text-stone-900 dark:bg-stone-950 dark:text-stone-100 font-sans transition-colors duration-300">
+      {/* Top Navigation */}
+      <header className="border-b border-stone-200 bg-white/80 dark:border-stone-800 dark:bg-stone-900/80 backdrop-blur-md sticky top-0 z-40 transition-colors">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          {/* Logo Brand */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
+            <span className="text-xl sm:text-2xl select-none" aria-hidden="true">💀</span>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-black text-base sm:text-lg tracking-wider text-rose-600 dark:text-rose-500 truncate">
-                  {t.brand.name}
+                <span className="font-black text-base sm:text-lg tracking-wider text-rose-600 dark:text-rose-500 uppercase">
+                  BugMortem
                 </span>
-                <span className="hidden md:inline-flex rounded-full bg-rose-500/10 px-2 py-0.5 font-bold text-[10px] sm:text-xs text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
-                  {t.brand.badge}
+                <span className="hidden sm:inline-flex text-[9px] sm:text-[10px] uppercase font-bold tracking-widest px-1.5 sm:px-2 py-0.5 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30 whitespace-nowrap">
+                  KIROWEEN 2026
                 </span>
               </div>
-              <p className="hidden sm:block text-xs text-neutral-500 dark:text-neutral-400 truncate">
-                {t.brand.tagline}
+              <p className="text-[11px] text-stone-600 dark:text-stone-400 hidden md:block truncate">
+                {fixOrphans(t?.subtitle)}
               </p>
             </div>
           </div>
 
-          {/* KONTROLKI: JĘZYK & MOTYW */}
+          {/* Controls: Language + Theme */}
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-            {/* PRZEŁĄCZNIK JĘZYKÓW (ZWIĘZŁY NA MOBILE: PL / EN) */}
-            <div className="flex items-center rounded-lg border border-neutral-200 p-0.5 sm:p-1 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900">
-              {SUPPORTED_LOCALES.map((loc) => (
-                <button
-                  key={loc}
-                  onClick={() => setLocale(loc)}
-                  className={`rounded-md px-2 py-1 text-xs font-bold transition-all ${
-                    locale === loc
-                      ? 'bg-rose-600 text-white shadow-xs'
-                      : 'text-neutral-600 hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-neutral-100'
-                  }`}
-                >
-                  <span className="sm:hidden">{loc.toUpperCase()}</span>
-                  <span className="hidden sm:inline">
-                    {loc === 'pl' ? 'Polski (PL)' : 'English (EN)'}
-                  </span>
-                </button>
-              ))}
+            <div className="flex items-center bg-stone-200 dark:bg-stone-800 rounded-lg p-0.5 sm:p-1 border border-stone-300 dark:border-stone-700 text-xs font-semibold">
+              <button
+                type="button"
+                onClick={() => changeLocale('pl')}
+                className={`px-2 sm:px-2.5 py-1 rounded transition-colors cursor-pointer ${
+                  locale === 'pl'
+                    ? 'bg-rose-600 text-white font-bold shadow-sm'
+                    : 'text-stone-700 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
+                }`}
+              >
+                <span className="sm:hidden">PL</span>
+                <span className="hidden sm:inline">Polski (PL)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => changeLocale('en')}
+                className={`px-2 sm:px-2.5 py-1 rounded transition-colors cursor-pointer ${
+                  locale === 'en'
+                    ? 'bg-rose-600 text-white font-bold shadow-sm'
+                    : 'text-stone-700 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
+                }`}
+              >
+                <span className="sm:hidden">EN</span>
+                <span className="hidden sm:inline">English (EN)</span>
+              </button>
             </div>
 
-            {/* PRZEŁĄCZNIK MOTYWU */}
             <button
+              type="button"
               onClick={toggleTheme}
-              className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-600 shadow-xs transition-colors hover:bg-neutral-100 hover:text-neutral-950 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
               aria-label="Toggle theme"
+              className="p-1.5 sm:p-2 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 transition-colors cursor-pointer shadow-sm text-sm"
             >
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {theme === 'dark' ? '☀️' : '🌙'}
             </button>
           </div>
         </div>
       </header>
 
-      {/* GŁÓWNA TREŚĆ */}
-      <main className="flex-1 mx-auto w-full max-w-7xl px-3 sm:px-6 py-5 sm:py-8 space-y-6 sm:space-y-8">
-        {/* BANNER GŁÓWNY */}
-        <section className="relative overflow-hidden rounded-2xl border border-rose-200/80 bg-gradient-to-r from-rose-50/70 via-neutral-50 to-amber-50/50 p-5 sm:p-8 dark:border-rose-500/20 dark:bg-gradient-to-br dark:from-rose-950/20 dark:via-neutral-900/20 dark:to-neutral-950 shadow-xs">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-rose-300/80 bg-rose-100/60 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-bold text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400">
-                <Flame className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                <span>KIROWEEN {2026} HACKATHON ENTRY</span>
-              </div>
-              <h1 className="text-xl sm:text-3xl font-black tracking-tight text-neutral-950 dark:text-neutral-100">
-                {t.dashboard.title}
-              </h1>
-              <p className="max-w-2xl text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                {t.dashboard.subtitle}
-              </p>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
+        {/* Hero Section */}
+        <div className="bg-white border-stone-200 text-stone-900 dark:bg-stone-900/60 dark:border-stone-800 dark:text-white rounded-2xl border p-5 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden shadow-xl dark:shadow-2xl transition-colors">
+          <div className="space-y-3 z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold tracking-wider uppercase bg-rose-100 text-rose-700 border border-rose-300 dark:bg-rose-950/60 dark:text-rose-400 dark:border-rose-800/40">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+              {t?.badgeHackathon}
             </div>
-            <div className="flex items-center gap-3 pt-2 md:pt-0 border-t border-rose-200/50 md:border-0">
-              <div className="flex flex-col md:items-end">
-                <span className="text-[10px] sm:text-xs uppercase font-mono tracking-wider text-neutral-500 dark:text-neutral-400">
-                  {t.dashboard.ecgStatus}
-                </span>
-                <span className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                  <Activity className="h-4 w-4 animate-pulse" />
-                  {t.dashboard.heartbeat}
-                </span>
-              </div>
-            </div>
+            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-stone-900 dark:text-white">
+              {fixOrphans(t?.title)}
+            </h1>
+            <p className="text-stone-600 dark:text-stone-400 max-w-2xl text-xs sm:text-base leading-relaxed">
+              {fixOrphans(t?.subtitle)}
+            </p>
           </div>
-        </section>
 
-        {/* PRESETY KOSZMARÓW PRODUKCYJNYCH */}
-        <section className="space-y-2.5">
-          <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-            {t.dashboard.selectPreset}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
-            {(['hydration', 'oom', 'cors', 'dbpool'] as PresetKey[]).map((key) => {
-              const presetInfo = t.presets[key];
-              const isSelected = activePreset === key;
+          <div className="z-10 flex flex-col items-start md:items-end gap-3 w-full md:w-auto">
+            <div className="w-full md:w-auto bg-stone-100 border-stone-200 dark:bg-stone-950/80 dark:border-stone-800 rounded-xl p-3 sm:p-4 border flex items-center justify-between md:justify-end gap-4 shadow-inner transition-colors">
+              <div className="text-left md:text-right">
+                <div className="text-[10px] uppercase font-bold tracking-widest text-stone-500 dark:text-stone-400">
+                  {t?.statusLabel}
+                </div>
+                <div className="text-xs sm:text-sm font-mono font-bold text-rose-600 dark:text-rose-500 flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                  {t?.statusValue}
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className="w-full md:w-auto px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 dark:shadow-rose-900/40 border border-rose-400/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span className="text-sm">⚡</span>
+              {t?.customAutopsyBtn}
+            </button>
+          </div>
+        </div>
+
+        {/* Preset Cards & Case Selection */}
+        <section className="space-y-3 sm:space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              {t?.presetsSectionTitle}
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {Object.entries(allIncidents).map(([incidentKey, incident], idx) => {
+              const incidentId = incident?.id || incidentKey;
+              const isSelected = selectedPreset === incidentId;
               return (
                 <button
-                  key={key}
-                  onClick={() => setActivePreset(key)}
-                  className={`flex flex-col text-left p-3.5 sm:p-4 rounded-xl border transition-all ${
+                  key={`incident-${incidentId}-${idx}`}
+                  type="button"
+                  onClick={() => setSelectedPreset(incidentId)}
+                  className={`text-left p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? 'border-rose-500 bg-rose-50/80 dark:bg-rose-950/20 shadow-sm ring-2 ring-rose-500/20'
-                      : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900/60 dark:hover:border-neutral-700 shadow-xs'
+                      ? 'bg-rose-50/80 border-rose-500 shadow-md ring-1 ring-rose-500/50 dark:bg-stone-900 dark:border-rose-500 dark:shadow-lg dark:shadow-rose-950/30'
+                      : 'bg-white border-stone-200 hover:border-stone-300 hover:bg-stone-50 dark:bg-stone-900/40 dark:border-stone-800/80 dark:hover:border-stone-700 dark:hover:bg-stone-900/80'
                   }`}
                 >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-[11px] sm:text-xs font-mono font-bold uppercase text-rose-600 dark:text-rose-400">
-                      {presetInfo.category}
-                    </span>
-                    <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
-                      {presetInfo.severity}
-                    </span>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                        {incident?.badge}
+                      </span>
+                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700">
+                        {incident?.severity}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100 line-clamp-1">
+                      {fixOrphans(incident?.title)}
+                    </h3>
+                    <p className="text-xs text-stone-600 dark:text-stone-400 line-clamp-2">
+                      {fixOrphans(incident?.desc)}
+                    </p>
                   </div>
-                  <h3 className="font-bold text-xs sm:text-sm text-neutral-950 dark:text-neutral-100 mb-1">
-                    {presetInfo.name}
-                  </h3>
-                  <p className="text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 mt-auto leading-relaxed">
-                    {presetInfo.rootCause}
-                  </p>
                 </button>
               );
             })}
           </div>
         </section>
 
-        {/* SEKCJA ZWŁOK KODU */}
-        <section className="space-y-2.5">
+        {/* Side-by-Side Code Autopsy */}
+        <section className="space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
-              <Code2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-rose-500" />
-              <span className="truncate">{t.dashboard.autopsyDiff}</span>
+            <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 flex items-center gap-2">
+              <span>&lt;/&gt;</span>
+              {t?.autopsyTitle}
             </h2>
             <button
-              onClick={() => handleCopy(currentData.resurrectedCode)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs font-semibold text-neutral-700 shadow-xs hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800 transition-colors shrink-0"
+              type="button"
+              onClick={handleCopyCode}
+              className="text-xs font-mono px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-300 dark:border-stone-700 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
-              {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
-              <span>{copied ? t.dashboard.copied : t.dashboard.copyCode}</span>
+              <span>📋</span>
+              {isCopied ? t?.copiedCodeBtn : t?.copyCodeBtn}
             </button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
-            {/* PRZEKLĘTY KOD */}
-            <div className="rounded-xl border border-rose-300/80 bg-rose-50/50 p-3.5 sm:p-4 font-mono text-[11px] sm:text-xs dark:border-red-500/30 dark:bg-neutral-900 shadow-xs overflow-hidden">
-              <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-rose-200 dark:border-neutral-800 text-rose-700 dark:text-red-400">
-                <span className="flex items-center gap-1.5 font-bold">
-                  <ShieldAlert className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span className="truncate">{t.dashboard.crashedCodeTitle}</span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            {/* Cursed Code (Before) */}
+            <div className="rounded-xl border border-rose-300 bg-rose-50/40 dark:border-rose-900/40 dark:bg-stone-950/80 overflow-hidden shadow-lg transition-colors">
+              <div className="bg-rose-100/80 border-b border-rose-200 dark:bg-rose-950/30 dark:border-rose-900/40 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2">
+                <span className="text-xs font-mono font-bold tracking-wider text-rose-700 dark:text-rose-400 flex items-center gap-1.5 truncate">
+                  <span>💀</span>
+                  {t?.crashedCodeTitle}
                 </span>
-                <span className="text-[9px] sm:text-[10px] bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded font-bold border border-rose-300 dark:bg-red-950 dark:text-red-300 dark:border-red-800 shrink-0">
-                  FATAL / P0
+                <span className="text-[10px] font-mono uppercase font-bold px-1.5 sm:px-2 py-0.5 rounded bg-rose-200 text-rose-800 border border-rose-300 dark:bg-rose-500/20 dark:text-rose-300 dark:border-rose-500/40 shrink-0">
+                  {t?.crashedBadge}
                 </span>
               </div>
-              <pre className="whitespace-pre-wrap break-words leading-relaxed text-rose-950 dark:text-red-200/90 font-medium">
-                {currentData.crashedCode}
+              <pre className="p-3 sm:p-4 font-mono text-xs leading-relaxed text-rose-950 dark:text-rose-200 overflow-x-auto whitespace-pre selection:bg-rose-200 dark:selection:bg-rose-900/50">
+                <code>{activeIncident?.crashedCode}</code>
               </pre>
             </div>
 
-            {/* WSKRZESZONY KOD */}
-            <div className="rounded-xl border border-emerald-300/80 bg-emerald-50/50 p-3.5 sm:p-4 font-mono text-[11px] sm:text-xs dark:border-emerald-500/30 dark:bg-neutral-900 shadow-xs overflow-hidden">
-              <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-emerald-200 dark:border-neutral-800 text-emerald-700 dark:text-emerald-400">
-                <span className="flex items-center gap-1.5 font-bold">
-                  <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span className="truncate">{t.dashboard.resurrectedCodeTitle}</span>
+            {/* Resurrected Code (After) */}
+            <div className="rounded-xl border border-emerald-300 bg-emerald-50/40 dark:border-emerald-900/40 dark:bg-stone-950/80 overflow-hidden shadow-lg transition-colors">
+              <div className="bg-emerald-100/80 border-b border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-900/40 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2">
+                <span className="text-xs font-mono font-bold tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 truncate">
+                  <span>✨</span>
+                  {t?.resurrectedCodeTitle}
                 </span>
-                <span className="text-[9px] sm:text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800 shrink-0">
-                  VERIFIED / SRE READY
+                <span className="text-[10px] font-mono uppercase font-bold px-1.5 sm:px-2 py-0.5 rounded bg-emerald-200 text-emerald-800 border border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/40 shrink-0">
+                  {t?.resurrectedBadge}
                 </span>
               </div>
-              <pre className="whitespace-pre-wrap break-words leading-relaxed text-emerald-950 dark:text-emerald-200/90 font-medium">
-                {currentData.resurrectedCode}
+              <pre className="p-3 sm:p-4 font-mono text-xs leading-relaxed text-emerald-950 dark:text-emerald-200 overflow-x-auto whitespace-pre selection:bg-emerald-200 dark:selection:bg-emerald-900/50">
+                <code>{activeIncident?.resurrectedCode}</code>
               </pre>
             </div>
           </div>
         </section>
 
-        {/* ZRZUT AWARII & OŚ CZASU */}
+        {/* Stack Trace & Timeline */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          <section className="space-y-2.5">
-            <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
-              <Terminal className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-neutral-500" />
-              <span>{t.dashboard.stackTraceTitle}</span>
+          <section className="space-y-3">
+            <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 flex items-center gap-2">
+              <span>&gt;_</span>
+              {t?.stackTraceTitle}
             </h2>
-            <div className="rounded-xl border border-neutral-200 bg-white p-3.5 sm:p-4 font-mono text-[11px] sm:text-xs shadow-xs h-56 sm:h-64 overflow-y-auto dark:border-neutral-800 dark:bg-neutral-950">
-              <pre className="whitespace-pre-wrap break-words leading-relaxed text-rose-700 dark:text-rose-400 font-medium">
-                {currentData.stackTrace}
-              </pre>
+            <div className="rounded-xl border border-stone-800 bg-stone-950 p-3 sm:p-4 font-mono text-xs text-rose-400/90 leading-relaxed overflow-x-auto shadow-inner">
+              <pre className="whitespace-pre-wrap">{activeIncident?.stackTrace}</pre>
             </div>
           </section>
 
-          <section className="space-y-2.5">
-            <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-neutral-500" />
-              <span>{t.dashboard.timelineTitle}</span>
+          <section className="space-y-3">
+            <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 flex items-center gap-2">
+              <span>⏱</span>
+              {t?.timelineTitle}
             </h2>
-            <div className="rounded-xl border border-neutral-200 bg-white p-3.5 sm:p-4 shadow-xs h-56 sm:h-64 overflow-y-auto space-y-2.5 sm:space-y-3 dark:border-neutral-800 dark:bg-neutral-900/60">
-              {currentData.timeline.map((item, idx) => (
-                <div key={idx} className="flex items-start gap-2.5 text-[11px] sm:text-xs">
-                  <span className="font-mono text-neutral-500 dark:text-neutral-400 font-semibold shrink-0">
-                    {item.time}
+            <div className="rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/40 p-3 sm:p-4 space-y-3 shadow-sm dark:shadow-inner transition-colors">
+              {safeTimeline.map((event, idx) => (
+                <div key={`timeline-${idx}-${event.time}`} className="flex items-start gap-2.5 sm:gap-3 text-xs font-mono">
+                  <span className="text-stone-400 dark:text-stone-500 shrink-0 select-none text-[11px] sm:text-xs">
+                    {event.time}
                   </span>
-                  <div className="flex-1">
-                    <span
-                      className={`font-semibold ${
-                        item.level === 'fatal'
-                          ? 'text-rose-600 dark:text-red-400 font-bold'
-                          : item.level === 'error'
-                          ? 'text-rose-500'
-                          : item.level === 'warn'
-                          ? 'text-amber-600 dark:text-amber-500'
-                          : 'text-neutral-700 dark:text-neutral-300'
-                      }`}
-                    >
-                      {item.event}
-                    </span>
-                  </div>
+                  <span className={event.isFatal ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-stone-800 dark:text-stone-300'}>
+                    {fixOrphans(event.desc)}
+                  </span>
                 </div>
               ))}
             </div>
           </section>
         </div>
 
-        {/* OFICJALNY PROTOKÓŁ SEKCJI ZWŁOK */}
-        <section className="space-y-2.5">
-          <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
-            <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-neutral-500" />
-            <span>{t.dashboard.postMortemTitle}</span>
-          </h2>
-          <div className="rounded-xl border border-neutral-200 bg-white p-4 sm:p-6 space-y-3 sm:space-y-4 shadow-xs dark:border-neutral-800 dark:bg-neutral-900/60">
-            <div>
-              <h3 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-1">
-                {t.dashboard.summaryLabel}
+        {/* Official Post-Mortem Report Protocol */}
+        <section className="rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/50 p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-xl dark:shadow-2xl relative transition-colors">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
+            <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-stone-800 dark:text-stone-200 flex items-center gap-2">
+              <span>📄</span>
+              {t?.postMortemTitle}
+            </h2>
+            <button
+              type="button"
+              onClick={handleExportReport}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 transition-colors cursor-pointer shadow-sm w-full sm:w-auto"
+            >
+              <span>⬇️</span>
+              {t?.exportReportBtn}
+            </button>
+          </div>
+
+          {exportNotice && (
+            <div className="p-3 rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-800 dark:bg-emerald-950/60 dark:border-emerald-800/50 dark:text-emerald-300 text-xs font-mono flex items-center gap-2">
+              <span>✓</span>
+              {t?.downloadSuccess}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+            <div className="space-y-2">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                {t?.postMortemSummaryHeading}
               </h3>
-              <p className="text-xs sm:text-sm text-neutral-800 dark:text-neutral-200 leading-relaxed">
-                {currentData.postMortemReport.summary}
+              <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
+                {fixOrphans(activeIncident?.postMortemReport?.summary)}
               </p>
             </div>
-            <div>
-              <h3 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-1">
-                {t.dashboard.impactLabel}
+
+            <div className="space-y-2">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                {t?.postMortemImpactHeading}
               </h3>
-              <p className="text-xs sm:text-sm text-neutral-800 dark:text-neutral-200 leading-relaxed">
-                {currentData.postMortemReport.impact}
+              <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
+                {fixOrphans(activeIncident?.postMortemReport?.impact)}
               </p>
             </div>
-            <div>
-              <h3 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-1">
-                {t.dashboard.preventativeLabel}
+
+            <div className="space-y-2">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                {t?.postMortemActionsHeading}
               </h3>
-              <ul className="list-disc pl-4 sm:pl-5 text-xs sm:text-sm space-y-1 text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                {currentData.postMortemReport.preventativeMeasures.map((measure, idx) => (
-                  <li key={idx}>{measure}</li>
+              <ul className="space-y-1.5 list-disc list-inside text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
+                {safeActionItems.map((item, idx) => (
+                  <li key={`action-${idx}`}>{fixOrphans(item)}</li>
                 ))}
               </ul>
             </div>
@@ -485,42 +584,269 @@ export default function BugMortemDashboard() {
         </section>
       </main>
 
-      {/* RESPONSYWNY FOOTER Z BEZPIECZNYM MARGINESEM PRZYCISKU SCROLL-TO-TOP */}
-      <footer className="mt-8 sm:mt-12 border-t border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950 py-6 sm:py-8">
-        <div className="mx-auto max-w-7xl px-3 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-neutral-500 dark:text-neutral-400 text-center md:text-left pr-16 md:pr-0">
-          <div>
-            <p>{t.footer.copyright}</p>
+      {/* Custom Autopsy Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-2xl w-full p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-2xl relative my-6 text-stone-900 dark:text-stone-100 transition-colors">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-stone-900 dark:text-white flex items-center gap-2">
+                  <span>⚡</span>
+                  {t?.customModalTitle}
+                </h3>
+                <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                  {fixOrphans(t?.customModalSubtitle)}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="text-stone-400 hover:text-stone-600 dark:hover:text-white text-lg p-1 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {formError && (
+              <div className="p-3 rounded-lg bg-rose-100 border border-rose-300 text-rose-800 dark:bg-rose-950/60 dark:border-rose-800/50 dark:text-rose-300 text-xs font-mono">
+                {formError}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateCustomAutopsy} className="space-y-4">
+              <div>
+                <label className="block text-xs font-mono font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                  {t?.fieldIncidentTitle} *
+                </label>
+                <input
+                  type="text"
+                  value={formTitle}
+                  onChange={(e) => setFormTitle(e.target.value)}
+                  placeholder={t?.fieldIncidentTitlePlaceholder}
+                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 placeholder-stone-400 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 dark:placeholder-stone-600 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-mono font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                    {t?.fieldCategory}
+                  </label>
+                  <select
+                    value={formCategory}
+                    onChange={(e) => setFormCategory(e.target.value as any)}
+                    className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
+                  >
+                    <option value="frontend">{t?.categoryFrontend}</option>
+                    <option value="backend">{t?.categoryBackend}</option>
+                    <option value="database">{t?.categoryDatabase}</option>
+                    <option value="infra">{t?.categoryInfra}</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                    {t?.fieldSeverity}
+                  </label>
+                  <select
+                    value={formSeverity}
+                    onChange={(e) => setFormSeverity(e.target.value as any)}
+                    className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
+                  >
+                    <option value="P0">{t?.severityP0}</option>
+                    <option value="P1">{t?.severityP1}</option>
+                    <option value="P2">{t?.severityP2}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                  {t?.fieldStackTrace} *
+                </label>
+                <textarea
+                  rows={4}
+                  value={formStackTrace}
+                  onChange={(e) => setFormStackTrace(e.target.value)}
+                  placeholder={t?.fieldStackTracePlaceholder}
+                  className="w-full bg-stone-900 border border-stone-800 rounded-lg p-3 font-mono text-xs text-rose-300 placeholder-stone-500 focus:outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                  {t?.fieldCrashedCode}
+                </label>
+                <textarea
+                  rows={3}
+                  value={formCrashedCode}
+                  onChange={(e) => setFormCrashedCode(e.target.value)}
+                  placeholder={t?.fieldCrashedCodePlaceholder}
+                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-200 placeholder-stone-400 dark:placeholder-stone-700 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                  {t?.fieldResurrectedCode}
+                </label>
+                <textarea
+                  rows={3}
+                  value={formResurrectedCode}
+                  onChange={(e) => setFormResurrectedCode(e.target.value)}
+                  placeholder={t?.fieldResurrectedCodePlaceholder}
+                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-emerald-300 placeholder-stone-400 dark:placeholder-stone-700 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200 cursor-pointer"
+                >
+                  {t?.btnCancel}
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 dark:shadow-rose-900/40 border border-rose-400/30 cursor-pointer"
+                >
+                  {t?.btnAnalyzeAndGenerate}
+                </button>
+              </div>
+            </form>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6">
-            <button
-              onClick={() => setLegalType('privacy')}
-              className="hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
-            >
-              {t.footer.privacyPolicy}
-            </button>
-            <button
-              onClick={() => setLegalType('terms')}
-              className="hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
-            >
-              {t.footer.termsOfService}
-            </button>
+        </div>
+      )}
+
+      {/* Footer */}
+      <footer className="border-t border-stone-200 bg-white dark:border-stone-900 dark:bg-stone-950 py-8 text-xs text-stone-500 transition-colors">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            © {copyrightYears} BugMortem. {t?.footerRights}
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="hover:text-stone-700 dark:hover:text-stone-300 cursor-pointer">{t?.footerPrivacy}</span>
+            <span>•</span>
+            <span className="hover:text-stone-700 dark:hover:text-stone-300 cursor-pointer">{t?.footerTerms}</span>
+            <span>•</span>
             <button
               type="button"
-              onClick={handleOpenCookieBanner}
-              className="font-medium text-rose-600 hover:text-rose-500 dark:text-rose-400 transition-colors"
+              onClick={() => setIsCookieDrawerOpen(true)}
+              className="text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200 underline cursor-pointer"
             >
-              {t.footer.cookieSettings}
+              {t?.footerCookieSettings}
             </button>
           </div>
         </div>
       </footer>
 
-      {/* MODAL PRAWNY */}
-      <LegalModal
-        isOpen={legalType !== null}
-        onClose={() => setLegalType(null)}
-        type={legalType || 'privacy'}
-      />
+      {/* GDPR Cookie Banner */}
+      {!cookieConsent && (
+        <aside
+          aria-label="Cookie consent banner"
+          className="fixed bottom-4 left-3 right-3 sm:left-auto sm:right-4 max-w-md bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-4 sm:p-5 shadow-2xl z-50 space-y-3 sm:space-y-4 text-stone-900 dark:text-stone-100 transition-colors"
+        >
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-2 text-rose-600 dark:text-rose-500 text-sm font-bold">
+              <span>🛡️</span>
+              <h3>{t?.cookieTitle}</h3>
+            </div>
+            <button
+              type="button"
+              onClick={handleAcceptEssential}
+              className="text-stone-400 hover:text-stone-600 dark:hover:text-white text-xs p-1 cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+          <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+            {fixOrphans(t?.cookieDesc)}
+          </p>
+          <div className="flex items-center gap-2 pt-1">
+            <button
+              type="button"
+              onClick={handleAcceptAllCookies}
+              className="flex-1 py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs tracking-wider transition-colors cursor-pointer text-center shadow-sm"
+            >
+              {t?.cookieAcceptAll}
+            </button>
+            <button
+              type="button"
+              onClick={handleAcceptEssential}
+              className="py-2 px-3 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-800 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-300 font-bold text-xs transition-colors cursor-pointer text-center"
+            >
+              {t?.cookieEssentialOnly}
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsCookieDrawerOpen(true)}
+            className="w-full text-center text-[11px] text-stone-500 hover:text-stone-800 dark:hover:text-stone-300 underline cursor-pointer"
+          >
+            {t?.cookieCustomize}
+          </button>
+        </aside>
+      )}
+
+      {/* Cookie Drawer Modal */}
+      {isCookieDrawerOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4">
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-5 shadow-2xl text-stone-900 dark:text-stone-100 transition-colors">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-stone-900 dark:text-white flex items-center gap-2">
+                <span>🛡️</span>
+                {t?.cookieDrawerTitle}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsCookieDrawerOpen(false)}
+                className="text-stone-400 hover:text-stone-600 dark:hover:text-white p-1 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-start justify-between gap-4 p-3 rounded-xl bg-stone-100 border border-stone-200 dark:bg-stone-950 dark:border-stone-800">
+                <div>
+                  <div className="text-xs font-bold text-stone-900 dark:text-stone-200">{t?.cookieAnalytics}</div>
+                  <div className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">{fixOrphans(t?.cookieAnalyticsDesc)}</div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={analyticsCookies}
+                  onChange={(e) => setAnalyticsCookies(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-stone-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+                />
+              </div>
+
+              <div className="flex items-start justify-between gap-4 p-3 rounded-xl bg-stone-100 border border-stone-200 dark:bg-stone-950 dark:border-stone-800">
+                <div>
+                  <div className="text-xs font-bold text-stone-900 dark:text-stone-200">{t?.cookieMarketing}</div>
+                  <div className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">{fixOrphans(t?.cookieMarketingDesc)}</div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={marketingCookies}
+                  onChange={(e) => setMarketingCookies(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-stone-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={handleSaveCookiePreferences}
+                className="w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs tracking-wider transition-colors cursor-pointer shadow-sm"
+              >
+                {t?.cookieSavePreferences}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -27,3 +27,7 @@ select {
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 }
+/* Likwidacja sierotek i wdów typograficznych */
+h1, h2, h3, h4, p, span, li {
+  text-wrap: pretty;
+}
