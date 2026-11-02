@@ -1,56 +1,32 @@
 export type Locale = 'en' | 'pl';
 
-export type IncidentSeverity = 'SEV-1' | 'SEV-2' | 'SEV-3' | 'SEV-4' | string;
-
-export type IncidentCategory =
-  | 'database'
-  | 'memory'
-  | 'network'
-  | 'concurrency'
-  | 'security'
-  | 'custom'
-  | string;
-
 export interface TimelineEvent {
   time: string;
-  event?: string;
-  desc?: string;
+  desc: string;
   isFatal?: boolean;
-  status?: 'nominal' | 'degraded' | 'critical' | 'resolved' | string;
+  status?: string;
   [key: string]: any;
 }
 
-export interface SafePattern {
-  name: string;
-  pattern: string;
-  codeSnippet: string;
-  [key: string]: any;
-}
-
-export interface ActionItem {
-  task: string;
-  owner: string;
-  priority: 'high' | 'medium' | 'low' | string;
-  deadline: string;
-  [key: string]: any;
-}
-
-export interface Incident {
-  id: string;
-  title: string;
-  category: IncidentCategory;
-  severity: IncidentSeverity;
+export interface PostMortemReport {
   summary: string;
-  rootCause: string;
   impact: string;
-  timeline: TimelineEvent[];
-  safePattern: SafePattern;
-  actionItems: ActionItem[];
-  [key: string]: any;
+  actionItems: string[];
 }
 
-// Eksport wymagany bezpośrednio przez src/app/page.tsx
-export type IncidentPreset = Incident;
+export interface IncidentPreset {
+  id: string;
+  badge: string;
+  severity: string;
+  title: string;
+  desc: string;
+  crashedCode: string;
+  resurrectedCode: string;
+  stackTrace: string;
+  timeline: TimelineEvent[];
+  postMortemReport: PostMortemReport;
+  [key: string]: any;
+}
 
 export interface LegalDictionary {
   modalTitle?: string;
@@ -86,45 +62,67 @@ export interface CommonDictionary {
 }
 
 export interface Dictionary {
-  appName: string;
-  appTagline: string;
-  hackathonBadge: string;
-  themeToggle: string;
-  languageToggle: string;
-  incidentsListTitle: string;
+  title: string;
+  subtitle: string;
+  badgeHackathon: string;
+  statusLabel: string;
+  statusValue: string;
   customAutopsyBtn: string;
-  presetTitles: Record<string, string>;
-  autopsyModalTitle: string;
-  autopsyTitleLabel: string;
-  autopsyTitlePlaceholder: string;
-  autopsyDescLabel: string;
-  autopsyDescPlaceholder: string;
-  autopsyCategoryLabel: string;
-  autopsySeverityLabel: string;
-  autopsySubmitBtn: string;
-  autopsyCancelBtn: string;
-  reportTitle: string;
-  reportBadge: string;
-  severityLabel: string;
-  categoryLabel: string;
-  impactLabel: string;
-  rootCauseLabel: string;
+  presetsSectionTitle: string;
+  autopsyTitle: string;
+  copyCodeBtn: string;
+  copiedCodeBtn: string;
+  crashedCodeTitle: string;
+  crashedBadge: string;
+  resurrectedCodeTitle: string;
+  resurrectedBadge: string;
+  stackTraceTitle: string;
   timelineTitle: string;
-  safePatternTitle: string;
-  actionItemsTitle: string;
-  exportMarkdownBtn: string;
-  copiedNotification: string;
-  taskHeader: string;
-  ownerHeader: string;
-  priorityHeader: string;
-  deadlineHeader: string;
-  footerCopyright: string;
-  footerDisclaimer: string;
-  categories: Record<string, string>;
-  severities: Record<string, string>;
+  postMortemTitle: string;
+  exportReportBtn: string;
+  downloadSuccess: string;
+  postMortemSummaryHeading: string;
+  postMortemImpactHeading: string;
+  postMortemActionsHeading: string;
+  customModalTitle: string;
+  customModalSubtitle: string;
+  fieldIncidentTitle: string;
+  fieldIncidentTitlePlaceholder: string;
+  fieldCategory: string;
+  categoryFrontend: string;
+  categoryBackend: string;
+  categoryDatabase: string;
+  categoryInfra: string;
+  fieldSeverity: string;
+  severityP0: string;
+  severityP1: string;
+  severityP2: string;
+  fieldStackTrace: string;
+  fieldStackTracePlaceholder: string;
+  fieldCrashedCode: string;
+  fieldCrashedCodePlaceholder: string;
+  fieldResurrectedCode: string;
+  fieldResurrectedCodePlaceholder: string;
+  btnCancel: string;
+  btnAnalyzeAndGenerate: string;
+  validationErrorRequired: string;
+  footerRights: string;
+  footerPrivacy: string;
+  footerTerms: string;
+  footerCookieSettings: string;
+  cookieTitle: string;
+  cookieDesc: string;
+  cookieAcceptAll: string;
+  cookieEssentialOnly: string;
+  cookieCustomize: string;
+  cookieDrawerTitle: string;
+  cookieAnalytics: string;
+  cookieAnalyticsDesc: string;
+  cookieMarketing: string;
+  cookieMarketingDesc: string;
+  cookieSavePreferences: string;
+  presets: Record<string, IncidentPreset>;
   legal: LegalDictionary;
   common: CommonDictionary;
-  cookieConsent?: Record<string, any>;
-  presets?: Incident[];
   [key: string]: any;
 }

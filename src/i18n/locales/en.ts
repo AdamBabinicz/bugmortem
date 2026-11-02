@@ -1,65 +1,65 @@
 import { Dictionary } from '../types';
 
 export const en: Dictionary = {
-  appName: 'BugMortem',
-  appTagline: 'Digital Incident Morgue & Automated Post-Mortem Report Generator',
-  hackathonBadge: 'Kiroween 2026 Hackathon Project',
-  themeToggle: 'Toggle Theme',
-  languageToggle: 'Language',
-  incidentsListTitle: 'Incident Autopsy Archive',
+  title: 'BugMortem – AI Incident Autopsy & Post-Mortem Studio',
+  subtitle: 'Forensic post-mortem investigation and automated SRE safe patterns for production outages.',
+  badgeHackathon: 'Kiroween 2026 Hackathon Entry',
+  statusLabel: 'Morgue Status',
+  statusValue: 'Incident Active (P0)',
   customAutopsyBtn: '+ Ingest Custom Incident',
-  
-  presetTitles: {
-    'incident-1': 'The Connection Pool Death Spiral',
-    'incident-2': 'The OOM Reaper Awakening',
-    'incident-3': 'The DNS TTL Ghost Protocol',
-    'incident-4': 'The Cascading Retry Storm',
-  },
-
-  autopsyModalTitle: 'Ingest Custom Incident Autopsy',
-  autopsyTitleLabel: 'Incident Title / Summary',
-  autopsyTitlePlaceholder: 'e.g. Distributed Lock Starvation in Payment Gateway',
-  autopsyDescLabel: 'Outage Symptom & Stack Trace Snippet',
-  autopsyDescPlaceholder: 'Describe the failure symptoms, error codes, connection timeouts, and what collapsed in production...',
-  autopsyCategoryLabel: 'Architecture Domain',
-  autopsySeverityLabel: 'Severity Level',
-  autopsySubmitBtn: 'Generate Post-Mortem Autopsy',
-  autopsyCancelBtn: 'Cancel',
-
-  reportTitle: 'Post-Mortem Autopsy Report',
-  reportBadge: 'Official Post-Mortem Record',
-  severityLabel: 'Incident Severity',
-  categoryLabel: 'Failure Domain',
-  impactLabel: 'Observed Blast Radius & Business Impact',
-  rootCauseLabel: 'Verified Root Cause (The Trigger)',
+  presetsSectionTitle: 'Incident Autopsy Archive',
+  autopsyTitle: 'Side-by-Side Code Autopsy',
+  copyCodeBtn: 'Copy Resurrected Code',
+  copiedCodeBtn: 'Copied to Clipboard!',
+  crashedCodeTitle: 'Cursed Code (Production Crash)',
+  crashedBadge: 'Fatal Error',
+  resurrectedCodeTitle: 'Resurrected SRE Code (Safe Pattern)',
+  resurrectedBadge: 'Circuit Breaker',
+  stackTraceTitle: 'Raw Stack Trace',
   timelineTitle: 'Chronological Incident Timeline',
-  safePatternTitle: 'Automated SRE Safe Pattern & Circuit Breaker',
-  actionItemsTitle: 'Preventative Action Items',
-  exportMarkdownBtn: 'Export Markdown Report',
-  copiedNotification: 'Report markdown copied to clipboard!',
-  taskHeader: 'Corrective Action',
-  ownerHeader: 'DRI / Owner',
-  priorityHeader: 'Priority',
-  deadlineHeader: 'Target SLA',
-
-  footerCopyright: 'BugMortem. Built for the Kiroween 2026 Hackathon by AWS & Devpost.',
-  footerDisclaimer: 'Zero telemetry. All incident autopsies and post-mortems run locally in your browser storage.',
-
-  categories: {
-    database: 'Database & Storage',
-    memory: 'Memory & CPU Exhaustion',
-    network: 'Networking & DNS',
-    concurrency: 'Concurrency & Deadlocks',
-    security: 'Security & Access Control',
-    custom: 'Custom Incident Analysis',
-  },
-
-  severities: {
-    'SEV-1': 'SEV-1 (Critical Outage)',
-    'SEV-2': 'SEV-2 (Major Degradation)',
-    'SEV-3': 'SEV-3 (Moderate Impact)',
-    'SEV-4': 'SEV-4 (Minor Glitch)',
-  },
+  postMortemTitle: 'Official Post-Mortem Report Protocol',
+  exportReportBtn: 'Export Markdown Report',
+  downloadSuccess: 'Markdown report downloaded successfully!',
+  postMortemSummaryHeading: 'Executive Summary',
+  postMortemImpactHeading: 'Blast Radius & Impact',
+  postMortemActionsHeading: 'Preventative Action Items',
+  customModalTitle: 'Ingest Custom Incident Autopsy',
+  customModalSubtitle: 'Paste your production error logs and stack traces to run an automated post-mortem autopsy.',
+  fieldIncidentTitle: 'Incident Title',
+  fieldIncidentTitlePlaceholder: 'e.g. Distributed Lock Starvation in Payment Gateway',
+  fieldCategory: 'Architecture Domain',
+  categoryFrontend: 'Frontend',
+  categoryBackend: 'Backend',
+  categoryDatabase: 'Database',
+  categoryInfra: 'Infrastructure',
+  fieldSeverity: 'Incident Severity',
+  severityP0: 'Fatal Outage (P0)',
+  severityP1: 'Critical Degradation (P1)',
+  severityP2: 'Major Glitch (P2)',
+  fieldStackTrace: 'Raw Stack Trace / Error Snippet',
+  fieldStackTracePlaceholder: 'Paste production stack trace or error log here...',
+  fieldCrashedCode: 'Cursed Code (Optional)',
+  fieldCrashedCodePlaceholder: 'Paste the snippet that triggered the crash...',
+  fieldResurrectedCode: 'Resurrected SRE Code (Optional)',
+  fieldResurrectedCodePlaceholder: 'Leave blank to auto-generate circuit breaker fallback...',
+  btnCancel: 'Cancel',
+  btnAnalyzeAndGenerate: 'Run Forensic Autopsy',
+  validationErrorRequired: 'Please provide an incident title and stack trace.',
+  footerRights: 'All rights reserved. Built for Kiroween 2026 by AWS & Devpost.',
+  footerPrivacy: 'Privacy Policy',
+  footerTerms: 'Terms of Service',
+  footerCookieSettings: 'Cookie Preferences',
+  cookieTitle: 'Cookie & Storage Transparency',
+  cookieDesc: 'BugMortem uses localStorage strictly to persist your post-mortem incident autopsies and theme preferences locally. We do not track or sell your telemetry.',
+  cookieAcceptAll: 'Accept All',
+  cookieEssentialOnly: 'Essential Only',
+  cookieCustomize: 'Customize Preferences',
+  cookieDrawerTitle: 'Cookie & Privacy Preferences',
+  cookieAnalytics: 'Analytics Storage',
+  cookieAnalyticsDesc: 'Allows saving analytical metrics of simulated outage mitigations locally.',
+  cookieMarketing: 'Marketing Storage',
+  cookieMarketingDesc: 'BugMortem does not serve ads or third-party tracking scripts.',
+  cookieSavePreferences: 'Save Preferences',
 
   common: {
     close: 'Close',
@@ -67,216 +67,203 @@ export const en: Dictionary = {
     save: 'Save',
     back: 'Back',
     loading: 'Loading...',
-    status: 'Status',
-    filter: 'Filter',
-    search: 'Search incidents...',
-  },
-
-  cookieConsent: {
-    bannerTitle: 'Cookie & Storage Transparency',
-    bannerText: 'BugMortem uses localStorage strictly to persist your post-mortem incident autopsies and theme preferences locally. We do not track or sell your telemetry.',
-    acceptAll: 'Accept & Acknowledge',
-    customize: 'Preferences',
-    decline: 'Decline Non-Essential',
-    savePreferences: 'Save Preferences',
-    necessaryOnly: 'Strictly Essential Only',
   },
 
   legal: {
-    modalTitle: 'Legal, Compliance & Privacy Center',
+    modalTitle: 'Legal & Compliance',
     title: 'Legal & Compliance',
     terms: 'Terms of Service',
-    termsTitle: 'Terms of Service & Usage',
-    termsContent: 'BugMortem is an open-source incident autopsy simulator and post-mortem automation suite engineered for the Kiroween 2026 Hackathon. Provided as-is for educational and incident mitigation purposes under the MIT license.',
+    termsTitle: 'Terms of Service',
+    termsContent: 'BugMortem is an incident post-mortem analysis and autopsy tool developed for the Kiroween 2026 hackathon. Provided as-is for educational and incident mitigation purposes.',
     privacy: 'Privacy Policy',
-    privacyTitle: 'Data Privacy & Local Storage Sovereignty',
-    privacyContent: 'All incident logs, custom autopsies, and post-mortems are processed locally in your browser storage. No proprietary outage data, logs, or stack traces are uploaded to external tracking servers or third-party telemetry aggregators.',
+    privacyTitle: 'Privacy Policy',
+    privacyContent: 'All incident logs, custom autopsies, and post-mortems are processed locally in your browser storage. No proprietary outage data is uploaded to third-party tracking services.',
     cookies: 'Cookie Policy',
     cookiesTitle: 'Cookie & Local Storage Policy',
-    cookiesContent: 'We use browser localStorage solely to persist your theme preference (dark/light), custom incident drafts, and autopsy reports across sessions. No advertising cookies or fingerprinting scripts are loaded.',
+    cookiesContent: 'We use browser localStorage solely to persist your theme preference, incident drafts, and custom autopsy analyses across sessions.',
     disclaimer: 'SRE Disclaimer',
-    disclaimerTitle: 'SRE & Reliability Engineering Disclaimer',
-    disclaimerContent: 'Generated root causes, blast radius estimations, and safe patterns are assistive recommendations. Always verify mitigation scripts and architectural changes in a staging sandbox before applying to production clusters.',
+    disclaimerTitle: 'SRE & Reliability Disclaimer',
+    disclaimerContent: 'Generated root causes and safe patterns are assistive recommendations. Always verify mitigation scripts in a staging sandbox before applying to production clusters.',
     gdpr: 'Data Protection & GDPR',
-    gdprTitle: 'Data Protection & GDPR Compliance',
-    gdprContent: 'BugMortem complies with European GDPR standards. You maintain 100% control over your data. Deleting your browser cache or clearing local data completely removes all stored post-mortem artifacts.',
+    gdprTitle: 'Data Protection & Sovereignty',
+    gdprContent: 'BugMortem fully respects data privacy regulations under GDPR. You maintain 100% control over exported markdown autopsy reports and local history.',
   },
 
-  presets: [
-    {
-      id: 'incident-1',
-      title: 'The Connection Pool Death Spiral',
-      category: 'database',
-      severity: 'SEV-1',
-      summary: 'A sudden burst of unindexed analytical queries exhausted all 200 pool connections in RDS Aurora PostgreSQL, causing cascaded thread locking across 12 microservices.',
-      impact: '100% checkout failure rate for 42 minutes. 14,200 transactions aborted. $320,000 estimated revenue disruption across EU & US East gateways.',
-      rootCause: 'A rogue background reporting cron bypassed the read-replica pool and executed a sequential scan with a 60s timeout against the primary transactional database, locking transaction slots.',
+  presets: {
+    'react-hydration': {
+      id: 'react-hydration',
+      badge: 'Frontend / SSR',
+      severity: 'P0',
+      title: 'React Hydration Mismatch & DOM Tree Collapse',
+      desc: 'Unstable new Date() or window access during SSR triggers React Error #418, ripping out interactive client state.',
+      crashedCode: `// ❌ CURSED CODE: Server/Client HTML divergence
+export default function Header() {
+  // Rendering dynamic date directly causes hydration crash
+  return (
+    <div>Current time: {new Date().toLocaleTimeString()}</div>
+  );
+}`,
+      resurrectedCode: `// ✅ RESURRECTED SRE PATTERN: Hydration-Safe State Mount
+import { useState, useEffect } from 'react';
+
+export default function Header() {
+  const [mounted, setMounted] = useState(false);
+  const [time, setTime] = useState('');
+
+  useEffect(() => {
+    setMounted(true);
+    setTime(new Date().toLocaleTimeString());
+  }, []);
+
+  if (!mounted) return <div className="animate-pulse">Loading clock...</div>;
+  return <div>Current time: {time}</div>;
+}`,
+      stackTrace: `Error: Hydration failed because the initial UI does not match what was rendered on the server.
+    at throwOnHydrationMismatch (react-dom-client.development.js:12508)
+    at tryToClaimNextHydratableInstance (react-dom-client.development.js:12534)
+    at completeWork (react-dom-client.development.js:22170)`,
       timeline: [
-        { time: '14:02 UTC', event: 'Automated BI cron job triggers unindexed join query on orders table.', status: 'nominal' },
-        { time: '14:05 UTC', event: 'Primary RDS CPU reaches 98%. Active connection pool maxes out at 200/200.', status: 'degraded' },
-        { time: '14:08 UTC', event: 'Checkout service threads block waiting for available connections; health checks fail.', status: 'critical' },
-        { time: '14:22 UTC', event: 'Incident Commander page triggered. Traffic diverted to static maintenance fallback.', status: 'critical' },
-        { time: '14:38 UTC', event: 'Long-running query terminated via pg_terminate_backend(); connection pool resets.', status: 'nominal' },
-        { time: '14:44 UTC', event: 'Egress traffic normalized. Zero 503 errors reported across edge gateway.', status: 'resolved' },
+        { time: '12:00:01 UTC', desc: 'Edge server renders pre-baked SSR HTML payload', isFatal: false },
+        { time: '12:00:02 UTC', desc: 'Client browser executes hydration bundle at local millisecond mismatch', isFatal: false },
+        { time: '12:00:03 UTC', desc: 'React throws Error #418; tearing unmounts interactive component tree', isFatal: true }
       ],
-      safePattern: {
-        name: 'Connection Pool Partitioning & Circuit Breaker',
-        pattern: 'Isolate transactional endpoints from analytical batch workloads with strict per-route concurrency limits and exponential backoff shedding.',
-        codeSnippet: `// SRE Safe Pattern: Resilient Connection Leasing with Timeout
-import { Pool } from 'pg';
-
-const primaryPool = new Pool({
-  max: 50,
-  connectionTimeoutMillis: 2000,
-  idleTimeoutMillis: 10000,
-  statement_timeout: 5000, // Hard fail long-running queries
-});
-
-export async function executeCriticalQuery<T>(sql: string, params: unknown[]): Promise<T> {
-  const client = await primaryPool.connect();
+      postMortemReport: {
+        summary: 'Fatal React hydration mismatch caused by non-deterministic SSR execution.',
+        impact: 'Users experienced momentary flash of unstyled content and disabled form buttons across marketing landing pages.',
+        actionItems: [
+          'Enforce useEffect guards for all browser-only dynamic attributes.',
+          'Add automated ESLint rule to flag new Date() inside server component JSX.',
+          'Deploy synthetic visual regression testing across top 50 landing pages.'
+        ]
+      }
+    },
+    'connection-pool': {
+      id: 'connection-pool',
+      badge: 'Database / Aurora',
+      severity: 'P0',
+      title: 'The Connection Pool Death Spiral',
+      desc: 'Unindexed analytical queries exhausted all 200 RDS Aurora connection slots, locking transactional checkout threads.',
+      crashedCode: `// ❌ CURSED CODE: Leaking connection pool leases
+export async function getOrderReport() {
+  const client = await pool.connect();
+  // Missing try/finally causes permanent lease leak on error
+  const res = await client.query('SELECT * FROM orders WHERE heavy_calc = true');
+  return res.rows;
+}`,
+      resurrectedCode: `// ✅ RESURRECTED SRE PATTERN: Resilient Scoped Leasing
+export async function getOrderReport() {
+  const client = await pool.connect();
   try {
-    return await client.query(sql, params) as T;
+    const res = await client.query('SELECT * FROM orders WHERE heavy_calc = true');
+    return res.rows;
   } finally {
-    client.release(); // Always return connection to pool
+    client.release(); // Always release connection back to pool
   }
 }`,
-      },
-      actionItems: [
-        { task: 'Implement read-replica routing for all non-mutating analytical queries', owner: 'DBA Team', priority: 'high', deadline: '24 Hours' },
-        { task: 'Enforce statement_timeout = 3000ms at the role level for app_user', owner: 'Infra SRE', priority: 'high', deadline: '48 Hours' },
-        { task: 'Add synthetic connection pool saturation alert at 75% threshold', owner: 'Observability', priority: 'medium', deadline: '7 Days' },
-      ],
-    },
-    {
-      id: 'incident-2',
-      title: 'The OOM Reaper Awakening',
-      category: 'memory',
-      severity: 'SEV-1',
-      summary: 'A bulk CSV export of 2.5 million order records loaded entire data payloads into a Node.js Buffer, triggering the Linux kernel Out-Of-Memory (OOM) killer on Kubernetes nodes.',
-      impact: 'Core billing API pods crash-looped for 65 minutes. 8 Kubernetes worker nodes evicted pods simultaneously, inducing cluster scheduling instability.',
-      rootCause: 'Missing streaming ingestion: the API endpoint used res.json(await db.query()) instead of piped pipeline streams, allocating 4.2GB memory against a 2GB container limit.',
+      stackTrace: `error: remaining connection slots are reserved for non-replication superuser connections
+    at Parser.parseErrorMessage (pg-protocol/dist/parser.js:287:98)
+    at Connection.handlePacket (pg/lib/connection.js:114:12)`,
       timeline: [
-        { time: '09:15 UTC', event: 'Enterprise customer requests all-time ledger CSV export via dashboard.', status: 'nominal' },
-        { time: '09:18 UTC', event: 'Pod billing-api-6f78 memory spikes from 420MB to 1.95GB in 180 seconds.', status: 'degraded' },
-        { time: '09:20 UTC', event: 'Kernel invokes oom-killer: "Killed process 1 (node)". Pod enters CrashLoopBackOff.', status: 'critical' },
-        { time: '09:35 UTC', event: 'Node evictions cascade across cluster as Kubelet experiences memory pressure.', status: 'critical' },
-        { time: '10:05 UTC', event: 'Export route temporarily disabled at Cloudflare edge worker level.', status: 'nominal' },
-        { time: '10:20 UTC', event: 'Pods restabilized with strict memory limits and chunked streaming enabled.', status: 'resolved' },
+        { time: '14:02 UTC', desc: 'Heavy reporting cron begins unindexed sequential scan on orders table', isFatal: false },
+        { time: '14:05 UTC', desc: 'Active database connection pool maxes out at 200/200 slots', isFatal: false },
+        { time: '14:08 UTC', desc: 'Checkout service threads block; health checks fail with 503 Service Unavailable', isFatal: true }
       ],
-      safePattern: {
-        name: 'Backpressure-Aware Streaming Pipeline',
-        pattern: 'Never load bulk datasets into memory buffers. Use cursor-based database streaming with Node.js Transform streams and client backpressure.',
-        codeSnippet: `// SRE Safe Pattern: Chunked Stream Pipeline
+      postMortemReport: {
+        summary: 'Database connection starvation paralyzed transactional ingress during peak checkout window.',
+        impact: '14,200 transactions aborted. $320,000 estimated revenue disruption across EU & US East gateways.',
+        actionItems: [
+          'Route all analytical batch queries to read-replica pools.',
+          'Set statement_timeout = 3000ms at the application user role level.',
+          'Add synthetic alert trigger when pool saturation exceeds 75% for 60 seconds.'
+        ]
+      }
+    },
+    'oom-reaper': {
+      id: 'oom-reaper',
+      badge: 'Runtime / Memory',
+      severity: 'P0',
+      title: 'The OOM Reaper Awakening',
+      desc: 'Bulk CSV export loaded 2.5M order rows directly into a Node.js memory buffer, triggering Linux kernel OOM killer.',
+      crashedCode: `// ❌ CURSED CODE: Loading unbounded datasets into RAM
+app.get('/export-orders', async (req, res) => {
+  const allOrders = await db.query('SELECT * FROM orders');
+  const csvBuffer = Buffer.from(generateCsv(allOrders));
+  res.send(csvBuffer);
+});`,
+      resurrectedCode: `// ✅ RESURRECTED SRE PATTERN: Backpressure Stream Pipeline
 import { pipeline } from 'stream/promises';
-import { stringify } from 'csv-stringify';
 import QueryStream from 'pg-query-stream';
 
-export async function streamOrdersToClient(client: any, res: any) {
-  const query = new QueryStream('SELECT id, amount, created_at FROM orders');
-  const stream = client.query(query);
-  const csvTransformer = stringify({ header: true });
-
+app.get('/export-orders', async (req, res) => {
+  const stream = client.query(new QueryStream('SELECT * FROM orders'));
   res.setHeader('Content-Type', 'text/csv');
-  // Backpressure prevents OOM by pausing query stream when client socket is full
-  await pipeline(stream, csvTransformer, res);
-}`,
-      },
-      actionItems: [
-        { task: 'Refactor all export endpoints to cursor-based streams with backpressure', owner: 'Backend Eng', priority: 'high', deadline: '3 Days' },
-        { task: 'Set container memory limit equal to request and enable cgroup v2 metrics', owner: 'DevOps Lead', priority: 'high', deadline: '5 Days' },
-        { task: 'Move bulk report generation to async background workers (AWS SQS + S3 pre-signed URLs)', owner: 'Architect', priority: 'medium', deadline: '14 Days' },
-      ],
-    },
-    {
-      id: 'incident-3',
-      title: 'The DNS TTL Ghost Protocol',
-      category: 'network',
-      severity: 'SEV-2',
-      summary: 'Legacy external payment processor endpoint IP address rotated without propagating through an internal Alpine Linux container environment due to a hardcoded 86400s DNS TTL.',
-      impact: 'Intermittent 20% credit card transaction rejection rate for 3.5 hours. Customers reported sporadic network connection timeouts.',
-      rootCause: 'Alpine Linux musl libc resolver cached getaddrinfo DNS responses indefinitely within Node.js process without honoring updated authoritative NS records.',
-      timeline: [
-        { time: '03:00 UTC', event: 'Payment gateway provider migrates upstream IP address to new subnet.', status: 'nominal' },
-        { time: '03:15 UTC', event: 'Outbound HTTPS requests to api.paygate.com fail with ETIMEDOUT 198.51.100.24:443.', status: 'degraded' },
-        { time: '04:45 UTC', event: 'Payment success metrics drop below 80% SLA threshold; PagerDuty alert fires.', status: 'critical' },
-        { time: '06:10 UTC', event: 'SRE diagnoses stale IP resolution in musl libc resolver.', status: 'degraded' },
-        { time: '06:30 UTC', event: 'CoreDNS caching configuration overridden with 60-second max TTL.', status: 'nominal' },
-        { time: '06:45 UTC', event: 'Rolling restart of payment pods forced; all transactions succeed.', status: 'resolved' },
-      ],
-      safePattern: {
-        name: 'Agent Keep-Alive & DNS Cache Eviction',
-        pattern: 'Configure HTTP clients with custom DNS lookup agents that enforce maximum TTL expiration and graceful connection draining.',
-        codeSnippet: `// SRE Safe Pattern: DNS Cache Eviction Agent
-import https from 'https';
-import dns from 'dns';
-
-// Force short DNS resolution TTL for critical 3rd-party egress
-export const resilientHttpsAgent = new https.Agent({
-  keepAlive: true,
-  keepAliveMsecs: 10000,
-  maxSockets: 100,
-  timeout: 5000,
-  lookup: (hostname, options, callback) => {
-    dns.lookup(hostname, { ...options, verbatim: true }, (err, address, family) => {
-      callback(err, address, family);
-    });
-  },
+  await pipeline(stream, csvTransformStream(), res);
 });`,
-      },
-      actionItems: [
-        { task: 'Enforce max-cache TTL of 60s in CoreDNS for all external FQDN resolutions', owner: 'Network Eng', priority: 'high', deadline: '2 Days' },
-        { task: 'Implement synthetic health check hitting payment processor canary endpoint', owner: 'QA Lead', priority: 'medium', deadline: '7 Days' },
-        { task: 'Standardize HTTP client agents across all backend microservices', owner: 'Core Platform', priority: 'medium', deadline: '10 Days' },
-      ],
-    },
-    {
-      id: 'incident-4',
-      title: 'The Cascading Retry Storm',
-      category: 'concurrency',
-      severity: 'SEV-1',
-      summary: 'A momentary 500ms latency spike in the user profile microservice triggered aggressive immediate retries (5x) across 80 upstream web workers, amplifying incoming traffic by 500%.',
-      impact: 'Total collapse of the downstream authentication and user profile databases. Ingress API gateway queue overflowed with 45,000 throttled requests.',
-      rootCause: 'Linear retry loops without jitter or exponential backoff turned a minor transient blip into a self-inflicted distributed denial of service (DoS) storm.',
+      stackTrace: `<--- Last few GCs --->
+[1:0x55d28a0] 45120 ms: Mark-sweep (reduce) 2045.2 (2055.0) -> 2044.1 (2056.0) MB
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory`,
       timeline: [
-        { time: '18:30 UTC', event: 'Minor GC pause on user-db causes 450ms query delay.', status: 'nominal' },
-        { time: '18:31 UTC', event: 'Client services immediately fire 5 synchronized retries within 50ms window.', status: 'degraded' },
-        { time: '18:32 UTC', event: 'Inbound requests jump from 2,000 req/sec to 12,500 req/sec.', status: 'critical' },
-        { time: '18:35 UTC', event: 'Profile service ingress queues exhaust memory; 504 Gateway Timeouts issued.', status: 'critical' },
-        { time: '18:55 UTC', event: 'Global rate-limiter engaged at Envoy proxy; traffic dropped to 10% baseline.', status: 'nominal' },
-        { time: '19:15 UTC', event: 'Full exponential backoff with full jitter deployed to upstream services.', status: 'resolved' },
+        { time: '09:15 UTC', desc: 'Bulk ledger CSV export initiated by enterprise tenant', isFatal: false },
+        { time: '09:18 UTC', desc: 'Container memory spikes from 420MB to 1.95GB in 180 seconds', isFatal: false },
+        { time: '09:20 UTC', desc: 'Kernel invokes oom-killer: "Killed process 1 (node)". Pod enters CrashLoopBackOff', isFatal: true }
       ],
-      safePattern: {
-        name: 'Exponential Backoff with Full Decorrelated Jitter',
-        pattern: 'Prevent thundering herds by spacing retries with exponential growth and random uniform jitter.',
-        codeSnippet: `// SRE Safe Pattern: Exponential Backoff with Full Jitter
-export async function resilientRetry<T>(
-  fn: () => Promise<T>,
-  maxRetries = 3,
-  baseDelayMs = 100,
-  maxDelayMs = 3000
-): Promise<T> {
-  let attempt = 0;
-  while (true) {
+      postMortemReport: {
+        summary: 'Unbuffered memory allocation triggered recursive Kubernetes pod evictions.',
+        impact: 'Core billing API pods crash-looped for 65 minutes across 8 worker nodes.',
+        actionItems: [
+          'Refactor all export endpoints to cursor-based streams with backpressure.',
+          'Set container memory limit equal to request and enable cgroup v2 metrics.',
+          'Offload bulk export generation to asynchronous AWS SQS workers.'
+        ]
+      }
+    },
+    'retry-storm': {
+      id: 'retry-storm',
+      badge: 'Concurrency / Network',
+      severity: 'P1',
+      title: 'The Cascading Retry Storm',
+      desc: 'Immediate retries without jitter on a 500ms latency spike multiplied incoming requests by 500%, toppling upstream services.',
+      crashedCode: `// ❌ CURSED CODE: Zero-delay synchronous retry storm
+async function fetchWithRetry(url, retries = 5) {
+  for (let i = 0; i < retries; i++) {
     try {
-      return await fn();
-    } catch (error) {
-      attempt++;
-      if (attempt > maxRetries) throw error;
-      // Full Jitter formula: sleep = rand(0, min(maxDelay, base * 2^attempt))
-      const calculatedMax = Math.min(maxDelayMs, baseDelayMs * Math.pow(2, attempt));
-      const jitteredSleep = Math.floor(Math.random() * calculatedMax);
-      await new Promise((resolve) => setTimeout(resolve, jitteredSleep));
+      return await fetch(url);
+    } catch (e) {
+      // Immediate retry without delay or jitter amplifies stampede
     }
   }
 }`,
-      },
-      actionItems: [
-        { task: 'Audit all HTTP client libraries to ban zero-delay immediate retries', owner: 'App Sec / SRE', priority: 'high', deadline: '24 Hours' },
-        { task: 'Deploy circuit breaker middleware (e.g. cockatiel / opossum) to all critical RPC calls', owner: 'Backend Team', priority: 'high', deadline: '3 Days' },
-        { task: 'Configure Envoy edge adaptive concurrency limits to shed load before database collapse', owner: 'Infra SRE', priority: 'medium', deadline: '7 Days' },
+      resurrectedCode: `// ✅ RESURRECTED SRE PATTERN: Exponential Backoff with Full Jitter
+async function fetchWithRetry(url, retries = 3, baseDelay = 100) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fetch(url);
+    } catch (e) {
+      if (i === retries - 1) throw e;
+      const maxDelay = baseDelay * Math.pow(2, i);
+      const jitter = Math.floor(Math.random() * maxDelay);
+      await new Promise(r => setTimeout(r, jitter));
+    }
+  }
+}`,
+      stackTrace: `FetchError: request to http://profile-service/user failed, reason: connect ECONNREFUSED 10.0.12.44:80
+    at ClientRequest.<anonymous> (node_modules/node-fetch/lib/index.js:1491:11)`,
+      timeline: [
+        { time: '18:30 UTC', desc: 'Transient GC pause causes 450ms query delay on profile database', isFatal: false },
+        { time: '18:31 UTC', desc: 'Client pods trigger 5 immediate retries simultaneously within 50ms', isFatal: false },
+        { time: '18:35 UTC', desc: 'Ingress gateway queue exhausts memory; 504 Gateway Timeouts issued', isFatal: true }
       ],
-    },
-  ],
+      postMortemReport: {
+        summary: 'Linear retry amplification created a self-inflicted distributed denial of service attack.',
+        impact: 'Authentication and profile services dropped 45,000 inbound requests during an 18-minute window.',
+        actionItems: [
+          'Mandate exponential backoff with full jitter across all internal RPC clients.',
+          'Deploy circuit breakers to shed traffic before downstream pool saturation.',
+          'Configure Envoy adaptive concurrency limits on edge gateways.'
+        ]
+      }
+    }
+  }
 };
 
 export default en;

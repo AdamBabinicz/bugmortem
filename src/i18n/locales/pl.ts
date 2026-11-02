@@ -1,65 +1,65 @@
 import { Dictionary } from '../types';
 
 export const pl: Dictionary = {
-  appName: 'BugMortem',
-  appTagline: 'Cyfrowa Kostnica Awarii i Generator Raportów Post-Mortem',
-  hackathonBadge: 'Projekt na Hackathon Kiroween 2026',
-  themeToggle: 'Przełącz motyw',
-  languageToggle: 'Język',
-  incidentsListTitle: 'Archiwum Sekcji Zwłok Awarii',
+  title: 'BugMortem – AI Studio Sekcji Zwłok Awarii i Post-Mortem',
+  subtitle: 'Inżynieryjne śledztwo post-mortem i zautomatyzowane bezpieczne wzorce SRE dla awarii produkcyjnych.',
+  badgeHackathon: 'Projekt na Hackathon Kiroween 2026',
+  statusLabel: 'Status Kostnicy',
+  statusValue: 'Aktywny Incydent (P0)',
   customAutopsyBtn: '+ Wprowadź Własną Awarię',
-
-  presetTitles: {
-    'incident-1': 'Spirala Śmierci Puli Połączeń',
-    'incident-2': 'Przebudzenie Żniwiarza OOM',
-    'incident-3': 'Widmowy Protokół DNS TTL',
-    'incident-4': 'Kaskadowa Burza Ponowień',
-  },
-
-  autopsyModalTitle: 'Sekcja Zwłok Własnego Incydentu',
-  autopsyTitleLabel: 'Tytuł / Podsumowanie Awarii',
-  autopsyTitlePlaceholder: 'np. Zagłodzenie blokad rozproszonych w bramce płatności',
-  autopsyDescLabel: 'Objawy Awarii i Fragment Śladu Stosu (Stack Trace)',
-  autopsyDescPlaceholder: 'Opisz objawy awarii, kody błędów, wyczerpanie limitów i co dokładnie padło na produkcji...',
-  autopsyCategoryLabel: 'Domena Architektoniczna',
-  autopsySeverityLabel: 'Poziom Krytyczności',
-  autopsySubmitBtn: 'Generuj Raport Sekcji Zwłok',
-  autopsyCancelBtn: 'Anuluj',
-
-  reportTitle: 'Oficjalny Raport Sekcji Zwłok Incydentu',
-  reportBadge: 'Zweryfikowany Raport Post-Mortem',
-  severityLabel: 'Krytyczność Awarii',
-  categoryLabel: 'Domena Architektoniczna',
-  impactLabel: 'Zasięg Zniszczeń i Wpływ Biznesowy (Blast Radius)',
-  rootCauseLabel: 'Zweryfikowana Przyczyna Pierwotna (Root Cause)',
+  presetsSectionTitle: 'Archiwum Sekcji Zwłok Awarii',
+  autopsyTitle: 'Sekcja Kodu: Przeklęty vs Wskrzeszony Kod',
+  copyCodeBtn: 'Kopiuj Wskrzeszony Kod',
+  copiedCodeBtn: 'Skopiowano do Schowka!',
+  crashedCodeTitle: 'Przeklęty Kod (Crash na Produkcji)',
+  crashedBadge: 'Błąd Krytyczny',
+  resurrectedCodeTitle: 'Wskrzeszony Kod SRE (Bezpieczny Wzorzec)',
+  resurrectedBadge: 'Circuit Breaker',
+  stackTraceTitle: 'Surowy Ślad Stosu (Stack Trace)',
   timelineTitle: 'Chronologiczna Oś Czasu Awarii',
-  safePatternTitle: 'Bezpieczny Wzorzec SRE i Bezpiecznik Obwodowy',
-  actionItemsTitle: 'Działania Naprawcze i Prewencyjne',
-  exportMarkdownBtn: 'Eksportuj Raport do Markdown',
-  copiedNotification: 'Raport w formacie Markdown skopiowany do schowka!',
-  taskHeader: 'Działanie Naprawcze',
-  ownerHeader: 'Odpowiedzialny (DRI)',
-  priorityHeader: 'Priorytet',
-  deadlineHeader: 'Docelowy Czas SLA',
-
-  footerCopyright: 'BugMortem. Stworzone na hackathon Kiroween 2026 organizowany przez AWS & Devpost.',
-  footerDisclaimer: 'Zero telemetrii. Wszelkie analizy awarii i raporty przetwarzane są wyłącznie w lokalnej pamięci Twojej przeglądarki.',
-
-  categories: {
-    database: 'Bazy Danych i Magazyn',
-    memory: 'Wyczerpanie Pamięci i Procesora',
-    network: 'Sieć i Serwery DNS',
-    concurrency: 'Współbieżność i Zakleszczenia',
-    security: 'Bezpieczeństwo i Uprawnienia',
-    custom: 'Analiza Własnego Incydentu',
-  },
-
-  severities: {
-    'SEV-1': 'SEV-1 (Krytyczna Awaria Całkowita)',
-    'SEV-2': 'SEV-2 (Poważna Degradacja Usługi)',
-    'SEV-3': 'SEV-3 (Umiarkowane Zakłócenie)',
-    'SEV-4': 'SEV-4 (Drobna Usterka)',
-  },
+  postMortemTitle: 'Oficjalny Raport Sekcji Zwłok Incydentu',
+  exportReportBtn: 'Eksportuj Raport do Markdown',
+  downloadSuccess: 'Raport Markdown został pomyślnie pobrany!',
+  postMortemSummaryHeading: 'Podsumowanie Wykonawcze',
+  postMortemImpactHeading: 'Promień Rażenia i Wpływ Biznesowy',
+  postMortemActionsHeading: 'Działania Prewencyjne i Naprawcze',
+  customModalTitle: 'Sekcja Zwłok Własnego Incydentu',
+  customModalSubtitle: 'Wklej logi błędów i zrzut stosu z produkcji, aby wygenerować automatyczną analizę post-mortem.',
+  fieldIncidentTitle: 'Tytuł Awarii',
+  fieldIncidentTitlePlaceholder: 'np. Zagłodzenie blokad rozproszonych w bramce płatności',
+  fieldCategory: 'Domena Architektoniczna',
+  categoryFrontend: 'Frontend',
+  categoryBackend: 'Backend',
+  categoryDatabase: 'Baza Danych',
+  categoryInfra: 'Infrastruktura',
+  fieldSeverity: 'Krytyczność Awarii',
+  severityP0: 'Awaria Całkowita (P0)',
+  severityP1: 'Krytyczna Degradacja (P1)',
+  severityP2: 'Poważna Usterka (P2)',
+  fieldStackTrace: 'Ślad Stosu (Stack Trace) / Logi Błędu',
+  fieldStackTracePlaceholder: 'Wklej tutaj zrzut stosu lub log z awarii...',
+  fieldCrashedCode: 'Przeklęty Kod (Opcjonalnie)',
+  fieldCrashedCodePlaceholder: 'Wklej fragment kodu, który wywołał awarię...',
+  fieldResurrectedCode: 'Wskrzeszony Kod SRE (Opcjonalnie)',
+  fieldResurrectedCodePlaceholder: 'Pozostaw puste, aby wygenerować automatyczny circuit breaker...',
+  btnCancel: 'Anuluj',
+  btnAnalyzeAndGenerate: 'Przeprowadź Sekcję Zwłok',
+  validationErrorRequired: 'Proszę podać tytuł awarii oraz ślad stosu.',
+  footerRights: 'Wszelkie prawa zastrzeżone. Stworzone na Kiroween 2026 przez AWS & Devpost.',
+  footerPrivacy: 'Polityka Prywatności',
+  footerTerms: 'Regulamin',
+  footerCookieSettings: 'Ustawienia Cookies',
+  cookieTitle: 'Przejrzystość Danych i Ciasteczek',
+  cookieDesc: 'BugMortem wykorzystuje localStorage wyłącznie do zapamiętania Twoich raportów awarii i preferencji motywu. Nie śledzimy ani nie profilujemy Twoich działań.',
+  cookieAcceptAll: 'Akceptuję wszystkie',
+  cookieEssentialOnly: 'Tylko niezbędne',
+  cookieCustomize: 'Dostosuj preferencje',
+  cookieDrawerTitle: 'Preferencje Prywatności i Cookies',
+  cookieAnalytics: 'Pamięć analityczna',
+  cookieAnalyticsDesc: 'Umożliwia lokalne zapisywanie symulowanych metryk naprawczych.',
+  cookieMarketing: 'Pamięć marketingowa',
+  cookieMarketingDesc: 'BugMortem nie wyświetla reklam ani nie korzysta ze skryptów śledzących.',
+  cookieSavePreferences: 'Zapisz preferencje',
 
   common: {
     close: 'Zamknij',
@@ -67,216 +67,203 @@ export const pl: Dictionary = {
     save: 'Zapisz',
     back: 'Wstecz',
     loading: 'Ładowanie...',
-    status: 'Status',
-    filter: 'Filtruj',
-    search: 'Szukaj incydentów...',
-  },
-
-  cookieConsent: {
-    bannerTitle: 'Przejrzystość Danych i Pamięci Podręcznej',
-    bannerText: 'BugMortem wykorzystuje pamięć localStorage wyłącznie do zachowania raportów sekcji zwłok oraz preferencji motywu w Twojej przeglądarce. Nie śledzimy ani nie profilujemy Twoich działań.',
-    acceptAll: 'Akceptuję i rozumiem',
-    customize: 'Ustawienia preferencji',
-    decline: 'Odrzuć nieistotne',
-    savePreferences: 'Zapisz preferencje',
-    necessaryOnly: 'Wyłącznie niezbędne',
   },
 
   legal: {
-    modalTitle: 'Centrum Prawne, Zgodności i Prywatności',
+    modalTitle: 'Informacje Prawne i Zgodność',
     title: 'Informacje Prawne',
     terms: 'Regulamin Serwisu',
     termsTitle: 'Regulamin Użytkowania BugMortem',
-    termsContent: 'BugMortem to otwartoźródłowy symulator sekcji zwłok awarii i generator raportów post-mortem stworzony na hackathon Kiroween 2026. Narzędzie udostępniane jest na licencji MIT w celach edukacyjnych oraz wsparcia stabilności systemów produkcyjnych.',
+    termsContent: 'BugMortem to otwartoźródłowy symulator sekcji zwłok awarii i generator raportów post-mortem stworzony na hackathon Kiroween 2026. Udostępniany w celach edukacyjnych i prewencji SRE.',
     privacy: 'Polityka Prywatności',
-    privacyTitle: 'Ochrona Prywatności i Suwerenność Danych Lokalnych',
-    privacyContent: 'Wszelkie logi, ślady stosu i własne raporty awarii są przetwarzane wyłącznie lokalnie w pamięci Twojej przeglądarki. Żadne poufne dane firmowe, logi ani tokeny nie są wysyłane na serwery telemetryczne podmiotów trzecich.',
+    privacyTitle: 'Polityka Prywatności i Suwerenność Danych',
+    privacyContent: 'Wszelkie analizy awarii, logi i wygenerowane raporty są przetwarzane lokalnie w pamięci Twojej przeglądarki. Dane telemetryczne nie są przekazywane podmiotom trzecim.',
     cookies: 'Polityka Cookies',
-    cookiesTitle: 'Zasady Wykorzystania Plików Cookies i Pamięci Podręcznej',
-    cookiesContent: 'Aplikacja korzysta wyłącznie z mechanizmu browser localStorage do zapamiętania motywu graficznego (ciemny/jasny), szkiców awarii oraz historii wygenerowanych raportów. Nie stosujemy skryptów śledzących ani ciasteczek reklamowych.',
+    cookiesTitle: 'Polityka Cookies i Pamięci Podręcznej',
+    cookiesContent: 'Aplikacja wykorzystuje wyłącznie pamięć podręczną localStorage do zachowania motywu, szkiców awarii oraz historii wygenerowanych raportów.',
     disclaimer: 'Zastrzeżenia Inżynieryjne',
-    disclaimerTitle: 'Zastrzeżenia Dotyczące Niezawodności SRE',
-    disclaimerContent: 'Automatycznie generowane bezpieczne wzorce architektoniczne, szacunki promienia rażenia oraz procedury naprawcze stanowią rekomendacje inżynieryjne. Przed wdrożeniem skryptów na środowisko produkcyjne należy zawsze przetestować je na klastrze stagingowym.',
-    gdpr: 'Zgodność z RODO',
-    gdprTitle: 'Ochrona Danych Osobowych (RODO / GDPR)',
-    gdprContent: 'BugMortem jest w pełni zgodny z europejskimi standardami RODO. Użytkownik ma 100% kontroli nad swoimi danymi. Wyczyszczenie pamięci podręcznej przeglądarki trwale usuwa wszystkie zapisane analizy awarii.',
+    disclaimerTitle: 'Zastrzeżenia Inżynieryjne SRE',
+    disclaimerContent: 'Automatycznie generowane bezpieczne wzorce i procedury naprawcze stanowią rekomendacje inżynieryjne. Przed wdrożeniem skryptów na produkcję należy przetestować je na środowisku stagingowym.',
+    gdpr: 'RODO',
+    gdprTitle: 'Ochrona Danych Osobowych (RODO)',
+    gdprContent: 'BugMortem jest w pełni zgodny z zasadami RODO/GDPR. Użytkownik zachowuje pełną kontrolę nad generowanymi raportami markdown i lokalną historią.',
   },
 
-  presets: [
-    {
-      id: 'incident-1',
-      title: 'Spirala Śmierci Puli Połączeń',
-      category: 'database',
-      severity: 'SEV-1',
-      summary: 'Nagły wyrzut nieindeksowanych zapytań analitycznych wyczerpał limit 200 połączeń w klastrze RDS Aurora PostgreSQL, wywołując kaskadowe zakleszczenie wątków w 12 mikroserwisach.',
-      impact: '100% odrzuconych płatności w koszyku przez 42 minuty. 14 200 przerwanych transakcji. Straty przychodowe szacowane na $320 000 w rejonach EU i US East.',
-      rootCause: 'Zadanie cron raportowania analitycznego o pominęło pulę replik do odczytu i uruchomiło pełny skan sekwencyjny z 60-sekundowym limitem na głównej bazie transakcyjnej, blokując sloty połączeń.',
+  presets: {
+    'react-hydration': {
+      id: 'react-hydration',
+      badge: 'Frontend / SSR',
+      severity: 'P0',
+      title: 'Niezgodność Hydratacji Reacta i Zapaść Drzewa DOM',
+      desc: 'Niestabilne new Date() lub dostęp do obiektu window podczas SSR wywołuje błąd React Error #418, niszcząc interaktywny stan klienta.',
+      crashedCode: `// ❌ PRZEKLĘTY KOD: Rozbieżność HTML między serwerem a klientem
+export default function Header() {
+  // Bezpośrednie renderowanie daty powoduje natychmiastowy crash hydratacji
+  return (
+    <div>Aktualny czas: {new Date().toLocaleTimeString()}</div>
+  );
+}`,
+      resurrectedCode: `// ✅ WSKRZESZONY WZORZEC SRE: Bezpieczny Montaż Stanu w Hydratacji
+import { useState, useEffect } from 'react';
+
+export default function Header() {
+  const [mounted, setMounted] = useState(false);
+  const [time, setTime] = useState('');
+
+  useEffect(() => {
+    setMounted(true);
+    setTime(new Date().toLocaleTimeString());
+  }, []);
+
+  if (!mounted) return <div className="animate-pulse">Ładowanie zegara...</div>;
+  return <div>Aktualny czas: {time}</div>;
+}`,
+      stackTrace: `Error: Hydration failed because the initial UI does not match what was rendered on the server.
+    at throwOnHydrationMismatch (react-dom-client.development.js:12508)
+    at tryToClaimNextHydratableInstance (react-dom-client.development.js:12534)
+    at completeWork (react-dom-client.development.js:22170)`,
       timeline: [
-        { time: '14:02 UTC', event: 'Automatyczny cron BI uruchamia nieindeksowane zapytanie join na tabeli zamówień.', status: 'nominal' },
-        { time: '14:05 UTC', event: 'Użycie CPU głównej bazy RDS osiąga 98%. Pula połączeń dobija do 200/200.', status: 'degraded' },
-        { time: '14:08 UTC', event: 'Wątki serwisu zamówień blokują się w oczekiwaniu na wolne połączenia; sondy health check padają.', status: 'critical' },
-        { time: '14:22 UTC', event: 'Powiadomienie Incident Commandera. Ruch przekierowany na statyczną stronę techniczną.', status: 'critical' },
-        { time: '14:38 UTC', event: 'Zawieszone zapytanie zabite komendą pg_terminate_backend(); pula połączeń resetuje się.', status: 'nominal' },
-        { time: '14:44 UTC', event: 'Ruch w pełni znormalizowany. Zero błędów 503 na bramkach brzegowych.', status: 'resolved' },
+        { time: '12:00:01 UTC', desc: 'Serwer brzegowy generuje wstępny kod HTML w trybie SSR', isFatal: false },
+        { time: '12:00:02 UTC', desc: 'Przeglądarka uruchamia paczkę klienta z rozbieżnością milisekundową', isFatal: false },
+        { time: '12:00:03 UTC', desc: 'React rzuca błąd #418; odmontowanie interaktywnego drzewa komponentów', isFatal: true }
       ],
-      safePattern: {
-        name: 'Partycjonowanie Puli Połączeń i Bezpiecznik Obwodowy',
-        pattern: 'Odizoluj punkty końcowe transakcji od analitycznych zadań wsadowych za pomocą ścisłych limitów współbieżności i wykładniczego wycofywania.',
-        codeSnippet: `// Wzorzec Bezpieczeństwa SRE: Odporne Leasingowanie Połączeń z Timeoutem
-import { Pool } from 'pg';
-
-const primaryPool = new Pool({
-  max: 50,
-  connectionTimeoutMillis: 2000,
-  idleTimeoutMillis: 10000,
-  statement_timeout: 5000, // Twardy błąd dla przeciągających się zapytań
-});
-
-export async function executeCriticalQuery<T>(sql: string, params: unknown[]): Promise<T> {
-  const client = await primaryPool.connect();
+      postMortemReport: {
+        summary: 'Krytyczna niezgodność hydratacji Reacta wywołana niedeterministycznym wykonaniem po stronie serwera.',
+        impact: 'Użytkownicy doświadczyli mignięcia niestylizowanej treści oraz zablokowania przycisków formularzy na stronach docelowych.',
+        actionItems: [
+          'Wymuszenie strażników useEffect dla wszystkich atrybutów specyficznych dla przeglądarki.',
+          'Dodanie reguły ESLint blokującej new Date() wewnątrz JSX komponentów serwerowych.',
+          'Wdrożenie testów regresji wizualnej dla 50 najważniejszych stron serwisu.'
+        ]
+      }
+    },
+    'connection-pool': {
+      id: 'connection-pool',
+      badge: 'Baza Danych / Aurora',
+      severity: 'P0',
+      title: 'Spirala Śmierci Puli Połączeń',
+      desc: 'Nieindeksowane zapytania analityczne wyczerpały limit 200 połączeń bazy RDS Aurora, paraliżując wątki transakcyjne w koszyku zakupowym.',
+      crashedCode: `// ❌ PRZEKLĘTY KOD: Wyciek połączeń z puli bazy danych
+export async function getOrderReport() {
+  const client = await pool.connect();
+  // Brak bloku try/finally powoduje trwały wyciek slotu przy jakimkolwiek błędzie
+  const res = await client.query('SELECT * FROM orders WHERE heavy_calc = true');
+  return res.rows;
+}`,
+      resurrectedCode: `// ✅ WSKRZESZONY WZORZEC SRE: Odporne Pobieranie Połączenia ze Zwolnieniem
+export async function getOrderReport() {
+  const client = await pool.connect();
   try {
-    return await client.query(sql, params) as T;
+    const res = await client.query('SELECT * FROM orders WHERE heavy_calc = true');
+    return res.rows;
   } finally {
-    client.release(); // Zawsze zwalniaj połączenie z powrotem do puli
+    client.release(); // Połączenie ZAWSZE wraca do puli
   }
 }`,
-      },
-      actionItems: [
-        { task: 'Wdrożenie routingu zapytań tylko do odczytu wyłącznie na repliki read-only', owner: 'Zespół DBA', priority: 'high', deadline: '24 Godziny' },
-        { task: 'Wymuszenie statement_timeout = 3000ms na poziomie roli app_user', owner: 'Infra SRE', priority: 'high', deadline: '48 Godzin' },
-        { task: 'Konfiguracja alertu nasycenia puli połączeń przy progu 75%', owner: 'Observability', priority: 'medium', deadline: '7 Dni' },
-      ],
-    },
-    {
-      id: 'incident-2',
-      title: 'Przebudzenie Żniwiarza OOM',
-      category: 'memory',
-      severity: 'SEV-1',
-      summary: 'Masowy eksport 2,5 miliona zamówień do pliku CSV załadował cały zbiór danych wprost do bufora pamięci Node.js, aktywując mechanizm jądra Linux Out-Of-Memory (OOM) killer na węzłach Kubernetes.',
-      impact: 'Pody API rozliczeń wpadły w pętlę restartów (CrashLoopBackOff) na 65 minut. 8 węzłów klastra Kubernetes jednocześnie eksmitowało kontenery z powodu braku pamięci RAM.',
-      rootCause: 'Brak strumieniowania: endpoint API używał res.json(await db.query()) zamiast potoków strumieniowych, alokując 4,2 GB pamięci przy twardym limicie kontenera 2 GB.',
+      stackTrace: `error: remaining connection slots are reserved for non-replication superuser connections
+    at Parser.parseErrorMessage (pg-protocol/dist/parser.js:287:98)
+    at Connection.handlePacket (pg/lib/connection.js:114:12)`,
       timeline: [
-        { time: '09:15 UTC', event: 'Klient korporacyjny zleca eksport pełnej historii zamówień do CSV przez panel.', status: 'nominal' },
-        { time: '09:18 UTC', event: 'Pamięć poda billing-api-6f78 gwałtownie rośnie z 420 MB do 1,95 GB w 180 sekund.', status: 'degraded' },
-        { time: '09:20 UTC', event: 'Jądro uruchamia oom-killer: "Killed process 1 (node)". Pod wpada w CrashLoopBackOff.', status: 'critical' },
-        { time: '09:35 UTC', event: 'Kaskadowe eksmisje podów w klastrze pod wpływem presji pamięci węzłów (MemoryPressure).', status: 'critical' },
-        { time: '10:05 UTC', event: 'Ścieżka eksportu tymczasowo zablokowana regułą WAF na poziomie Cloudflare.', status: 'nominal' },
-        { time: '10:20 UTC', event: 'Pody ustabilizowane z limitami pamięci i włączonym strumieniowaniem porcjowym.', status: 'resolved' },
+        { time: '14:02 UTC', desc: 'Ciężki cron analityczny rozpoczyna sekwencyjny skan tabeli zamówień', isFatal: false },
+        { time: '14:05 UTC', desc: 'Aktywna pula połączeń osiąga maksymalny limit 200/200 slotów', isFatal: false },
+        { time: '14:08 UTC', desc: 'Wątki serwisu zamówień blokują się; sondy health check zwracają 503', isFatal: true }
       ],
-      safePattern: {
-        name: 'Potok Strumieniowy z Obsługą Przeciwciśnienia (Backpressure)',
-        pattern: 'Nigdy nie ładuj dużych zbiorów do buforów w pamięci RAM. Używaj kursorów bazodanowych i potoków transformujących ze sprzężeniem zwrotnym socketu.',
-        codeSnippet: `// Wzorzec Bezpieczeństwa SRE: Potok Strumieniowania Porcjowego
+      postMortemReport: {
+        summary: 'Zagłodzenie puli połączeń bazy danych zablokowało ruch transakcyjny w szczycie zakupowym.',
+        impact: '14 200 przerwanych zamówień. Szacowane straty przychodowe na poziomie $320 000 w rejonach EU i US East.',
+        actionItems: [
+          'Przekierowanie wszystkich zapytań analitycznych do puli replik tylko do odczytu (read-replica).',
+          'Ustawienie twardego limitu statement_timeout = 3000ms na poziomie roli aplikacji.',
+          'Konfiguracja alertu przy nasyceniu puli połączeń powyżej 75% przez 60 sekund.'
+        ]
+      }
+    },
+    'oom-reaper': {
+      id: 'oom-reaper',
+      badge: 'Runtime / Pamięć',
+      severity: 'P0',
+      title: 'Przebudzenie Żniwiarza OOM',
+      desc: 'Masowy eksport 2,5 mln zamówień do pliku CSV załadował cały zbiór do bufora RAM Node.js, aktywując mechanizm Linux OOM killer.',
+      crashedCode: `// ❌ PRZEKLĘTY KOD: Ładowanie nieograniczonych zbiorów danych wprost do RAM
+app.get('/export-orders', async (req, res) => {
+  const allOrders = await db.query('SELECT * FROM orders');
+  const csvBuffer = Buffer.from(generateCsv(allOrders));
+  res.send(csvBuffer);
+});`,
+      resurrectedCode: `// ✅ WSKRZESZONY WZORZEC SRE: Potok Strumieniowania z Backpressure
 import { pipeline } from 'stream/promises';
-import { stringify } from 'csv-stringify';
 import QueryStream from 'pg-query-stream';
 
-export async function streamOrdersToClient(client: any, res: any) {
-  const query = new QueryStream('SELECT id, amount, created_at FROM orders');
-  const stream = client.query(query);
-  const csvTransformer = stringify({ header: true });
-
+app.get('/export-orders', async (req, res) => {
+  const stream = client.query(new QueryStream('SELECT * FROM orders'));
   res.setHeader('Content-Type', 'text/csv');
-  // Backpressure zapobiega OOM wstrzymując zapytanie, gdy bufor socketu klienta jest pełny
-  await pipeline(stream, csvTransformer, res);
-}`,
-      },
-      actionItems: [
-        { task: 'Przepisanie wszystkich endpointów eksportu na strumienie kursorowe z backpressure', owner: 'Backend Eng', priority: 'high', deadline: '3 Dni' },
-        { task: 'Wyrównanie limitu memory limit z requestem i wdrożenie metryk cgroup v2', owner: 'DevOps Lead', priority: 'high', deadline: '5 Dni' },
-        { task: 'Przeniesienie ciężkich raportów do asynchronicznych workerów (AWS SQS + pre-signed S3 URLs)', owner: 'Architekt', priority: 'medium', deadline: '14 Dni' },
-      ],
-    },
-    {
-      id: 'incident-3',
-      title: 'Widmowy Protokół DNS TTL',
-      category: 'network',
-      severity: 'SEV-2',
-      summary: 'Adres IP zewnętrznego procesora płatności został zaktualizowany u dostawcy, lecz kontenery Alpine Linux nie odświeżyły rekordu przez zignorowanie zaleceń i twardy cache DNS TTL na 86 400 sekund.',
-      impact: 'Losowe odrzucanie 20% transakcji kartowych przez 3,5 godziny. Klienci otrzymywali komunikaty o przekroczeniu limitu czasu połączenia sieciowego.',
-      rootCause: 'Biblioteka resolvera musl libc w Alpine Linux buforowała wyniki getaddrinfo w nieskończoność wewnątrz procesu Node.js, ignorując zmiany w nadrzędnych serwerach nazw.',
-      timeline: [
-        { time: '03:00 UTC', event: 'Operator bramki płatności migruje adres IP do nowej podsieci.', status: 'nominal' },
-        { time: '03:15 UTC', event: 'Wychodzące żądania HTTPS do api.paygate.com kończą się błędem ETIMEDOUT 198.51.100.24:443.', status: 'degraded' },
-        { time: '04:45 UTC', event: 'Skuteczność transakcji spada poniżej 80% SLA; uruchamia się alert w PagerDuty.', status: 'critical' },
-        { time: '06:10 UTC', event: 'Inżynier SRE diagnozuje nieaktualne tłumaczenie IP w resolverze musl libc.', status: 'degraded' },
-        { time: '06:30 UTC', event: 'Konfiguracja CoreDNS nadpisana z maksymalnym TTL wynoszącym 60 sekund.', status: 'nominal' },
-        { time: '06:45 UTC', event: 'Restart kroczący podów płatności; 100% transakcji wraca do normy.', status: 'resolved' },
-      ],
-      safePattern: {
-        name: 'Agent Keep-Alive z Rotacją Cache DNS',
-        pattern: 'Konfiguruj klientów HTTP z agentami resolvera wymuszającymi maksymalny czas życia TTL i płynne odświeżanie połączeń.',
-        codeSnippet: `// Wzorzec Bezpieczeństwa SRE: Agent z Odświeżaniem Cache DNS
-import https from 'https';
-import dns from 'dns';
-
-// Wymuszenie krótkiego TTL rezolucji DNS dla krytycznych usług zewnętrznych
-export const resilientHttpsAgent = new https.Agent({
-  keepAlive: true,
-  keepAliveMsecs: 10000,
-  maxSockets: 100,
-  timeout: 5000,
-  lookup: (hostname, options, callback) => {
-    dns.lookup(hostname, { ...options, verbatim: true }, (err, address, family) => {
-      callback(err, address, family);
-    });
-  },
+  await pipeline(stream, csvTransformStream(), res);
 });`,
-      },
-      actionItems: [
-        { task: 'Wymuszenie max-cache TTL 60s w CoreDNS dla wszystkich zewnętrznych domen FQDN', owner: 'Inżynier Sieci', priority: 'high', deadline: '2 Dni' },
-        { task: 'Wdrożenie syntetycznego monitoringu kanarkowego endpointu bramki płatności', owner: 'Lider QA', priority: 'medium', deadline: '7 Dni' },
-        { task: 'Standaryzacja agentów HTTP we wszystkich mikroserwisach backendowych', owner: 'Platforma Core', priority: 'medium', deadline: '10 Dni' },
-      ],
-    },
-    {
-      id: 'incident-4',
-      title: 'Kaskadowa Burza Ponowień',
-      category: 'concurrency',
-      severity: 'SEV-1',
-      summary: 'Krótki, 500-milisekundowy skok opóźnień w mikroserwisie profilu użytkownika wywołał agresywne natychmiastowe ponowienia (5x) w 80 instancjach webowych, potęgując ruch wejściowy o 500%.',
-      impact: 'Całkowite załamanie bazy danych uwierzytelniania i profili. Kolejka bramki API Gateway przepełniła się, odrzucając 45 000 żądań z kodem błędu 504.',
-      rootCause: 'Liniowe pętle ponowień bez rozproszenia (jitter) i bez wykładniczego wycofywania zmieniły chwilowe zachwianie w samobójczy rozproszony atak odmowy usługi (DoS).',
+      stackTrace: `<--- Last few GCs --->
+[1:0x55d28a0] 45120 ms: Mark-sweep (reduce) 2045.2 (2055.0) -> 2044.1 (2056.0) MB
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory`,
       timeline: [
-        { time: '18:30 UTC', event: 'Krótka pauza odśmiecania pamięci (GC) na user-db powoduje 450 ms opóźnienia.', status: 'nominal' },
-        { time: '18:31 UTC', event: 'Serwisy klienckie wysyłają 5 zsynchronizowanych ponowień w oknie 50 ms.', status: 'degraded' },
-        { time: '18:32 UTC', event: 'Ruch przychodzący skacze z 2000 żądań/s do 12 500 żądań/s.', status: 'critical' },
-        { time: '18:35 UTC', event: 'Pamięć kolejki serwisu wyczerpuje się; masowo zwracane błędy 504 Gateway Timeout.', status: 'critical' },
-        { time: '18:55 UTC', event: 'Uruchomienie globalnego ogranicznika przepustowości na proxy Envoy (10% bazy).', status: 'nominal' },
-        { time: '19:15 UTC', event: 'Wdrożenie algorytmu Full Jitter z wykładniczym wycofywaniem w serwisach.', status: 'resolved' },
+        { time: '09:15 UTC', desc: 'Klient korporacyjny zleca masowy eksport historii zamówień', isFatal: false },
+        { time: '09:18 UTC', desc: 'Pamięć kontenera rośnie z 420 MB do 1,95 GB w 180 sekund', isFatal: false },
+        { time: '09:20 UTC', desc: 'Kernel uruchamia oom-killer: "Killed process 1 (node)". Pod wpada w CrashLoop', isFatal: true }
       ],
-      safePattern: {
-        name: 'Wykładnicze Wycofywanie z Pełnym Rozproszeniem (Full Jitter)',
-        pattern: 'Zapobiegaj efektowi tratowania stada (thundering herd), rozpraszając ponowienia losowym opóźnieniem o wykładniczej dynamice.',
-        codeSnippet: `// Wzorzec Bezpieczeństwa SRE: Wykładnicze Wycofywanie z Pełnym Jitterem
-export async function resilientRetry<T>(
-  fn: () => Promise<T>,
-  maxRetries = 3,
-  baseDelayMs = 100,
-  maxDelayMs = 3000
-): Promise<T> {
-  let attempt = 0;
-  while (true) {
+      postMortemReport: {
+        summary: 'Niekontrolowana alokacja pamięci wywołała kaskadowe eksmisje podów w klastrze Kubernetes.',
+        impact: 'Kluczowe API rozliczeń restartowało się w pętli przez 65 minut na 8 węzłach klastra.',
+        actionItems: [
+          'Przepisanie wszystkich ścieżek eksportu na strumienie kursorowe z obsługą przeciwciśnienia.',
+          'Ustawienie limitu pamięci równego żądaniu i wdrożenie metryk cgroup v2.',
+          'Przeniesienie ciężkich zadań generowania raportów do asynchronicznych workerów AWS SQS.'
+        ]
+      }
+    },
+    'retry-storm': {
+      id: 'retry-storm',
+      badge: 'Współbieżność / Sieć',
+      severity: 'P1',
+      title: 'Kaskadowa Burza Ponowień',
+      desc: 'Natychmiastowe ponowienia bez losowego rozproszenia (jitter) przy 500ms opóźnieniu spotęgowały ruch o 500%, obalając bazy danych.',
+      crashedCode: `// ❌ PRZEKLĘTY KOD: Synchroniczna burza ponowień bez opóźnienia
+async function fetchWithRetry(url, retries = 5) {
+  for (let i = 0; i < retries; i++) {
     try {
-      return await fn();
-    } catch (error) {
-      attempt++;
-      if (attempt > maxRetries) throw error;
-      // Wzór Full Jitter: losowy czas między 0 a min(maxDelay, base * 2^attempt)
-      const calculatedMax = Math.min(maxDelayMs, baseDelayMs * Math.pow(2, attempt));
-      const jitteredSleep = Math.floor(Math.random() * calculatedMax);
-      await new Promise((resolve) => setTimeout(resolve, jitteredSleep));
+      return await fetch(url);
+    } catch (e) {
+      // Natychmiastowe ponowienie bez opóźnienia zwielokrotnia obciążenie
     }
   }
 }`,
-      },
-      actionItems: [
-        { task: 'Audyt bibliotek HTTP pod kątem natychmiastowych ponowień bez opóźnienia', owner: 'App Sec / SRE', priority: 'high', deadline: '24 Godziny' },
-        { task: 'Wdrożenie biblioteki circuit breakera (np. opossum / cockatiel) w wywołaniach RPC', owner: 'Zespół Backend', priority: 'high', deadline: '3 Dni' },
-        { task: 'Konfiguracja adaptacyjnego odrzucania ruchu w Envoy przed awarią bazy', owner: 'Infra SRE', priority: 'medium', deadline: '7 Dni' },
+      resurrectedCode: `// ✅ WSKRZESZONY WZORZEC SRE: Wykładnicze Wycofywanie z Pełnym Jitterem
+async function fetchWithRetry(url, retries = 3, baseDelay = 100) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fetch(url);
+    } catch (e) {
+      if (i === retries - 1) throw e;
+      const maxDelay = baseDelay * Math.pow(2, i);
+      const jitter = Math.floor(Math.random() * maxDelay);
+      await new Promise(r => setTimeout(r, jitter));
+    }
+  }
+}`,
+      stackTrace: `FetchError: request to http://profile-service/user failed, reason: connect ECONNREFUSED 10.0.12.44:80
+    at ClientRequest.<anonymous> (node_modules/node-fetch/lib/index.js:1491:11)`,
+      timeline: [
+        { time: '18:30 UTC', desc: 'Chwilowa pauza GC na bazie wywołuje 450 ms opóźnienia zapytań', isFatal: false },
+        { time: '18:31 UTC', desc: 'Serwisy klienckie wysyłają 5 natychmiastowych ponowień w oknie 50 ms', isFatal: false },
+        { time: '18:35 UTC', desc: 'Pamięć kolejki bramki wyczerpuje się; masowo zwracane błędy 504 Gateway Timeout', isFatal: true }
       ],
-    },
-  ],
+      postMortemReport: {
+        summary: 'Liniowa amplifikacja ponowień wywołała samobójczy rozproszony atak odmowy usługi (DoS).',
+        impact: 'Serwisy uwierzytelniania i profili odrzuciły 45 000 żądań w oknie 18 minut.',
+        actionItems: [
+          'Wymuszenie algorytmu Full Jitter z wykładniczym wycofywaniem we wszystkich klientach RPC.',
+          'Wdrożenie circuit breakerów odcinających ruch przed nasyceniem bazy.',
+          'Konfiguracja adaptacyjnego ograniczania przepustowości na bramce Envoy.'
+        ]
+      }
+    }
+  }
 };
 
 export default pl;
