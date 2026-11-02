@@ -61,6 +61,23 @@ export const pl: Dictionary = {
   cookieMarketingDesc: 'BugMortem nie wyświetla reklam ani nie korzysta ze skryptów śledzących.',
   cookieSavePreferences: 'Zapisz preferencje',
 
+  cookies: {
+    title: 'Przejrzystość Danych i Plików Cookies',
+    description: 'BugMortem wykorzystuje pamięć lokalną przeglądarki wyłącznie do zapisu raportów z awarii oraz preferencji interfejsu. Żadne dane telemetryczne nie są sprzedawane.',
+    essential: 'Niezbędne pliki cookies',
+    essentialDesc: 'Konieczne do prawidłowego działania aplikacji, zapamiętania motywu ciemnego/jasnego i zapisu sekcji zwłok.',
+    alwaysActive: 'Zawsze aktywne',
+    analytics: 'Pomiary analityczne',
+    analyticsDesc: 'Pomagają nam anonimowo badać wydajność symulatora procedur naprawczych SRE.',
+    marketing: 'Pliki marketingowe',
+    marketingDesc: 'Zero reklam, skryptów śledzących i profilowania przez podmioty trzecie.',
+    savePreferences: 'Zapisz preferencje',
+    acceptAll: 'Zaakceptuj wszystkie',
+    rejectAll: 'Odrzuć opcjonalne',
+    hideDetails: 'Ukryj szczegóły',
+    customize: 'Dostosuj',
+  },
+
   common: {
     close: 'Zamknij',
     cancel: 'Anuluj',

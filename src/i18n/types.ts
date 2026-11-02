@@ -28,6 +28,24 @@ export interface IncidentPreset {
   [key: string]: any;
 }
 
+export interface CookiesDictionary {
+  title: string;
+  description: string;
+  essential: string;
+  essentialDesc: string;
+  alwaysActive: string;
+  analytics: string;
+  analyticsDesc: string;
+  marketing: string;
+  marketingDesc: string;
+  savePreferences: string;
+  acceptAll: string;
+  rejectAll: string;
+  hideDetails: string;
+  customize: string;
+  [key: string]: any;
+}
+
 export interface LegalDictionary {
   modalTitle?: string;
   title?: string;
@@ -121,6 +139,7 @@ export interface Dictionary {
   cookieMarketing: string;
   cookieMarketingDesc: string;
   cookieSavePreferences: string;
+  cookies: CookiesDictionary;
   presets: Record<string, IncidentPreset>;
   legal: LegalDictionary;
   common: CommonDictionary;

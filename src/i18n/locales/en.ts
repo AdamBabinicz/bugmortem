@@ -61,6 +61,23 @@ export const en: Dictionary = {
   cookieMarketingDesc: 'BugMortem does not serve ads or third-party tracking scripts.',
   cookieSavePreferences: 'Save Preferences',
 
+  cookies: {
+    title: 'Cookie & Privacy Transparency',
+    description: 'BugMortem uses local browser storage strictly to persist incident reports, autopsy notes, and your interface preferences. No personal telemetry is sold.',
+    essential: 'Essential Storage',
+    essentialDesc: 'Required for core session state, dark/light theme persistence, and local incident autopsy caching.',
+    alwaysActive: 'Always Active',
+    analytics: 'Analytics Storage',
+    analyticsDesc: 'Allows anonymous client-side performance timing for simulated SRE incident mitigations.',
+    marketing: 'Marketing Storage',
+    marketingDesc: 'Zero advertising scripts, tracking pixels, or third-party behavioral profiling.',
+    savePreferences: 'Save Preferences',
+    acceptAll: 'Accept All',
+    rejectAll: 'Reject Non-Essential',
+    hideDetails: 'Hide Details',
+    customize: 'Preferences',
+  },
+
   common: {
     close: 'Close',
     cancel: 'Cancel',
