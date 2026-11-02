@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title,
     description,
-    images: ['https://bugmortem.vercel.app/og-image.png'],
+    images: ['https://bugmortem.vercel.app/1.jpeg'],
   },
 };
 
