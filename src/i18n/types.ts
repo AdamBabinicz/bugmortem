@@ -1,6 +1,6 @@
 export type Locale = 'en' | 'pl';
 
-export type IncidentSeverity = 'SEV-1' | 'SEV-2' | 'SEV-3' | 'SEV-4';
+export type IncidentSeverity = 'SEV-1' | 'SEV-2' | 'SEV-3' | 'SEV-4' | string;
 
 export type IncidentCategory =
   | 'database'
@@ -8,25 +8,31 @@ export type IncidentCategory =
   | 'network'
   | 'concurrency'
   | 'security'
-  | 'custom';
+  | 'custom'
+  | string;
 
 export interface TimelineEvent {
   time: string;
-  event: string;
-  status: 'nominal' | 'degraded' | 'critical' | 'resolved';
+  event?: string;
+  desc?: string;
+  isFatal?: boolean;
+  status?: 'nominal' | 'degraded' | 'critical' | 'resolved' | string;
+  [key: string]: any;
 }
 
 export interface SafePattern {
   name: string;
   pattern: string;
   codeSnippet: string;
+  [key: string]: any;
 }
 
 export interface ActionItem {
   task: string;
   owner: string;
-  priority: 'high' | 'medium' | 'low';
+  priority: 'high' | 'medium' | 'low' | string;
   deadline: string;
+  [key: string]: any;
 }
 
 export interface Incident {
@@ -40,7 +46,11 @@ export interface Incident {
   timeline: TimelineEvent[];
   safePattern: SafePattern;
   actionItems: ActionItem[];
+  [key: string]: any;
 }
+
+// Eksport wymagany bezpośrednio przez src/app/page.tsx
+export type IncidentPreset = Incident;
 
 export interface LegalDictionary {
   modalTitle?: string;
@@ -69,6 +79,9 @@ export interface CommonDictionary {
   save?: string;
   back?: string;
   loading?: string;
+  status?: string;
+  filter?: string;
+  search?: string;
   [key: string]: any;
 }
 
@@ -107,9 +120,11 @@ export interface Dictionary {
   deadlineHeader: string;
   footerCopyright: string;
   footerDisclaimer: string;
-  categories: Record<IncidentCategory, string>;
-  severities: Record<IncidentSeverity, string>;
+  categories: Record<string, string>;
+  severities: Record<string, string>;
   legal: LegalDictionary;
   common: CommonDictionary;
+  cookieConsent?: Record<string, any>;
+  presets?: Incident[];
   [key: string]: any;
 }
