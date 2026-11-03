@@ -15,31 +15,6 @@ export function fixOrphans(text: string): string {
   return text.replace(/(^|\s)([aiouwz]|do|na|od|po|ze|we|za|co|że|to)(\s+)/gi, '$1$2\u00A0');
 }
 
-// Bezpieczna integracja z Google Consent Mode v2 i GTM
-function pushGtmConsent(analytics: boolean, marketing: boolean) {
-  if (typeof window === 'undefined') return;
-  const w = window as unknown as {
-    dataLayer?: unknown[];
-    gtag?: (...args: unknown[]) => void;
-  };
-  w.dataLayer = w.dataLayer || [];
-
-  if (typeof w.gtag === 'function') {
-    w.gtag('consent', 'update', {
-      analytics_storage: analytics ? 'granted' : 'denied',
-      ad_storage: marketing ? 'granted' : 'denied',
-      ad_user_data: marketing ? 'granted' : 'denied',
-      ad_personalization: marketing ? 'granted' : 'denied',
-    });
-  }
-
-  w.dataLayer.push({
-    event: 'consent_update',
-    consent_analytics: analytics,
-    consent_marketing: marketing,
-  });
-}
-
 export default function Home() {
   // Global Theme Context
   const { theme, toggleTheme } = useTheme();
@@ -67,12 +42,6 @@ export default function Home() {
   const [formResurrectedCode, setFormResurrectedCode] = useState<string>('');
   const [formError, setFormError] = useState<string>('');
 
-  // GDPR Cookie State
-  const [cookieConsent, setCookieConsent] = useState<string | null>(null);
-  const [isCookieDrawerOpen, setIsCookieDrawerOpen] = useState<boolean>(false);
-  const [analyticsCookies, setAnalyticsCookies] = useState<boolean>(true);
-  const [marketingCookies, setMarketingCookies] = useState<boolean>(false);
-
   // Inicjalizacja z localStorage oraz bezpieczna kalkulacja daty
   useEffect(() => {
     const currentYear = new Date().getFullYear();
@@ -86,9 +55,6 @@ export default function Home() {
     if (savedLocale === 'pl' || savedLocale === 'en') {
       setLocaleState(savedLocale);
     }
-
-    const storedConsent = localStorage.getItem('bugmortem_cookie_consent');
-    setCookieConsent(storedConsent);
 
     try {
       const storedIncidents = localStorage.getItem('bugmortem_custom_incidents');
@@ -299,30 +265,16 @@ try {
     setFormError('');
   };
 
-  const handleAcceptAllCookies = () => {
-    localStorage.setItem('bugmortem_cookie_consent', 'all');
-    setCookieConsent('all');
-    pushGtmConsent(true, true);
-  };
-
-  const handleAcceptEssential = () => {
-    localStorage.setItem('bugmortem_cookie_consent', 'essential');
-    setCookieConsent('essential');
-    pushGtmConsent(false, false);
-  };
-
-  const handleSaveCookiePreferences = () => {
-    const consentVal = `custom_analytics_${analyticsCookies}_marketing_${marketingCookies}`;
-    localStorage.setItem('bugmortem_cookie_consent', consentVal);
-    setCookieConsent(consentVal);
-    setIsCookieDrawerOpen(false);
-    pushGtmConsent(analyticsCookies, marketingCookies);
+  const handleOpenCookieSettings = () => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('open_cookie_banner'));
+    }
   };
 
   return (
-    <div className="min-h-screen bg-stone-100 text-stone-900 dark:bg-stone-950 dark:text-stone-100 font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-stone-100 text-stone-900 dark:bg-stone-950 dark:text-stone-100 font-sans">
       {/* Top Navigation */}
-      <header className="border-b border-stone-200 bg-white/80 dark:border-stone-800 dark:bg-stone-900/80 backdrop-blur-md sticky top-0 z-40 transition-colors">
+      <header className="border-b border-stone-200 bg-white/80 dark:border-stone-800 dark:bg-stone-900/80 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
           {/* Logo Brand */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
@@ -348,7 +300,7 @@ try {
               <button
                 type="button"
                 onClick={() => changeLocale('pl')}
-                className={`px-2 sm:px-2.5 py-1 rounded transition-colors cursor-pointer ${
+                className={`px-2 sm:px-2.5 py-1 rounded cursor-pointer ${
                   locale === 'pl'
                     ? 'bg-rose-600 text-white font-bold shadow-sm'
                     : 'text-stone-800 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white'
@@ -360,7 +312,7 @@ try {
               <button
                 type="button"
                 onClick={() => changeLocale('en')}
-                className={`px-2 sm:px-2.5 py-1 rounded transition-colors cursor-pointer ${
+                className={`px-2 sm:px-2.5 py-1 rounded cursor-pointer ${
                   locale === 'en'
                     ? 'bg-rose-600 text-white font-bold shadow-sm'
                     : 'text-stone-800 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white'
@@ -375,7 +327,7 @@ try {
               type="button"
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className="p-1.5 sm:p-2 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 transition-colors cursor-pointer shadow-sm text-sm"
+              className="p-1.5 sm:p-2 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 cursor-pointer shadow-sm text-sm"
             >
               {theme === 'dark' ? '☀️' : '🌙'}
             </button>
@@ -386,10 +338,11 @@ try {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
         {/* Hero Section */}
-        <div className="bg-white border-stone-200 text-stone-900 dark:bg-stone-900/60 dark:border-stone-800 dark:text-white rounded-2xl border p-5 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden shadow-xl dark:shadow-2xl transition-colors">
+        <div className="bg-white border-stone-200 text-stone-900 dark:bg-stone-900/60 dark:border-stone-800 dark:text-white rounded-2xl border p-5 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden shadow-xl dark:shadow-2xl">
           <div className="space-y-3 z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold tracking-wider uppercase bg-rose-100 text-rose-700 border border-rose-300 dark:bg-rose-950/60 dark:text-rose-400 dark:border-rose-800/40">
-              <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+              {/* Statyczna dioda bez ciągłej animacji klatek */}
+              <span className="w-2 h-2 rounded-full bg-rose-500 ring-2 ring-rose-500/40" />
               {t?.badgeHackathon}
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-stone-900 dark:text-white">
@@ -401,13 +354,14 @@ try {
           </div>
 
           <div className="z-10 flex flex-col items-start md:items-end gap-3 w-full md:w-auto">
-            <div className="w-full md:w-auto bg-stone-100 border-stone-200 dark:bg-stone-950/80 dark:border-stone-800 rounded-xl p-3 sm:p-4 border flex items-center justify-between md:justify-end gap-4 shadow-inner transition-colors">
+            <div className="w-full md:w-auto bg-stone-100 border-stone-200 dark:bg-stone-950/80 dark:border-stone-800 rounded-xl p-3 sm:p-4 border flex items-center justify-between md:justify-end gap-4 shadow-inner">
               <div className="text-left md:text-right">
                 <div className="text-[10px] uppercase font-bold tracking-widest text-stone-700 dark:text-stone-300">
                   {t?.statusLabel}
                 </div>
                 <div className="text-xs sm:text-sm font-mono font-bold text-rose-600 dark:text-rose-500 flex items-center gap-2">
-                  <span className="inline-block w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                  {/* Statyczna dioda statusu */}
+                  <span className="inline-block w-2 h-2 rounded-full bg-rose-500 ring-2 ring-rose-500/30" />
                   {t?.statusValue}
                 </div>
               </div>
@@ -416,7 +370,7 @@ try {
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="w-full md:w-auto px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 dark:shadow-rose-900/40 border border-rose-400/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full md:w-auto px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 dark:shadow-rose-900/40 border border-rose-400/30 flex items-center justify-center gap-2 cursor-pointer"
             >
               <span className="text-sm">⚡</span>
               {t?.customAutopsyBtn}
@@ -441,7 +395,7 @@ try {
                   key={`incident-${incidentId}-${idx}`}
                   type="button"
                   onClick={() => setSelectedPreset(incidentId)}
-                  className={`text-left p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
+                  className={`text-left p-4 rounded-xl border cursor-pointer flex flex-col justify-between ${
                     isSelected
                       ? 'bg-rose-50/80 border-rose-500 shadow-md ring-1 ring-rose-500/50 dark:bg-stone-900 dark:border-rose-500 dark:shadow-lg dark:shadow-rose-950/30'
                       : 'bg-white border-stone-200 hover:border-stone-300 hover:bg-stone-50 dark:bg-stone-900/40 dark:border-stone-800/80 dark:hover:border-stone-700 dark:hover:bg-stone-900/80'
@@ -479,7 +433,7 @@ try {
             <button
               type="button"
               onClick={handleCopyCode}
-              className="text-xs font-mono px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+              className="text-xs font-mono px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
               <span>📋</span>
               {isCopied ? t?.copiedCodeBtn : t?.copyCodeBtn}
@@ -488,7 +442,7 @@ try {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Cursed Code (Before) */}
-            <div className="rounded-xl border border-rose-300 bg-rose-50/40 dark:border-rose-900/40 dark:bg-stone-950/80 overflow-hidden shadow-lg transition-colors">
+            <div className="rounded-xl border border-rose-300 bg-rose-50/40 dark:border-rose-900/40 dark:bg-stone-950/80 overflow-hidden shadow-lg">
               <div className="bg-rose-100/80 border-b border-rose-200 dark:bg-rose-950/30 dark:border-rose-900/40 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2">
                 <span className="text-xs font-mono font-bold tracking-wider text-rose-700 dark:text-rose-400 flex items-center gap-1.5 truncate">
                   <span>💀</span>
@@ -504,7 +458,7 @@ try {
             </div>
 
             {/* Resurrected Code (After) */}
-            <div className="rounded-xl border border-emerald-300 bg-emerald-50/40 dark:border-emerald-900/40 dark:bg-stone-950/80 overflow-hidden shadow-lg transition-colors">
+            <div className="rounded-xl border border-emerald-300 bg-emerald-50/40 dark:border-emerald-900/40 dark:bg-stone-950/80 overflow-hidden shadow-lg">
               <div className="bg-emerald-100/80 border-b border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-900/40 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2">
                 <span className="text-xs font-mono font-bold tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 truncate">
                   <span>✨</span>
@@ -538,10 +492,9 @@ try {
               <span>⏱</span>
               {t?.timelineTitle}
             </h2>
-            <div className="rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/40 p-3 sm:p-4 space-y-3 shadow-sm dark:shadow-inner transition-colors">
+            <div className="rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/40 p-3 sm:p-4 space-y-3 shadow-sm dark:shadow-inner">
               {safeTimeline.map((event, idx) => (
                 <div key={`timeline-${idx}-${event.time}`} className="flex items-start gap-2.5 sm:gap-3 text-xs font-mono">
-                  {/* WCAG AA Compliant high-contrast timestamp */}
                   <span className="text-stone-700 dark:text-stone-300 font-medium shrink-0 select-none text-[11px] sm:text-xs">
                     {event.time}
                   </span>
@@ -555,7 +508,7 @@ try {
         </div>
 
         {/* Official Post-Mortem Report Protocol */}
-        <section className="rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/50 p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-xl dark:shadow-2xl relative transition-colors">
+        <section className="rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/50 p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-xl dark:shadow-2xl relative">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
             <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-stone-800 dark:text-stone-200 flex items-center gap-2">
               <span>📄</span>
@@ -564,7 +517,7 @@ try {
             <button
               type="button"
               onClick={handleExportReport}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 transition-colors cursor-pointer shadow-sm w-full sm:w-auto"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 cursor-pointer shadow-sm w-full sm:w-auto"
             >
               <span>⬇️</span>
               {t?.exportReportBtn}
@@ -614,7 +567,7 @@ try {
       {/* Custom Autopsy Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-2xl w-full p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-2xl relative my-6 text-stone-900 dark:text-stone-100 transition-colors">
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-2xl w-full p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-2xl relative my-6 text-stone-900 dark:text-stone-100">
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-stone-900 dark:text-white flex items-center gap-2">
@@ -747,7 +700,7 @@ try {
       )}
 
       {/* Footer – Pełna zgodność z kontrastem WCAG AA / AAA */}
-      <footer className="border-t border-stone-200 bg-white dark:border-stone-900 dark:bg-stone-950 py-8 text-xs text-stone-700 dark:text-stone-300 transition-colors">
+      <footer className="border-t border-stone-200 bg-white dark:border-stone-900 dark:bg-stone-950 py-8 text-xs text-stone-700 dark:text-stone-300">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             © {copyrightYears} BugMortem. {t?.footerRights}
@@ -759,7 +712,7 @@ try {
             <span>•</span>
             <button
               type="button"
-              onClick={() => setIsCookieDrawerOpen(true)}
+              onClick={handleOpenCookieSettings}
               className="text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white underline cursor-pointer"
             >
               {t?.footerCookieSettings}
@@ -767,113 +720,6 @@ try {
           </div>
         </div>
       </footer>
-
-      {/* GDPR Cookie Banner – Wysoki kontrast */}
-      {!cookieConsent && (
-        <aside
-          aria-label="Cookie consent banner"
-          className="fixed bottom-4 left-3 right-3 sm:left-auto sm:right-4 max-w-md bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-4 sm:p-5 shadow-2xl z-50 space-y-3 sm:space-y-4 text-stone-900 dark:text-stone-100 transition-colors"
-        >
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-2 text-rose-600 dark:text-rose-500 text-sm font-bold">
-              <span>🛡️</span>
-              <h3>{t?.cookieTitle}</h3>
-            </div>
-            <button
-              type="button"
-              onClick={handleAcceptEssential}
-              className="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white text-xs p-1 cursor-pointer"
-            >
-              ✕
-            </button>
-          </div>
-          <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
-            {fixOrphans(t?.cookieDesc)}
-          </p>
-          <div className="flex items-center gap-2 pt-1">
-            <button
-              type="button"
-              onClick={handleAcceptAllCookies}
-              className="flex-1 py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs tracking-wider transition-colors cursor-pointer text-center shadow-sm"
-            >
-              {t?.cookieAcceptAll}
-            </button>
-            <button
-              type="button"
-              onClick={handleAcceptEssential}
-              className="py-2 px-3 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-800 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 font-bold text-xs transition-colors cursor-pointer text-center"
-            >
-              {t?.cookieEssentialOnly}
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsCookieDrawerOpen(true)}
-            className="w-full text-center text-xs font-medium text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white underline cursor-pointer"
-          >
-            {t?.cookieCustomize}
-          </button>
-        </aside>
-      )}
-
-      {/* Cookie Drawer Modal – Wysoki kontrast */}
-      {isCookieDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4">
-          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-5 shadow-2xl text-stone-900 dark:text-stone-100 transition-colors">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-stone-900 dark:text-white flex items-center gap-2">
-                <span>🛡️</span>
-                {t?.cookieDrawerTitle}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsCookieDrawerOpen(false)}
-                className="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white p-1 cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-start justify-between gap-4 p-3 rounded-xl bg-stone-100 border border-stone-200 dark:bg-stone-950 dark:border-stone-800">
-                <div>
-                  <div className="text-xs font-bold text-stone-900 dark:text-stone-200">{t?.cookieAnalytics}</div>
-                  <div className="text-[11px] text-stone-700 dark:text-stone-300 mt-0.5">{fixOrphans(t?.cookieAnalyticsDesc)}</div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={analyticsCookies}
-                  onChange={(e) => setAnalyticsCookies(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded border-stone-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
-                />
-              </div>
-
-              <div className="flex items-start justify-between gap-4 p-3 rounded-xl bg-stone-100 border border-stone-200 dark:bg-stone-950 dark:border-stone-800">
-                <div>
-                  <div className="text-xs font-bold text-stone-900 dark:text-stone-200">{t?.cookieMarketing}</div>
-                  <div className="text-[11px] text-stone-700 dark:text-stone-300 mt-0.5">{fixOrphans(t?.cookieMarketingDesc)}</div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={marketingCookies}
-                  onChange={(e) => setMarketingCookies(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded border-stone-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={handleSaveCookiePreferences}
-                className="w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs tracking-wider transition-colors cursor-pointer shadow-sm"
-              >
-                {t?.cookieSavePreferences}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
