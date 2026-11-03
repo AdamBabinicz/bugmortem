@@ -15,6 +15,31 @@ export function fixOrphans(text: string): string {
   return text.replace(/(^|\s)([aiouwz]|do|na|od|po|ze|we|za|co|że|to)(\s+)/gi, '$1$2\u00A0');
 }
 
+// Bezpieczna integracja z Google Consent Mode v2 i GTM
+function pushGtmConsent(analytics: boolean, marketing: boolean) {
+  if (typeof window === 'undefined') return;
+  const w = window as unknown as {
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
+  };
+  w.dataLayer = w.dataLayer || [];
+
+  if (typeof w.gtag === 'function') {
+    w.gtag('consent', 'update', {
+      analytics_storage: analytics ? 'granted' : 'denied',
+      ad_storage: marketing ? 'granted' : 'denied',
+      ad_user_data: marketing ? 'granted' : 'denied',
+      ad_personalization: marketing ? 'granted' : 'denied',
+    });
+  }
+
+  w.dataLayer.push({
+    event: 'consent_update',
+    consent_analytics: analytics,
+    consent_marketing: marketing,
+  });
+}
+
 export default function Home() {
   // Global Theme Context
   const { theme, toggleTheme } = useTheme();
@@ -277,11 +302,13 @@ try {
   const handleAcceptAllCookies = () => {
     localStorage.setItem('bugmortem_cookie_consent', 'all');
     setCookieConsent('all');
+    pushGtmConsent(true, true);
   };
 
   const handleAcceptEssential = () => {
     localStorage.setItem('bugmortem_cookie_consent', 'essential');
     setCookieConsent('essential');
+    pushGtmConsent(false, false);
   };
 
   const handleSaveCookiePreferences = () => {
@@ -289,6 +316,7 @@ try {
     localStorage.setItem('bugmortem_cookie_consent', consentVal);
     setCookieConsent(consentVal);
     setIsCookieDrawerOpen(false);
+    pushGtmConsent(analyticsCookies, marketingCookies);
   };
 
   return (
@@ -308,7 +336,7 @@ try {
                   KIROWEEN 2026
                 </span>
               </div>
-              <p className="text-[11px] text-stone-600 dark:text-stone-400 hidden md:block truncate">
+              <p className="text-[11px] text-stone-700 dark:text-stone-300 hidden md:block truncate">
                 {fixOrphans(t?.subtitle)}
               </p>
             </div>
@@ -323,7 +351,7 @@ try {
                 className={`px-2 sm:px-2.5 py-1 rounded transition-colors cursor-pointer ${
                   locale === 'pl'
                     ? 'bg-rose-600 text-white font-bold shadow-sm'
-                    : 'text-stone-700 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
+                    : 'text-stone-800 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white'
                 }`}
               >
                 <span className="sm:hidden">PL</span>
@@ -335,7 +363,7 @@ try {
                 className={`px-2 sm:px-2.5 py-1 rounded transition-colors cursor-pointer ${
                   locale === 'en'
                     ? 'bg-rose-600 text-white font-bold shadow-sm'
-                    : 'text-stone-700 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
+                    : 'text-stone-800 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white'
                 }`}
               >
                 <span className="sm:hidden">EN</span>
@@ -367,7 +395,7 @@ try {
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-stone-900 dark:text-white">
               {fixOrphans(t?.title)}
             </h1>
-            <p className="text-stone-600 dark:text-stone-400 max-w-2xl text-xs sm:text-base leading-relaxed">
+            <p className="text-stone-700 dark:text-stone-300 max-w-2xl text-xs sm:text-base leading-relaxed">
               {fixOrphans(t?.subtitle)}
             </p>
           </div>
@@ -375,7 +403,7 @@ try {
           <div className="z-10 flex flex-col items-start md:items-end gap-3 w-full md:w-auto">
             <div className="w-full md:w-auto bg-stone-100 border-stone-200 dark:bg-stone-950/80 dark:border-stone-800 rounded-xl p-3 sm:p-4 border flex items-center justify-between md:justify-end gap-4 shadow-inner transition-colors">
               <div className="text-left md:text-right">
-                <div className="text-[10px] uppercase font-bold tracking-widest text-stone-500 dark:text-stone-400">
+                <div className="text-[10px] uppercase font-bold tracking-widest text-stone-700 dark:text-stone-300">
                   {t?.statusLabel}
                 </div>
                 <div className="text-xs sm:text-sm font-mono font-bold text-rose-600 dark:text-rose-500 flex items-center gap-2">
@@ -399,7 +427,7 @@ try {
         {/* Preset Cards & Case Selection */}
         <section className="space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400">
+            <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300">
               {t?.presetsSectionTitle}
             </h2>
           </div>
@@ -424,14 +452,14 @@ try {
                       <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
                         {incident?.badge}
                       </span>
-                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-stone-100 text-stone-700 border border-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700">
+                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-stone-100 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700">
                         {incident?.severity}
                       </span>
                     </div>
                     <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100 line-clamp-1">
                       {fixOrphans(incident?.title)}
                     </h3>
-                    <p className="text-xs text-stone-600 dark:text-stone-400 line-clamp-2">
+                    <p className="text-xs text-stone-700 dark:text-stone-300 line-clamp-2">
                       {fixOrphans(incident?.desc)}
                     </p>
                   </div>
@@ -444,14 +472,14 @@ try {
         {/* Side-by-Side Code Autopsy */}
         <section className="space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 flex items-center gap-2">
+            <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
               <span>&lt;/&gt;</span>
               {t?.autopsyTitle}
             </h2>
             <button
               type="button"
               onClick={handleCopyCode}
-              className="text-xs font-mono px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-300 dark:border-stone-700 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+              className="text-xs font-mono px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
               <span>📋</span>
               {isCopied ? t?.copiedCodeBtn : t?.copyCodeBtn}
@@ -496,7 +524,7 @@ try {
         {/* Stack Trace & Timeline */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <section className="space-y-3">
-            <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 flex items-center gap-2">
+            <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
               <span>&gt;_</span>
               {t?.stackTraceTitle}
             </h2>
@@ -506,17 +534,18 @@ try {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 flex items-center gap-2">
+            <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
               <span>⏱</span>
               {t?.timelineTitle}
             </h2>
             <div className="rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/40 p-3 sm:p-4 space-y-3 shadow-sm dark:shadow-inner transition-colors">
               {safeTimeline.map((event, idx) => (
                 <div key={`timeline-${idx}-${event.time}`} className="flex items-start gap-2.5 sm:gap-3 text-xs font-mono">
-                  <span className="text-stone-400 dark:text-stone-500 shrink-0 select-none text-[11px] sm:text-xs">
+                  {/* WCAG AA Compliant high-contrast timestamp */}
+                  <span className="text-stone-700 dark:text-stone-300 font-medium shrink-0 select-none text-[11px] sm:text-xs">
                     {event.time}
                   </span>
-                  <span className={event.isFatal ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-stone-800 dark:text-stone-300'}>
+                  <span className={event.isFatal ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-stone-900 dark:text-stone-100'}>
                     {fixOrphans(event.desc)}
                   </span>
                 </div>
@@ -551,28 +580,28 @@ try {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
             <div className="space-y-2">
-              <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300">
                 {t?.postMortemSummaryHeading}
               </h3>
-              <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
+              <p className="text-xs text-stone-800 dark:text-stone-200 leading-relaxed">
                 {fixOrphans(activeIncident?.postMortemReport?.summary)}
               </p>
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300">
                 {t?.postMortemImpactHeading}
               </h3>
-              <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
+              <p className="text-xs text-stone-800 dark:text-stone-200 leading-relaxed">
                 {fixOrphans(activeIncident?.postMortemReport?.impact)}
               </p>
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300">
                 {t?.postMortemActionsHeading}
               </h3>
-              <ul className="space-y-1.5 list-disc list-inside text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
+              <ul className="space-y-1.5 list-disc list-inside text-xs text-stone-800 dark:text-stone-200 leading-relaxed">
                 {safeActionItems.map((item, idx) => (
                   <li key={`action-${idx}`}>{fixOrphans(item)}</li>
                 ))}
@@ -592,14 +621,14 @@ try {
                   <span>⚡</span>
                   {t?.customModalTitle}
                 </h3>
-                <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
                   {fixOrphans(t?.customModalSubtitle)}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-stone-400 hover:text-stone-600 dark:hover:text-white text-lg p-1 cursor-pointer"
+                className="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white text-lg p-1 cursor-pointer"
               >
                 ✕
               </button>
@@ -613,7 +642,7 @@ try {
 
             <form onSubmit={handleCreateCustomAutopsy} className="space-y-4">
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                <label className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
                   {t?.fieldIncidentTitle} *
                 </label>
                 <input
@@ -621,13 +650,13 @@ try {
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   placeholder={t?.fieldIncidentTitlePlaceholder}
-                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 placeholder-stone-400 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 dark:placeholder-stone-600 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
+                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 placeholder-stone-500 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 dark:placeholder-stone-500 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                  <label className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
                     {t?.fieldCategory}
                   </label>
                   <select
@@ -643,7 +672,7 @@ try {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                  <label className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
                     {t?.fieldSeverity}
                   </label>
                   <select
@@ -659,7 +688,7 @@ try {
               </div>
 
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                <label className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
                   {t?.fieldStackTrace} *
                 </label>
                 <textarea
@@ -667,12 +696,12 @@ try {
                   value={formStackTrace}
                   onChange={(e) => setFormStackTrace(e.target.value)}
                   placeholder={t?.fieldStackTracePlaceholder}
-                  className="w-full bg-stone-900 border border-stone-800 rounded-lg p-3 font-mono text-xs text-rose-300 placeholder-stone-500 focus:outline-none focus:border-rose-500"
+                  className="w-full bg-stone-900 border border-stone-800 rounded-lg p-3 font-mono text-xs text-rose-300 placeholder-stone-400 focus:outline-none focus:border-rose-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                <label className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
                   {t?.fieldCrashedCode}
                 </label>
                 <textarea
@@ -680,12 +709,12 @@ try {
                   value={formCrashedCode}
                   onChange={(e) => setFormCrashedCode(e.target.value)}
                   placeholder={t?.fieldCrashedCodePlaceholder}
-                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-200 placeholder-stone-400 dark:placeholder-stone-700 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-rose-500"
+                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-200 placeholder-stone-500 dark:placeholder-stone-500 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-rose-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                <label className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
                   {t?.fieldResurrectedCode}
                 </label>
                 <textarea
@@ -693,7 +722,7 @@ try {
                   value={formResurrectedCode}
                   onChange={(e) => setFormResurrectedCode(e.target.value)}
                   placeholder={t?.fieldResurrectedCodePlaceholder}
-                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-emerald-300 placeholder-stone-400 dark:placeholder-stone-700 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-emerald-300 placeholder-stone-500 dark:placeholder-stone-500 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -701,7 +730,7 @@ try {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200 cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white cursor-pointer"
                 >
                   {t?.btnCancel}
                 </button>
@@ -717,21 +746,21 @@ try {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="border-t border-stone-200 bg-white dark:border-stone-900 dark:bg-stone-950 py-8 text-xs text-stone-500 transition-colors">
+      {/* Footer – Pełna zgodność z kontrastem WCAG AA / AAA */}
+      <footer className="border-t border-stone-200 bg-white dark:border-stone-900 dark:bg-stone-950 py-8 text-xs text-stone-700 dark:text-stone-300 transition-colors">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             © {copyrightYears} BugMortem. {t?.footerRights}
           </div>
           <div className="flex items-center gap-4">
-            <span className="hover:text-stone-700 dark:hover:text-stone-300 cursor-pointer">{t?.footerPrivacy}</span>
+            <span className="text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white cursor-pointer">{t?.footerPrivacy}</span>
             <span>•</span>
-            <span className="hover:text-stone-700 dark:hover:text-stone-300 cursor-pointer">{t?.footerTerms}</span>
+            <span className="text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white cursor-pointer">{t?.footerTerms}</span>
             <span>•</span>
             <button
               type="button"
               onClick={() => setIsCookieDrawerOpen(true)}
-              className="text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200 underline cursor-pointer"
+              className="text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white underline cursor-pointer"
             >
               {t?.footerCookieSettings}
             </button>
@@ -739,7 +768,7 @@ try {
         </div>
       </footer>
 
-      {/* GDPR Cookie Banner */}
+      {/* GDPR Cookie Banner – Wysoki kontrast */}
       {!cookieConsent && (
         <aside
           aria-label="Cookie consent banner"
@@ -753,12 +782,12 @@ try {
             <button
               type="button"
               onClick={handleAcceptEssential}
-              className="text-stone-400 hover:text-stone-600 dark:hover:text-white text-xs p-1 cursor-pointer"
+              className="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white text-xs p-1 cursor-pointer"
             >
               ✕
             </button>
           </div>
-          <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+          <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
             {fixOrphans(t?.cookieDesc)}
           </p>
           <div className="flex items-center gap-2 pt-1">
@@ -772,7 +801,7 @@ try {
             <button
               type="button"
               onClick={handleAcceptEssential}
-              className="py-2 px-3 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-800 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-300 font-bold text-xs transition-colors cursor-pointer text-center"
+              className="py-2 px-3 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-800 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 font-bold text-xs transition-colors cursor-pointer text-center"
             >
               {t?.cookieEssentialOnly}
             </button>
@@ -780,14 +809,14 @@ try {
           <button
             type="button"
             onClick={() => setIsCookieDrawerOpen(true)}
-            className="w-full text-center text-[11px] text-stone-500 hover:text-stone-800 dark:hover:text-stone-300 underline cursor-pointer"
+            className="w-full text-center text-xs font-medium text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white underline cursor-pointer"
           >
             {t?.cookieCustomize}
           </button>
         </aside>
       )}
 
-      {/* Cookie Drawer Modal */}
+      {/* Cookie Drawer Modal – Wysoki kontrast */}
       {isCookieDrawerOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4">
           <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-5 shadow-2xl text-stone-900 dark:text-stone-100 transition-colors">
@@ -799,7 +828,7 @@ try {
               <button
                 type="button"
                 onClick={() => setIsCookieDrawerOpen(false)}
-                className="text-stone-400 hover:text-stone-600 dark:hover:text-white p-1 cursor-pointer"
+                className="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white p-1 cursor-pointer"
               >
                 ✕
               </button>
@@ -809,7 +838,7 @@ try {
               <div className="flex items-start justify-between gap-4 p-3 rounded-xl bg-stone-100 border border-stone-200 dark:bg-stone-950 dark:border-stone-800">
                 <div>
                   <div className="text-xs font-bold text-stone-900 dark:text-stone-200">{t?.cookieAnalytics}</div>
-                  <div className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">{fixOrphans(t?.cookieAnalyticsDesc)}</div>
+                  <div className="text-[11px] text-stone-700 dark:text-stone-300 mt-0.5">{fixOrphans(t?.cookieAnalyticsDesc)}</div>
                 </div>
                 <input
                   type="checkbox"
@@ -822,7 +851,7 @@ try {
               <div className="flex items-start justify-between gap-4 p-3 rounded-xl bg-stone-100 border border-stone-200 dark:bg-stone-950 dark:border-stone-800">
                 <div>
                   <div className="text-xs font-bold text-stone-900 dark:text-stone-200">{t?.cookieMarketing}</div>
-                  <div className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">{fixOrphans(t?.cookieMarketingDesc)}</div>
+                  <div className="text-[11px] text-stone-700 dark:text-stone-300 mt-0.5">{fixOrphans(t?.cookieMarketingDesc)}</div>
                 </div>
                 <input
                   type="checkbox"
