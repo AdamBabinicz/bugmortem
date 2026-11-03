@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://bugmortem.vercel.app/og-image.png',
+        url: 'https://bugmortem.vercel.app/1.jpeg',
         width: 1200,
         height: 630,
         alt: 'BugMortem – AI Incident Autopsy & SRE Post-Mortem Studio',
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     title: 'BugMortem – AI Incident Autopsy & SRE Post-Mortem Studio',
     description:
       'Digital Incident Morgue and automated SRE post-mortem studio. Built for Devpost Kiroween 2026.',
-    images: ['https://bugmortem.vercel.app/og-image.png'],
+    images: ['https://bugmortem.vercel.app/1.jpeg'],
   },
 };
 
@@ -96,7 +96,7 @@ export default function RootLayout({
         <link rel="canonical" href="https://bugmortem.vercel.app" />
 
         {/* Bezpośrednie tagi Open Graph Image dla botów social media i walidatorów */}
-        <meta property="og:image" content="https://bugmortem.vercel.app/og-image.png" />
+        <meta property="og:image" content="https://bugmortem.vercel.app/1.jpeg" />
         <meta property="og:image:secure_url" content="https://bugmortem.vercel.app/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -156,7 +156,7 @@ export default function RootLayout({
             src="https://www.googletagmanager.com/ns.html?id=GTM-K77D4NHB"
             height="0"
             width="0"
-            style={{ display: 'none', visibility: 'hidden' }}
+            
           />
         </noscript>
 
