@@ -54,34 +54,18 @@ export default function RootLayout({
   return (
     <html lang="pl" suppressHydrationWarning>
       <head>
-        {/* 1. Google Consent Mode v2 – Domyślny stan zgody PRZED uruchomieniem GTM */}
+        {/* 1. Google Consent Mode v2 – Zgodnie z RODO stan początkowy jest ZAWSZE 'denied' */}
         <Script id="google-consent-default" strategy="beforeInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
 
-            // Sprawdź czy użytkownik dokonał już wcześniej wyboru w localStorage
-            var savedConsent = null;
-            try {
-              savedConsent = JSON.parse(localStorage.getItem('bm_cookie_consent'));
-            } catch(e) {}
-
-            if (savedConsent && savedConsent.decided) {
-              gtag('consent', 'default', {
-                'analytics_storage': savedConsent.analytics ? 'granted' : 'denied',
-                'ad_storage': savedConsent.marketing ? 'granted' : 'denied',
-                'ad_user_data': savedConsent.marketing ? 'granted' : 'denied',
-                'ad_personalization': savedConsent.marketing ? 'granted' : 'denied'
-              });
-            } else {
-              // Nowy użytkownik: domyślnie zablokowane do momentu kliknięcia w banerze
-              gtag('consent', 'default', {
-                'analytics_storage': 'denied',
-                'ad_storage': 'denied',
-                'ad_user_data': 'denied',
-                'ad_personalization': 'denied'
-              });
-            }
+            gtag('consent', 'default', {
+              'analytics_storage': 'denied',
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied'
+            });
           `}
         </Script>
 
