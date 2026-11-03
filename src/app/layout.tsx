@@ -52,14 +52,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pl" suppressHydrationWarning>
+    <html lang="pl" className="dark" suppressHydrationWarning>
       <head>
+        {/* Przyspieszenie połączenia do Google Tag Managera */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+
         {/* 1. Google Consent Mode v2 – Zgodnie z RODO stan początkowy jest ZAWSZE 'denied' */}
         <Script id="google-consent-default" strategy="beforeInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
-
             gtag('consent', 'default', {
               'analytics_storage': 'denied',
               'ad_storage': 'denied',
@@ -69,8 +72,8 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* 2. Google Tag Manager Container */}
-        <Script id="google-tag-manager" strategy="afterInteractive">
+        {/* 2. Google Tag Manager Container – wczytywany w tle (lazyOnload) bez blokowania renderowania */}
+        <Script id="google-tag-manager" strategy="lazyOnload">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -80,8 +83,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-
-      <body className="min-h-screen bg-neutral-50 text-neutral-900 transition-colors duration-200 dark:bg-neutral-950 dark:text-neutral-100 antialiased selection:bg-rose-500 selection:text-white">
+      <body className="min-h-screen bg-stone-950 text-stone-100 transition-colors duration-200 antialiased selection:bg-rose-500 selection:text-white">
         {/* Google Tag Manager (noscript fallback) */}
         <noscript>
           <iframe
@@ -91,7 +93,6 @@ export default function RootLayout({
             className="hidden invisible"
           />
         </noscript>
-
         <Providers>{children}</Providers>
       </body>
     </html>
