@@ -9,7 +9,7 @@ import { useTheme } from '@/context/ThemeContext';
 const enDict = enNamed || (enNamed as any)?.default;
 const plDict = plNamed || (plNamed as any)?.default;
 
-// Rozszerzenie typu o opcjonalny wskaźnik zdarzenia krytycznego
+// Bezpieczne rozszerzenie typu zdarzenia na osi czasu
 export interface SafeTimelineEvent extends TimelineEvent {
   isFatal?: boolean;
 }
@@ -158,7 +158,7 @@ export default function Home() {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
     } catch {
-      // Ignore clipboard restrictions
+      // Ignore
     }
   };
 
@@ -236,21 +236,27 @@ ${activeIncident.resurrectedCode || ''}
     const now = new Date();
     const timeStr = now.toTimeString().split(' ')[0];
 
-    const categoryBadge =
-      formCategory === 'frontend'
-        ? t?.categoryFrontend || 'Frontend'
-        : formCategory === 'backend'
-          ? t?.categoryBackend || 'Backend'
-          : formCategory === 'database'
-            ? t?.categoryDatabase || 'Database'
-            : t?.categoryInfra || 'Infra';
+    // Bezpieczne ustalenie kategorii bez zagnieżdżonych operatorów trójargumentowych
+    let categoryBadge = 'Frontend';
+    if (formCategory === 'frontend') {
+      categoryBadge = t?.categoryFrontend || 'Frontend';
+    } else if (formCategory === 'backend') {
+      categoryBadge = t?.categoryBackend || 'Backend';
+    } else if (formCategory === 'database') {
+      categoryBadge = t?.categoryDatabase || 'Database';
+    } else {
+      categoryBadge = t?.categoryInfra || 'Infra';
+    }
 
-    const severityLabel =
-      formSeverity === 'P0'
-        ? t?.severityP0 || 'Fatal (P0)'
-        : formSeverity === 'P1'
-          ? t?.severityP1 || 'Critical (P1)'
-          : t?.severityP2 || 'Major (P2)';
+    // Bezpieczne ustalenie priorytetu bez błędów składniowych
+    let severityLabel = 'Major (P2)';
+    if (formSeverity === 'P0') {
+      severityLabel = t?.severityP0 || 'Fatal (P0)';
+    } else if (formSeverity === 'P1') {
+      severityLabel = t?.severityP1 || 'Critical (P1)';
+    } else {
+      severityLabel = t?.severityP2 || 'Major (P2)';
+    }
 
     const fallbackResurrected =
       formResurrectedCode.trim() ||
@@ -395,7 +401,6 @@ try {
         <div className="bg-white border-stone-200 text-stone-900 dark:bg-stone-900/60 dark:border-stone-800 dark:text-white rounded-2xl border p-5 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden shadow-xl dark:shadow-2xl">
           <div className="space-y-3 z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold tracking-wider uppercase bg-rose-100 text-rose-700 border border-rose-300 dark:bg-rose-950/60 dark:text-rose-400 dark:border-rose-800/40">
-              {/* Stabilna dioda z poświatą HEX bez przecinków */}
               <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e]" />
               {t?.badgeHackathon}
             </div>
@@ -554,7 +559,6 @@ try {
             <div className="rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/40 p-3 sm:p-4 space-y-3 shadow-sm dark:shadow-inner">
               {safeTimeline.map((event, idx) => (
                 <div key={`timeline-${idx}-${event.time}`} className="flex items-start gap-2.5 sm:gap-3 text-xs font-mono">
-                  {/* WCAG AA / AAA wysoki kontrast dla znacznika czasu */}
                   <span className="text-stone-700 dark:text-stone-300 font-medium shrink-0 select-none text-[11px] sm:text-xs">
                     {event.time}
                   </span>
