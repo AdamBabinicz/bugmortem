@@ -10,7 +10,7 @@ export const dynamic = 'force-static';
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
-  display: 'swap', // Kluczowe: zapobiega blokowaniu FCP (brak FOIT podczas pobierania fontu)
+  display: 'swap', // Zapobiega blokowaniu FCP
 });
 
 const geistMono = Geist_Mono({
@@ -36,6 +36,20 @@ export const metadata: Metadata = {
   authors: [{ name: 'Adam Gierczak', url: 'https://github.com/AdamBabinicz' }],
   creator: 'Adam Gierczak',
   publisher: 'BugMortem',
+  alternates: {
+    canonical: 'https://bugmortem.vercel.app',
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/manifest.json',
   verification: {
     google: 'google446cfb165e1d0d78.html',
   },
@@ -47,12 +61,22 @@ export const metadata: Metadata = {
     siteName: 'BugMortem',
     locale: 'pl_PL',
     type: 'website',
+    images: [
+      {
+        url: 'https://bugmortem.vercel.app/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'BugMortem – AI Incident Autopsy & SRE Post-Mortem Studio',
+        type: 'image/png',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'BugMortem – AI Incident Autopsy & SRE Post-Mortem Studio',
     description:
       'Digital Incident Morgue and automated SRE post-mortem studio. Built for Devpost Kiroween 2026.',
+    images: ['https://bugmortem.vercel.app/og-image.png'],
   },
 };
 
@@ -68,17 +92,37 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* Krytyczny inline CSS – silnik przeglądarki zalicza FCP natychmiast w pierwszym cyklu malowania */}
+        {/* Canonical URL – zapobieganie duplikatom treści w Google */}
+        <link rel="canonical" href="https://bugmortem.vercel.app" />
+
+        {/* Bezpośrednie tagi Open Graph Image dla botów social media i walidatorów */}
+        <meta property="og:image" content="https://bugmortem.vercel.app/og-image.png" />
+        <meta property="og:image:secure_url" content="https://bugmortem.vercel.app/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="BugMortem – AI Incident Autopsy & SRE Post-Mortem Studio" />
+        <meta property="og:image:type" content="image/png" />
+        <meta name="twitter:image" content="https://bugmortem.vercel.app/og-image.png" />
+
+        {/* Ikony urządzeń mobilnych – Android Chrome & iOS Safari */}
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#0c0a09" />
+
+        {/* Krytyczny inline CSS dla FCP */}
         <style
           dangerouslySetInnerHTML={{
             __html: `html{background-color:#0c0a09;color:#fafaf9;}body{background-color:#0c0a09;color:#fafaf9;}`,
           }}
         />
-        {/* Optymalizacja połączenia sieciowego z GTM */}
+
+        {/* Preconnect do Google Tag Managera */}
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
-        {/* Google Consent Mode v2 – domyślne blokowanie przed załadowaniem tagów */}
+        {/* Google Consent Mode v2 */}
         <Script id="google-consent-mode-init" strategy="beforeInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
@@ -94,7 +138,7 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Google Tag Manager Container Loader */}
+        {/* GTM Container Loader */}
         <Script id="google-tag-manager-loader" strategy="afterInteractive">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -106,7 +150,7 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="min-h-screen bg-stone-100 text-stone-900 dark:bg-stone-950 dark:text-stone-100 antialiased font-sans">
-        {/* Google Tag Manager (noscript fallback) */}
+        {/* Fallback no-script dla GTM */}
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-K77D4NHB"

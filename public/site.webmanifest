@@ -1,21 +1,24 @@
 {
-  "name": "BugMortem: Incident Autopsy & Post-Mortem SRE Tool",
+  "name": "BugMortem – AI Incident Autopsy & SRE Studio",
   "short_name": "BugMortem",
+  "description": "Digital Incident Morgue and automated SRE post-mortem studio. Built for Devpost Kiroween 2026.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c0a09",
+  "theme_color": "#0c0a09",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/web-app-manifest-192x192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     },
     {
-      "src": "/web-app-manifest-512x512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
-  ],
-  "theme_color": "#0a0a0a",
-  "background_color": "#0a0a0a",
-  "display": "standalone"
+  ]
 }
