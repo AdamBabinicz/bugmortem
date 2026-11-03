@@ -54,7 +54,38 @@ export default function RootLayout({
   return (
     <html lang="pl" suppressHydrationWarning>
       <head>
-        {/* Google Tag Manager */}
+        {/* 1. Google Consent Mode v2 – Domyślny stan zgody PRZED uruchomieniem GTM */}
+        <Script id="google-consent-default" strategy="beforeInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+
+            // Sprawdź czy użytkownik dokonał już wcześniej wyboru w localStorage
+            var savedConsent = null;
+            try {
+              savedConsent = JSON.parse(localStorage.getItem('bm_cookie_consent'));
+            } catch(e) {}
+
+            if (savedConsent && savedConsent.decided) {
+              gtag('consent', 'default', {
+                'analytics_storage': savedConsent.analytics ? 'granted' : 'denied',
+                'ad_storage': savedConsent.marketing ? 'granted' : 'denied',
+                'ad_user_data': savedConsent.marketing ? 'granted' : 'denied',
+                'ad_personalization': savedConsent.marketing ? 'granted' : 'denied'
+              });
+            } else {
+              // Nowy użytkownik: domyślnie zablokowane do momentu kliknięcia w banerze
+              gtag('consent', 'default', {
+                'analytics_storage': 'denied',
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied'
+              });
+            }
+          `}
+        </Script>
+
+        {/* 2. Google Tag Manager Container */}
         <Script id="google-tag-manager" strategy="afterInteractive">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -65,6 +96,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
+
       <body className="min-h-screen bg-neutral-50 text-neutral-900 transition-colors duration-200 dark:bg-neutral-950 dark:text-neutral-100 antialiased selection:bg-rose-500 selection:text-white">
         {/* Google Tag Manager (noscript fallback) */}
         <noscript>
