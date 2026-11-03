@@ -11,8 +11,8 @@ interface CookieConsentState {
   decided: boolean;
 }
 
-// Bezpieczny helper przekazujący zgodę do Google Tag Manager & Google Consent Mode v2
-const pushGtmConsent = (analyticsGranted: boolean, marketingGranted: boolean) => {
+// Bezpieczne wywołanie gtag oraz dataLayer
+function pushGtmConsent(analytics: boolean, marketing: boolean) {
   if (typeof window === 'undefined') return;
 
   const w = window as unknown as {
@@ -22,26 +22,23 @@ const pushGtmConsent = (analyticsGranted: boolean, marketingGranted: boolean) =>
 
   w.dataLayer = w.dataLayer || [];
 
-  // 1. Aktualizacja oficjalnego standardu Google Consent Mode v2
-  const consentData = {
-    analytics_storage: analyticsGranted ? 'granted' : 'denied',
-    ad_storage: marketingGranted ? 'granted' : 'denied',
-    ad_user_data: marketingGranted ? 'granted' : 'denied',
-    ad_personalization: marketingGranted ? 'granted' : 'denied',
-  };
-
+  // 1. Aktualizacja stanu Google Consent Mode v2
   if (typeof w.gtag === 'function') {
-    w.gtag('consent', 'update', consentData);
+    w.gtag('consent', 'update', {
+      analytics_storage: analytics ? 'granted' : 'denied',
+      ad_storage: marketing ? 'granted' : 'denied',
+      ad_user_data: marketing ? 'granted' : 'denied',
+      ad_personalization: marketing ? 'granted' : 'denied',
+    });
   }
 
-  // 2. Wypchnięcie zdarzenia do dataLayer dla wyzwalaczy (triggers) w GTM
+  // 2. Wypchnięcie zdarzenia do dataLayer dla wyzwalaczy w GTM
   w.dataLayer.push({
     event: 'consent_update',
-    ...consentData,
-    consent_analytics: analyticsGranted,
-    consent_marketing: marketingGranted,
+    consent_analytics: analytics,
+    consent_marketing: marketing,
   });
-};
+}
 
 export function CookieBanner() {
   const { t } = useTranslation();
@@ -55,29 +52,26 @@ export function CookieBanner() {
   });
 
   useEffect(() => {
-    // Sprawdź stan w pamięci przeglądarki
     const saved = localStorage.getItem('bm_cookie_consent');
     if (!saved) {
+      // Brak wcześniejszego wyboru -> pokaż baner
       setIsVisible(true);
-      // Domyślnie na starcie blokujemy analitykę przed podjęciem decyzji
-      pushGtmConsent(false, false);
     } else {
       try {
         const parsed: CookieConsentState = JSON.parse(saved);
         setConsent(parsed);
-        // Powracający użytkownik: natychmiast załaduj zapisaną wcześniej zgodę do GTM
         if (parsed.decided) {
+          // Przywróć dokładnie taki stan, jaki zapisał użytkownik (granted LUB denied)
           pushGtmConsent(parsed.analytics, parsed.marketing);
         } else {
           setIsVisible(true);
         }
       } catch {
         setIsVisible(true);
-        pushGtmConsent(false, false);
       }
     }
 
-    // Nasłuchuj na żądanie ponownego otwarcia (np. link "Ustawienia cookies" w stopce)
+    // Nasłuchuj na ponowne otwarcie banera (np. link w stopce strony)
     const handleReopen = () => {
       setIsVisible(true);
       setShowDetails(true);
@@ -92,7 +86,7 @@ export function CookieBanner() {
     localStorage.setItem('bm_cookie_consent', JSON.stringify(updated));
     setIsVisible(false);
 
-    // Przekaż zaktualizowaną decyzję do GTM/GA4
+    // Przekaż aktualizację do GTM / GA4
     pushGtmConsent(updated.analytics, updated.marketing);
   };
 
@@ -118,30 +112,38 @@ export function CookieBanner() {
         </div>
         <div className="flex-1">
           <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
-            {t.cookies.title}
+            {t?.cookies?.title || 'Ustawienia prywatności'}
           </h3>
           <p className="mt-1 text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">
-            {t.cookies.description}
+            {t?.cookies?.description || 'Używamy plików cookie i tagów analitycznych do analizy ruchu.'}
           </p>
 
           {showDetails && (
             <div className="mt-3 space-y-2 border-t border-neutral-200 pt-3 dark:border-neutral-800">
-              {/* Ciasteczka niezbędne */}
+              {/* Niezbędne */}
               <div className="flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-semibold text-neutral-800 dark:text-neutral-200">{t.cookies.essential}</span>
-                  <p className="text-[10px] text-neutral-500">{t.cookies.essentialDesc}</p>
+                  <span className="font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t?.cookies?.essential || 'Niezbędne'}
+                  </span>
+                  <p className="text-[10px] text-neutral-500">
+                    {t?.cookies?.essentialDesc || 'Wymagane do działania serwisu'}
+                  </p>
                 </div>
                 <span className="rounded bg-neutral-100 px-2 py-0.5 font-mono text-[10px] font-bold text-neutral-500 dark:bg-neutral-800">
-                  {t.cookies.alwaysActive}
+                  {t?.cookies?.alwaysActive || 'Zawsze aktywne'}
                 </span>
               </div>
 
-              {/* Analityka (GTM / GA4: GTM-K77D4NHB) */}
+              {/* Analityka (GTM / GA4) */}
               <div className="flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-semibold text-neutral-800 dark:text-neutral-200">{t.cookies.analytics}</span>
-                  <p className="text-[10px] text-neutral-500">{t.cookies.analyticsDesc}</p>
+                  <span className="font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t?.cookies?.analytics || 'Analityka'}
+                  </span>
+                  <p className="text-[10px] text-neutral-500">
+                    {t?.cookies?.analyticsDesc || 'Google Analytics 4 & GTM'}
+                  </p>
                 </div>
                 <input
                   type="checkbox"
@@ -154,8 +156,12 @@ export function CookieBanner() {
               {/* Marketing */}
               <div className="flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-semibold text-neutral-800 dark:text-neutral-200">{t.cookies.marketing}</span>
-                  <p className="text-[10px] text-neutral-500">{t.cookies.marketingDesc}</p>
+                  <span className="font-semibold text-neutral-800 dark:text-neutral-200">
+                    {t?.cookies?.marketing || 'Marketing'}
+                  </span>
+                  <p className="text-[10px] text-neutral-500">
+                    {t?.cookies?.marketingDesc || 'Personalizacja i kampanie'}
+                  </p>
                 </div>
                 <input
                   type="checkbox"
@@ -172,42 +178,41 @@ export function CookieBanner() {
             {showDetails ? (
               <button
                 onClick={handleSaveCustom}
-                className="flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
               >
                 <Check className="h-3.5 w-3.5" />
-                {t.cookies.savePreferences}
+                {t?.cookies?.savePreferences || 'Zapisz preferencje'}
               </button>
             ) : (
               <>
                 <button
                   onClick={handleAcceptAll}
-                  className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors cursor-pointer"
+                  className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
                 >
-                  {t.cookies.acceptAll}
+                  {t?.cookies?.acceptAll || 'Akceptuj wszystkie'}
                 </button>
                 <button
                   onClick={handleRejectNonEssential}
-                  className="rounded-lg border border-neutral-300 bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
+                  className="rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 transition-colors"
                 >
-                  {t.cookies.rejectAll}
+                  {t?.cookies?.rejectNonEssential || 'Odrzuć opcjonalne'}
+                </button>
+                <button
+                  onClick={() => setShowDetails(true)}
+                  className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors"
+                >
+                  <Sliders className="h-3.5 w-3.5" />
+                  {t?.cookies?.details || 'Dostosuj'}
                 </button>
               </>
             )}
-
-            <button
-              onClick={() => setShowDetails(!showDetails)}
-              className="flex items-center gap-1 text-xs font-semibold text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors ml-auto cursor-pointer"
-            >
-              <Sliders className="h-3.5 w-3.5" />
-              {showDetails ? t.cookies.hideDetails : t.cookies.customize}
-            </button>
           </div>
         </div>
 
         <button
-          onClick={() => setIsVisible(false)}
-          className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer"
-          aria-label="Close"
+          onClick={handleRejectNonEssential}
+          className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
+          title="Zamknij i odrzuć opcjonalne"
         >
           <X className="h-4 w-4" />
         </button>
