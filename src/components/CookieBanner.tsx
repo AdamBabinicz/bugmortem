@@ -11,8 +11,7 @@ interface CookieConsentState {
   decided: boolean;
 }
 
-// Bezpieczne wywołanie gtag oraz dataLayer
-function pushGtmConsent(analytics: boolean, marketing: boolean) {
+export function pushGtmConsent(analytics: boolean, marketing: boolean) {
   if (typeof window === 'undefined') return;
 
   const w = window as unknown as {
@@ -22,7 +21,6 @@ function pushGtmConsent(analytics: boolean, marketing: boolean) {
 
   w.dataLayer = w.dataLayer || [];
 
-  // 1. Aktualizacja stanu Google Consent Mode v2
   if (typeof w.gtag === 'function') {
     w.gtag('consent', 'update', {
       analytics_storage: analytics ? 'granted' : 'denied',
@@ -32,7 +30,6 @@ function pushGtmConsent(analytics: boolean, marketing: boolean) {
     });
   }
 
-  // 2. Wypchnięcie zdarzenia do dataLayer dla wyzwalaczy w GTM
   w.dataLayer.push({
     event: 'consent_update',
     consent_analytics: analytics,
@@ -54,14 +51,12 @@ export function CookieBanner() {
   useEffect(() => {
     const saved = localStorage.getItem('bm_cookie_consent');
     if (!saved) {
-      // Brak wcześniejszego wyboru -> pokaż baner
       setIsVisible(true);
     } else {
       try {
         const parsed: CookieConsentState = JSON.parse(saved);
         setConsent(parsed);
         if (parsed.decided) {
-          // Przywróć dokładnie taki stan, jaki zapisał użytkownik (granted LUB denied)
           pushGtmConsent(parsed.analytics, parsed.marketing);
         } else {
           setIsVisible(true);
@@ -71,7 +66,6 @@ export function CookieBanner() {
       }
     }
 
-    // Nasłuchuj na ponowne otwarcie banera (np. link w stopce strony)
     const handleReopen = () => {
       setIsVisible(true);
       setShowDetails(true);
@@ -85,8 +79,8 @@ export function CookieBanner() {
     setConsent(updated);
     localStorage.setItem('bm_cookie_consent', JSON.stringify(updated));
     setIsVisible(false);
+    setShowDetails(false);
 
-    // Przekaż aktualizację do GTM / GA4
     pushGtmConsent(updated.analytics, updated.marketing);
   };
 
@@ -120,7 +114,6 @@ export function CookieBanner() {
 
           {showDetails && (
             <div className="mt-3 space-y-2 border-t border-neutral-200 pt-3 dark:border-neutral-800">
-              {/* Niezbędne */}
               <div className="flex items-center justify-between text-xs">
                 <div>
                   <span className="font-semibold text-neutral-800 dark:text-neutral-200">
@@ -135,7 +128,6 @@ export function CookieBanner() {
                 </span>
               </div>
 
-              {/* Analityka (GTM / GA4) */}
               <div className="flex items-center justify-between text-xs">
                 <div>
                   <span className="font-semibold text-neutral-800 dark:text-neutral-200">
@@ -153,7 +145,6 @@ export function CookieBanner() {
                 />
               </div>
 
-              {/* Marketing */}
               <div className="flex items-center justify-between text-xs">
                 <div>
                   <span className="font-semibold text-neutral-800 dark:text-neutral-200">
@@ -173,38 +164,35 @@ export function CookieBanner() {
             </div>
           )}
 
-          {/* PRZYCISKI AKCJI */}
           <div className="mt-4 flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleAcceptAll}
+              className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
+            >
+              {t?.cookies?.acceptAll || 'Akceptuj wszystkie'}
+            </button>
+            <button
+              onClick={handleRejectNonEssential}
+              className="rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 transition-colors"
+            >
+              {t?.cookies?.rejectNonEssential || 'Odrzuć opcjonalne'}
+            </button>
             {showDetails ? (
               <button
                 onClick={handleSaveCustom}
-                className="flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
+                className="flex items-center gap-1.5 rounded-lg border border-neutral-300 bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 transition-colors"
               >
                 <Check className="h-3.5 w-3.5" />
-                {t?.cookies?.savePreferences || 'Zapisz preferencje'}
+                {t?.cookies?.savePreferences || 'Zapisz wybrane'}
               </button>
             ) : (
-              <>
-                <button
-                  onClick={handleAcceptAll}
-                  className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
-                >
-                  {t?.cookies?.acceptAll || 'Akceptuj wszystkie'}
-                </button>
-                <button
-                  onClick={handleRejectNonEssential}
-                  className="rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 transition-colors"
-                >
-                  {t?.cookies?.rejectNonEssential || 'Odrzuć opcjonalne'}
-                </button>
-                <button
-                  onClick={() => setShowDetails(true)}
-                  className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors"
-                >
-                  <Sliders className="h-3.5 w-3.5" />
-                  {t?.cookies?.details || 'Dostosuj'}
-                </button>
-              </>
+              <button
+                onClick={() => setShowDetails(true)}
+                className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors"
+              >
+                <Sliders className="h-3.5 w-3.5" />
+                {t?.cookies?.details || 'Dostosuj'}
+              </button>
             )}
           </div>
         </div>
