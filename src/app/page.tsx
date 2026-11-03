@@ -9,6 +9,11 @@ import { useTheme } from '@/context/ThemeContext';
 const enDict = enNamed || (enNamed as any)?.default;
 const plDict = plNamed || (plNamed as any)?.default;
 
+// Rozszerzenie typu o opcjonalny wskaźnik zdarzenia krytycznego
+export interface SafeTimelineEvent extends TimelineEvent {
+  isFatal?: boolean;
+}
+
 // Likwidacja wiszących spójników (sierotek typograficznych w języku polskim)
 export function fixOrphans(text: string): string {
   if (!text || typeof text !== 'string') return text;
@@ -95,9 +100,10 @@ export default function Home() {
       if (storedIncidents) {
         const parsed = JSON.parse(storedIncidents);
         const valid: Record<string, IncidentPreset> = {};
-        Object.entries(parsed).forEach(([k, v]: [string, any]) => {
-          if (v && v.title && v.crashedCode) {
-            valid[k] = v;
+        Object.entries(parsed).forEach(([k, v]) => {
+          const item = v as IncidentPreset;
+          if (item && item.title && item.crashedCode) {
+            valid[k] = item;
           }
         });
         setCustomIncidents(valid);
@@ -137,8 +143,8 @@ export default function Home() {
     Object.values(presetsMap)[0] ||
     defaultFallback;
 
-  const safeTimeline: TimelineEvent[] = Array.isArray(activeIncident?.timeline)
-    ? activeIncident.timeline
+  const safeTimeline: SafeTimelineEvent[] = Array.isArray(activeIncident?.timeline)
+    ? (activeIncident.timeline as SafeTimelineEvent[])
     : [];
 
   const safeActionItems: string[] = Array.isArray(activeIncident?.postMortemReport?.actionItems)
@@ -244,8 +250,7 @@ ${activeIncident.resurrectedCode || ''}
         ? t?.severityP0 || 'Fatal (P0)'
         : formSeverity === 'P1'
           ? t?.severityP1 || 'Critical (P1)'
-          : formSeverity === 'P2'
-            ? t?.severityP2 || 'Major (P2)':
+          : t?.severityP2 || 'Major (P2)';
 
     const fallbackResurrected =
       formResurrectedCode.trim() ||
@@ -260,7 +265,7 @@ try {
   return fallbackResponse();
 }`;
 
-    const customTimeline: TimelineEvent[] = [
+    const customTimeline: SafeTimelineEvent[] = [
       { time: timeStr, desc: `${categoryBadge} anomaly initiated under active workload` },
       { time: `${timeStr}.250`, desc: `Exception bubbled up to runtime boundary`, isFatal: true },
       { time: `${timeStr}.500`, desc: `Fatal crash handler terminated process execution`, isFatal: true }
@@ -269,13 +274,13 @@ try {
     const newIncident: IncidentPreset = {
       id: customId,
       badge: categoryBadge,
-      severity: severityLabel,
+      severity: (severityLabel as any) || formSeverity,
       title: formTitle.trim(),
       desc: formStackTrace.split('\n')[0].slice(0, 140) || formTitle.trim(),
       crashedCode: formCrashedCode.trim() || `// ❌ CRASH STATE\n${formStackTrace.slice(0, 300)}`,
       resurrectedCode: fallbackResurrected,
       stackTrace: formStackTrace.trim(),
-      timeline: customTimeline,
+      timeline: customTimeline as any,
       postMortemReport: {
         summary: `${severityLabel} incident in ${categoryBadge}: ${formTitle.trim()}. Captured via live autopsy ingestion.`,
         impact: `Service interruption detected. Immediate mitigation executed via SRE safety guardrails.`,
@@ -390,8 +395,8 @@ try {
         <div className="bg-white border-stone-200 text-stone-900 dark:bg-stone-900/60 dark:border-stone-800 dark:text-white rounded-2xl border p-5 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden shadow-xl dark:shadow-2xl">
           <div className="space-y-3 z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold tracking-wider uppercase bg-rose-100 text-rose-700 border border-rose-300 dark:bg-rose-950/60 dark:text-rose-400 dark:border-rose-800/40">
-              {/* Stabilny wskaźnik z poświatą bez ciągłej pętli animacji ping */}
-              <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)]" />
+              {/* Stabilna dioda z poświatą HEX bez przecinków */}
+              <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e]" />
               {t?.badgeHackathon}
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-stone-900 dark:text-white">
@@ -409,8 +414,7 @@ try {
                   {t?.statusLabel}
                 </div>
                 <div className="text-xs sm:text-sm font-mono font-bold text-rose-600 dark:text-rose-500 flex items-center gap-2">
-                  {/* Stabilna dioda neonowa SRE */}
-                  <span className="inline-block w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.8)]" />
+                  <span className="inline-block w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_#f43f5e]" />
                   {t?.statusValue}
                 </div>
               </div>
@@ -472,8 +476,11 @@ try {
           </div>
         </section>
 
-        {/* Side-by-Side Code Autopsy – Zoptymalizowany dla Speed Index z content-visibility */}
-        <section className="space-y-3 sm:space-y-4 [content-visibility:auto] [contain-intrinsic-size:1px_450px]">
+        {/* Side-by-Side Code Autopsy */}
+        <section
+          style={{ contentVisibility: 'auto', containIntrinsicSize: '450px' }}
+          className="space-y-3 sm:space-y-4"
+        >
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
               <span>&lt;/&gt;</span>
@@ -524,8 +531,11 @@ try {
           </div>
         </section>
 
-        {/* Stack Trace & Timeline – Zoptymalizowany dla Speed Index z content-visibility */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 [content-visibility:auto] [contain-intrinsic-size:1px_350px]">
+        {/* Stack Trace & Timeline */}
+        <div
+          style={{ contentVisibility: 'auto', containIntrinsicSize: '350px' }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6"
+        >
           <section className="space-y-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
               <span>&gt;_</span>
@@ -557,8 +567,11 @@ try {
           </section>
         </div>
 
-        {/* Official Post-Mortem Report Protocol – Zoptymalizowany dla Speed Index */}
-        <section className="rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/50 p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-xl dark:shadow-2xl relative [content-visibility:auto] [contain-intrinsic-size:1px_300px]">
+        {/* Official Post-Mortem Report Protocol */}
+        <section
+          style={{ contentVisibility: 'auto', containIntrinsicSize: '300px' }}
+          className="rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/50 p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-xl dark:shadow-2xl relative"
+        >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
             <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-stone-800 dark:text-stone-200 flex items-center gap-2">
               <span>📄</span>
@@ -645,10 +658,11 @@ try {
 
             <form onSubmit={handleCreateCustomAutopsy} className="space-y-4">
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
+                <label htmlFor="formTitle" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
                   {t?.fieldIncidentTitle} *
                 </label>
                 <input
+                  id="formTitle"
                   type="text"
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
@@ -659,10 +673,11 @@ try {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
+                  <label htmlFor="formCategory" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
                     {t?.fieldCategory}
                   </label>
                   <select
+                    id="formCategory"
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value as any)}
                     className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
@@ -675,10 +690,11 @@ try {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
+                  <label htmlFor="formSeverity" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
                     {t?.fieldSeverity}
                   </label>
                   <select
+                    id="formSeverity"
                     value={formSeverity}
                     onChange={(e) => setFormSeverity(e.target.value as any)}
                     className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
@@ -691,10 +707,11 @@ try {
               </div>
 
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
+                <label htmlFor="formStackTrace" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
                   {t?.fieldStackTrace} *
                 </label>
                 <textarea
+                  id="formStackTrace"
                   rows={4}
                   value={formStackTrace}
                   onChange={(e) => setFormStackTrace(e.target.value)}
@@ -704,10 +721,11 @@ try {
               </div>
 
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
+                <label htmlFor="formCrashedCode" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
                   {t?.fieldCrashedCode}
                 </label>
                 <textarea
+                  id="formCrashedCode"
                   rows={3}
                   value={formCrashedCode}
                   onChange={(e) => setFormCrashedCode(e.target.value)}
@@ -717,10 +735,11 @@ try {
               </div>
 
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
+                <label htmlFor="formResurrectedCode" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
                   {t?.fieldResurrectedCode}
                 </label>
                 <textarea
+                  id="formResurrectedCode"
                   rows={3}
                   value={formResurrectedCode}
                   onChange={(e) => setFormResurrectedCode(e.target.value)}
