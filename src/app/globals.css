@@ -2,16 +2,18 @@
 
 @variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
-/* 1. Globalne zablokowanie niechcianego poziomego scrolla na telefonach */
+/* 1. Globalne zablokowanie niechcianego poziomego scrolla i natychmiastowe ciemne tło (0 ms opóźnienia) */
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
   position: relative;
   scroll-behavior: smooth;
+  background-color: #0c0a09; /* stone-950 – klatka 0 renderuje się natychmiast na ciemno */
+  color: #f5f5f4; /* stone-100 */
 }
 
-/* 2. Globalna "rączka" (cursor: pointer) dla wszystkich buttonów, linków i kontrolek w projekcie */
+/* 2. Globalna rączka dla kontrolek */
 button,
 [role="button"],
 a,
@@ -22,12 +24,7 @@ select {
   cursor: pointer !important;
 }
 
-@layer base {
-  body {
-    transition: background-color 0.2s ease, color 0.2s ease;
-  }
-}
-/* Likwidacja sierotek i wdów typograficznych */
+/* Likwidacja sierotek typograficznych */
 h1, h2, h3, h4, p, span, li {
   text-wrap: pretty;
 }
