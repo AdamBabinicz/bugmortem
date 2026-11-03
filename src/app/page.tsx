@@ -248,7 +248,7 @@ ${activeIncident.resurrectedCode || ''}
       categoryBadge = t?.categoryInfra || 'Infra';
     }
 
-    // Bezpieczne ustalenie priorytetu bez błędów składniowych
+    // Bezpieczne ustalenie priorytetu
     let severityLabel = 'Major (P2)';
     if (formSeverity === 'P0') {
       severityLabel = t?.severityP0 || 'Fatal (P0)';
@@ -436,7 +436,7 @@ try {
           </div>
         </div>
 
-        {/* Preset Cards & Case Selection */}
+        {/* Preset Cards & Case Selection – W3C HTML5 Valid (Phrasing Content inside Button) */}
         <section className="space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300">
@@ -459,22 +459,22 @@ try {
                       : 'bg-white border-stone-200 hover:border-stone-300 hover:bg-stone-50 dark:bg-stone-900/40 dark:border-stone-800/80 dark:hover:border-stone-700 dark:hover:bg-stone-900/80'
                   }`}
                 >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-2">
+                  <span className="block space-y-2 w-full">
+                    <span className="flex items-center justify-between gap-2">
                       <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
                         {incident?.badge}
                       </span>
                       <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-stone-100 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700">
                         {incident?.severity}
                       </span>
-                    </div>
-                    <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100 line-clamp-1">
+                    </span>
+                    <strong className="block font-bold text-sm text-stone-900 dark:text-stone-100 line-clamp-1">
                       {fixOrphans(incident?.title)}
-                    </h3>
-                    <p className="text-xs text-stone-700 dark:text-stone-300 line-clamp-2">
+                    </strong>
+                    <span className="block text-xs text-stone-700 dark:text-stone-300 line-clamp-2 font-normal">
                       {fixOrphans(incident?.desc)}
-                    </p>
-                  </div>
+                    </span>
+                  </span>
                 </button>
               );
             })}
