@@ -169,6 +169,8 @@ export interface Dictionary {
   footerPrivacy: string;
   footerTerms: string;
   footerCookieSettings: string;
+  audioToggleEnable: string;
+  audioToggleDisable: string;
   cookieTitle: string;
   cookieDesc: string;
   cookieAcceptAll: string;

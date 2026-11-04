@@ -45,6 +45,8 @@ export const pl: Dictionary = {
   btnCancel: 'Anuluj',
   btnAnalyzeAndGenerate: 'Przeprowadź Sekcję Zwłok',
   validationErrorRequired: 'Proszę podać tytuł awarii oraz ślad stosu.',
+  audioToggleEnable: 'Telemetria Audio: Wyciszona — kliknij, aby włączyć',
+  audioToggleDisable: 'Telemetria Audio: Włączona — kliknij, aby wyciszyć',
   footerRights: 'Wszelkie prawa zastrzeżone. Stworzone na Kiroween 2026 przez AWS & Devpost.',
   footerPrivacy: 'Polityka Prywatności',
   footerTerms: 'Regulamin',

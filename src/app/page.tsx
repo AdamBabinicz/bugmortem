@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { IncidentPreset, TimelineEvent } from '../i18n/types';
 import { useTheme } from '@/context/ThemeContext';
 import { useI18n } from '@/i18n/context';
 import { LegalModal, LegalDocType } from '@/components/legal/LegalModal';
+import { Volume2, VolumeX } from 'lucide-react';
+import { useAudioEngine } from '@/hooks/useAudioEngine';
 
 // Bezpieczne rozszerzenie typu zdarzenia na osi czasu
 export interface SafeTimelineEvent extends TimelineEvent {
@@ -103,6 +105,11 @@ export default function Home() {
     Object.values(presetsMap)[0] ||
     defaultFallback;
 
+  // Audio synthesizer — muted by default (browser autoplay policy).
+  // Severity drives the sound program: P0 = flatline drone, P1/P2 = heartbeat.
+  const activeSeverity = activeIncident?.severity ?? 'P1';
+  const { audioEnabled, toggleAudio, playResurrectionChime } = useAudioEngine(activeSeverity);
+
   const safeTimeline: SafeTimelineEvent[] = Array.isArray(activeIncident?.timeline)
     ? (activeIncident.timeline as SafeTimelineEvent[])
     : [];
@@ -128,6 +135,7 @@ export default function Home() {
         document.body.removeChild(textarea);
       }
       setIsCopied(true);
+      playResurrectionChime();
       setTimeout(() => setIsCopied(false), 2000);
     } catch {
       // Ignore silently — clipboard unavailable
@@ -398,6 +406,25 @@ try {
                   strokeLinejoin="round"
                 />
               </svg>
+
+              {/* Audio Telemetry Toggle */}
+              <button
+                type="button"
+                onClick={toggleAudio}
+                aria-label={audioEnabled ? t?.audioToggleDisable : t?.audioToggleEnable}
+                title={audioEnabled ? t?.audioToggleDisable : t?.audioToggleEnable}
+                className={`p-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
+                  audioEnabled
+                    ? 'bg-emerald-100 border-emerald-400 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-950/60 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/60 shadow-[0_0_8px_rgba(16,185,129,0.4)]'
+                    : 'bg-stone-200 border-stone-300 text-stone-500 hover:bg-stone-300 dark:bg-stone-800 dark:border-stone-700 dark:text-stone-400 dark:hover:bg-stone-700'
+                }`}
+              >
+                {audioEnabled
+                  ? <Volume2 className="w-3.5 h-3.5" />
+                  : <VolumeX className="w-3.5 h-3.5" />
+                }
+              </button>
+
               <div className="text-left md:text-right">
                 <div className="text-[10px] uppercase font-bold tracking-widest text-stone-700 dark:text-stone-300">
                   {t?.statusLabel}

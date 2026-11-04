@@ -45,6 +45,8 @@ export const en: Dictionary = {
   btnCancel: 'Cancel',
   btnAnalyzeAndGenerate: 'Run Forensic Autopsy',
   validationErrorRequired: 'Please provide an incident title and stack trace.',
+  audioToggleEnable: 'Audio Telemetry: Muted — click to enable',
+  audioToggleDisable: 'Audio Telemetry: Enabled — click to mute',
   footerRights: 'All rights reserved. Built for Kiroween 2026 by AWS & Devpost.',
   footerPrivacy: 'Privacy Policy',
   footerTerms: 'Terms of Service',
