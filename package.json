@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run --config vitest.config.ts",
     "test:pbt": "vitest run --config vitest.config.ts",
     "test:pbt:watch": "vitest --config vitest.config.ts"
   },
