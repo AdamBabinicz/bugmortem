@@ -2,12 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { IncidentPreset, TimelineEvent } from '../i18n/types';
-import { en as enNamed } from '../i18n/locales/en';
-import { pl as plNamed } from '../i18n/locales/pl';
 import { useTheme } from '@/context/ThemeContext';
-
-const enDict = enNamed || (enNamed as any)?.default;
-const plDict = plNamed || (plNamed as any)?.default;
+import { useI18n } from '@/i18n/context';
 
 // Bezpieczne rozszerzenie typu zdarzenia na osi czasu
 export interface SafeTimelineEvent extends TimelineEvent {
@@ -20,38 +16,13 @@ export function fixOrphans(text: string): string {
   return text.replace(/(^|\s)([aiouwz]|do|na|od|po|ze|we|za|co|że|to)(\s+)/gi, '$1$2\u00A0');
 }
 
-// Bezpieczna integracja z Google Consent Mode v2 i GTM
-function pushGtmConsent(analytics: boolean, marketing: boolean) {
-  if (typeof window === 'undefined') return;
-  const w = window as unknown as {
-    dataLayer?: unknown[];
-    gtag?: (...args: unknown[]) => void;
-  };
-  w.dataLayer = w.dataLayer || [];
-
-  if (typeof w.gtag === 'function') {
-    w.gtag('consent', 'update', {
-      analytics_storage: analytics ? 'granted' : 'denied',
-      ad_storage: marketing ? 'granted' : 'denied',
-      ad_user_data: marketing ? 'granted' : 'denied',
-      ad_personalization: marketing ? 'granted' : 'denied',
-    });
-  }
-
-  w.dataLayer.push({
-    event: 'consent_update',
-    consent_analytics: analytics,
-    consent_marketing: marketing,
-  });
-}
 
 export default function Home() {
   // Global Theme Context
   const { theme, toggleTheme } = useTheme();
 
-  // Locale state
-  const [locale, setLocaleState] = useState<'pl' | 'en'>('en');
-  const t = locale === 'pl' ? plDict : enDict;
+  // Locale via shared I18nProvider (drives CookieBanner and all consumers in sync)
+  const { locale, setLocale, t } = useI18n();
 
   // Incident state
   const [selectedPreset, setSelectedPreset] = useState<string>('react-hydration');
@@ -72,12 +43,6 @@ export default function Home() {
   const [formResurrectedCode, setFormResurrectedCode] = useState<string>('');
   const [formError, setFormError] = useState<string>('');
 
-  // GDPR Cookie State
-  const [cookieConsent, setCookieConsent] = useState<string | null>(null);
-  const [isCookieDrawerOpen, setIsCookieDrawerOpen] = useState<boolean>(false);
-  const [analyticsCookies, setAnalyticsCookies] = useState<boolean>(true);
-  const [marketingCookies, setMarketingCookies] = useState<boolean>(false);
-
   // Inicjalizacja z localStorage oraz bezpieczna kalkulacja daty
   useEffect(() => {
     const currentYear = new Date().getFullYear();
@@ -85,23 +50,6 @@ export default function Home() {
       setCopyrightYears(`2026 - ${currentYear}`);
     } else {
       setCopyrightYears('2026');
-    }
-
-    const savedLocale = localStorage.getItem('bugmortem_locale') as 'pl' | 'en';
-    if (savedLocale === 'pl' || savedLocale === 'en') {
-      setLocaleState(savedLocale);
-    }
-
-    const storedConsent = localStorage.getItem('bm_cookie_consent');
-    // Parse structured consent or treat legacy string as decided
-    if (storedConsent) {
-      try {
-        const parsed = JSON.parse(storedConsent);
-        setCookieConsent(parsed.decided ? storedConsent : null);
-      } catch {
-        // Legacy string value — treat as decided
-        setCookieConsent(storedConsent);
-      }
     }
 
     try {
@@ -123,11 +71,10 @@ export default function Home() {
   }, []);
 
   const changeLocale = (newLocale: 'pl' | 'en') => {
-    setLocaleState(newLocale);
-    localStorage.setItem('bugmortem_locale', newLocale);
+    setLocale(newLocale);
   };
 
-  const presetsMap = t?.presets || enDict?.presets || {};
+  const presetsMap = t?.presets || {};
   const allIncidents: Record<string, IncidentPreset> = {
     ...presetsMap,
     ...customIncidents
@@ -332,27 +279,6 @@ try {
     setFormError('');
   };
 
-  const handleAcceptAllCookies = () => {
-    const consent = { essential: true, analytics: true, marketing: true, decided: true };
-    localStorage.setItem('bm_cookie_consent', JSON.stringify(consent));
-    setCookieConsent(JSON.stringify(consent));
-    pushGtmConsent(true, true);
-  };
-
-  const handleAcceptEssential = () => {
-    const consent = { essential: true, analytics: false, marketing: false, decided: true };
-    localStorage.setItem('bm_cookie_consent', JSON.stringify(consent));
-    setCookieConsent(JSON.stringify(consent));
-    pushGtmConsent(false, false);
-  };
-
-  const handleSaveCookiePreferences = () => {
-    const consent = { essential: true, analytics: analyticsCookies, marketing: marketingCookies, decided: true };
-    localStorage.setItem('bm_cookie_consent', JSON.stringify(consent));
-    setCookieConsent(JSON.stringify(consent));
-    setIsCookieDrawerOpen(false);
-    pushGtmConsent(analyticsCookies, marketingCookies);
-  };
 
   return (
     <div className="min-h-screen bg-stone-100 text-stone-900 dark:bg-stone-950 dark:text-stone-100 font-sans">
@@ -839,7 +765,7 @@ try {
             <span>•</span>
             <button
               type="button"
-              onClick={() => setIsCookieDrawerOpen(true)}
+              onClick={() => window.dispatchEvent(new Event('open_cookie_banner'))}
               className="text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white underline cursor-pointer"
             >
               {t?.footerCookieSettings}
@@ -848,112 +774,6 @@ try {
         </div>
       </footer>
 
-      {/* GDPR Cookie Banner – Wysoki kontrast */}
-      {!cookieConsent && (
-        <aside
-          aria-label="Cookie consent banner"
-          className="fixed bottom-4 left-3 right-3 sm:left-auto sm:right-4 max-w-md bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-4 sm:p-5 shadow-2xl z-50 space-y-3 sm:space-y-4 text-stone-900 dark:text-stone-100"
-        >
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-2 text-rose-600 dark:text-rose-500 text-sm font-bold">
-              <span>🛡️</span>
-              <h3>{t?.cookieTitle}</h3>
-            </div>
-            <button
-              type="button"
-              onClick={handleAcceptEssential}
-              className="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white text-xs p-1 cursor-pointer"
-            >
-              ✕
-            </button>
-          </div>
-          <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
-            {fixOrphans(t?.cookieDesc)}
-          </p>
-          <div className="flex items-center gap-2 pt-1">
-            <button
-              type="button"
-              onClick={handleAcceptAllCookies}
-              className="flex-1 py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs tracking-wider transition-colors cursor-pointer text-center shadow-sm"
-            >
-              {t?.cookieAcceptAll}
-            </button>
-            <button
-              type="button"
-              onClick={handleAcceptEssential}
-              className="py-2 px-3 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-800 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 font-bold text-xs transition-colors cursor-pointer text-center"
-            >
-              {t?.cookieEssentialOnly}
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsCookieDrawerOpen(true)}
-            className="w-full text-center text-xs font-medium text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white underline cursor-pointer"
-          >
-            {t?.cookieCustomize}
-          </button>
-        </aside>
-      )}
-
-      {/* Cookie Drawer Modal – Wysoki kontrast */}
-      {isCookieDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4">
-          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-5 shadow-2xl text-stone-900 dark:text-stone-100">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-stone-900 dark:text-white flex items-center gap-2">
-                <span>🛡️</span>
-                {t?.cookieDrawerTitle}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsCookieDrawerOpen(false)}
-                className="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white p-1 cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-start justify-between gap-4 p-3 rounded-xl bg-stone-100 border border-stone-200 dark:bg-stone-950 dark:border-stone-800">
-                <div>
-                  <div className="text-xs font-bold text-stone-900 dark:text-stone-200">{t?.cookieAnalytics}</div>
-                  <div className="text-[11px] text-stone-700 dark:text-stone-300 mt-0.5">{fixOrphans(t?.cookieAnalyticsDesc)}</div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={analyticsCookies}
-                  onChange={(e) => setAnalyticsCookies(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded border-stone-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
-                />
-              </div>
-
-              <div className="flex items-start justify-between gap-4 p-3 rounded-xl bg-stone-100 border border-stone-200 dark:bg-stone-950 dark:border-stone-800">
-                <div>
-                  <div className="text-xs font-bold text-stone-900 dark:text-stone-200">{t?.cookieMarketing}</div>
-                  <div className="text-[11px] text-stone-700 dark:text-stone-300 mt-0.5">{fixOrphans(t?.cookieMarketingDesc)}</div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={marketingCookies}
-                  onChange={(e) => setMarketingCookies(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded border-stone-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={handleSaveCookiePreferences}
-                className="w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs tracking-wider transition-colors cursor-pointer shadow-sm"
-              >
-                {t?.cookieSavePreferences}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
