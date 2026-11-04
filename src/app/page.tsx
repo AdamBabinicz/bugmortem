@@ -7,6 +7,7 @@ import { useI18n } from '@/i18n/context';
 import { LegalModal, LegalDocType } from '@/components/legal/LegalModal';
 import { Volume2, VolumeX } from 'lucide-react';
 import { useAudioEngine } from '@/hooks/useAudioEngine';
+import { EcgMonitor, WaveformState } from '@/components/EcgMonitor';
 
 // Bezpieczne rozszerzenie typu zdarzenia na osi czasu
 export interface SafeTimelineEvent extends TimelineEvent {
@@ -38,6 +39,9 @@ export default function Home() {
 
   // Legal Modal State
   const [legalDoc, setLegalDoc] = useState<LegalDocType>(null);
+
+  // ECG waveform display state — flatline until user resurrects the service
+  const [waveformState, setWaveformState] = useState<WaveformState>('flatline');
 
   // Custom Autopsy Modal & Form State
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -110,6 +114,11 @@ export default function Home() {
   const activeSeverity = activeIncident?.severity ?? 'P1';
   const { audioEnabled, toggleAudio, playResurrectionChime } = useAudioEngine(activeSeverity);
 
+  // Reset waveform to flatline whenever the active incident changes
+  useEffect(() => {
+    setWaveformState('flatline');
+  }, [selectedPreset]);
+
   const safeTimeline: SafeTimelineEvent[] = Array.isArray(activeIncident?.timeline)
     ? (activeIncident.timeline as SafeTimelineEvent[])
     : [];
@@ -136,6 +145,7 @@ export default function Home() {
       }
       setIsCopied(true);
       playResurrectionChime();
+      setWaveformState('heartbeat');
       setTimeout(() => setIsCopied(false), 2000);
     } catch {
       // Ignore silently — clipboard unavailable
@@ -374,65 +384,55 @@ try {
           </div>
 
           <div className="z-10 flex flex-col items-start md:items-end gap-3 w-full md:w-auto">
-            <div className="w-full md:w-auto bg-stone-100 border-stone-200 dark:bg-stone-950/80 dark:border-stone-800 rounded-xl p-3 sm:p-4 border flex items-center justify-between md:justify-end gap-4 shadow-inner">
-              {/* ECG Flatline Monitor */}
-              <svg
-                viewBox="0 0 120 32"
-                className="w-24 sm:w-32 h-6 shrink-0"
-                aria-label="ECG vital signs monitor"
-                aria-hidden="true"
-              >
-                <style>{`
-                  @keyframes ecg-scroll {
-                    0%   { stroke-dashoffset: 300; }
-                    100% { stroke-dashoffset: 0; }
-                  }
-                  .ecg-line {
-                    stroke-dasharray: 300;
-                    stroke-dashoffset: 300;
-                    animation: ecg-scroll 2.4s linear infinite;
-                  }
-                `}</style>
-                {/* Flat baseline */}
-                <line x1="0" y1="16" x2="120" y2="16" stroke="currentColor" strokeWidth="0.5" className="text-rose-900/30 dark:text-rose-900/50" />
-                {/* ECG spike path */}
-                <path
-                  className="ecg-line"
-                  d="M0,16 L20,16 L25,16 L28,4 L31,28 L34,10 L37,16 L60,16 L65,16 L68,4 L71,28 L74,10 L77,16 L100,16 L105,16 L108,4 L111,28 L114,10 L117,16 L120,16"
-                  fill="none"
-                  stroke="#ef4444"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            <div className="w-full md:w-auto bg-stone-100 border-stone-200 dark:bg-stone-950/80 dark:border-stone-800 rounded-xl px-3 sm:px-4 py-3 border shadow-inner">
+              {/*
+                HUD layout (single row, left → right):
+                [Speaker toggle]  [ECG — flex-1, fills available space]  [• Status label + value]
+              */}
+              <div className="flex items-center gap-3">
 
-              {/* Audio Telemetry Toggle */}
-              <button
-                type="button"
-                onClick={toggleAudio}
-                aria-label={audioEnabled ? t?.audioToggleDisable : t?.audioToggleEnable}
-                title={audioEnabled ? t?.audioToggleDisable : t?.audioToggleEnable}
-                className={`p-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
-                  audioEnabled
-                    ? 'bg-emerald-100 border-emerald-400 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-950/60 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/60 shadow-[0_0_8px_rgba(16,185,129,0.4)]'
-                    : 'bg-stone-200 border-stone-300 text-stone-500 hover:bg-stone-300 dark:bg-stone-800 dark:border-stone-700 dark:text-stone-400 dark:hover:bg-stone-700'
-                }`}
-              >
-                {audioEnabled
-                  ? <Volume2 className="w-3.5 h-3.5" />
-                  : <VolumeX className="w-3.5 h-3.5" />
-                }
-              </button>
+                {/* ── Audio toggle ── */}
+                <button
+                  type="button"
+                  onClick={toggleAudio}
+                  aria-label={audioEnabled ? t?.audioToggleDisable : t?.audioToggleEnable}
+                  title={audioEnabled ? t?.audioToggleDisable : t?.audioToggleEnable}
+                  className={`p-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
+                    audioEnabled
+                      ? 'bg-emerald-100 border-emerald-400 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-950/60 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/60 shadow-[0_0_8px_rgba(16,185,129,0.35)]'
+                      : 'bg-stone-200 border-stone-300 text-stone-500 hover:bg-stone-300 dark:bg-stone-800 dark:border-stone-700 dark:text-stone-400 dark:hover:bg-stone-700'
+                  }`}
+                >
+                  {audioEnabled
+                    ? <Volume2 className="w-3.5 h-3.5" />
+                    : <VolumeX className="w-3.5 h-3.5" />
+                  }
+                </button>
 
-              <div className="text-left md:text-right">
-                <div className="text-[10px] uppercase font-bold tracking-widest text-stone-700 dark:text-stone-300">
-                  {t?.statusLabel}
+                {/* ── ECG waveform — flex-1 so it expands to fill ── */}
+                <div className="flex-1 min-w-0">
+                  <EcgMonitor state={waveformState} />
                 </div>
-                <div className="text-xs sm:text-sm font-mono font-bold text-rose-600 dark:text-rose-500 flex items-center gap-2">
-                  <span className="inline-block w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_#f43f5e]" />
-                  {t?.statusValue}
+
+                {/* ── Status indicator ── */}
+                <div className="shrink-0 text-right">
+                  <div className="text-[10px] uppercase font-bold tracking-widest text-stone-700 dark:text-stone-300 whitespace-nowrap">
+                    {t?.statusLabel}
+                  </div>
+                  <div className={`text-xs sm:text-sm font-mono font-bold flex items-center justify-end gap-1.5 ${
+                    waveformState === 'heartbeat'
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-rose-600 dark:text-rose-500'
+                  }`}>
+                    <span className={`inline-block w-2 h-2 rounded-full ${
+                      waveformState === 'heartbeat'
+                        ? 'bg-emerald-500 shadow-[0_0_6px_#10b981] animate-pulse'
+                        : 'bg-rose-500 shadow-[0_0_6px_#f43f5e] animate-pulse'
+                    }`} />
+                    {t?.statusValue}
+                  </div>
                 </div>
+
               </div>
             </div>
 

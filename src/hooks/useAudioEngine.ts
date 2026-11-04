@@ -10,7 +10,7 @@ interface UseAudioEngineResult {
   audioEnabled: boolean;
   /** Toggle mute/unmute — also resumes the AudioContext on first user gesture */
   toggleAudio: () => void;
-  /** Fire the resurrection chime (called after copying resurrected code) */
+  /** Fire the resurrection chime AND transition audio from flatline → heartbeat */
   playResurrectionChime: () => void;
 }
 
@@ -24,8 +24,7 @@ export function useAudioEngine(severity: SeverityMode): UseAudioEngineResult {
   const ctxRef = useRef<AudioContext | null>(null);
   const engineRef = useRef<SoundEngine | null>(null);
 
-  // Lazily create (or reuse) the AudioContext — must happen in response to
-  // a user gesture to satisfy browser autoplay policies.
+  // Lazily create (or reuse) the AudioContext — must happen after a user gesture.
   const getContext = useCallback((): AudioContext => {
     if (!ctxRef.current) {
       ctxRef.current = new (window.AudioContext ||
@@ -45,16 +44,14 @@ export function useAudioEngine(severity: SeverityMode): UseAudioEngineResult {
 
   const startSound = useCallback((sev: SeverityMode): void => {
     const engine = getEngine();
-    // Stop whatever was running first
     engine.stopHeartbeat();
     engine.stopFlatline();
 
     if (sev === 'P0') {
       engine.startFlatline();
     } else {
-      // P1, P2, custom incidents — rhythmic heartbeat
-      // P1: 90 bpm (elevated tension), P2: 72 bpm (stable warning)
-      const bpm = sev === 'P1' ? 90 : 72;
+      // P1: 90 bpm (elevated tension), P2 / other: 70 bpm (stable monitor)
+      const bpm = sev === 'P1' ? 90 : 70;
       engine.startHeartbeat(bpm);
     }
   }, [getEngine]);
@@ -65,13 +62,12 @@ export function useAudioEngine(severity: SeverityMode): UseAudioEngineResult {
     engineRef.current.stopFlatline();
   }, []);
 
-  // ── Toggle ───────────────────────────────────────────────────────────────
+  // ── Toggle mute / unmute ─────────────────────────────────────────────────
 
   const toggleAudio = useCallback((): void => {
     const ctx = getContext();
 
     if (!audioEnabled) {
-      // Unmuting: resume context (required after autoplay suspension)
       if (ctx.state === 'suspended') {
         ctx.resume().then(() => startSound(severity));
       } else {
@@ -79,17 +75,13 @@ export function useAudioEngine(severity: SeverityMode): UseAudioEngineResult {
       }
       setAudioEnabled(true);
     } else {
-      // Muting
       stopSound();
-      // Suspend context to free OS audio resources
-      if (ctx.state === 'running') {
-        ctx.suspend();
-      }
+      if (ctx.state === 'running') ctx.suspend();
       setAudioEnabled(false);
     }
   }, [audioEnabled, severity, getContext, startSound, stopSound]);
 
-  // ── React to severity changes while audio is playing ────────────────────
+  // ── React to severity changes while audio is live ────────────────────────
 
   useEffect(() => {
     if (!audioEnabled) return;
@@ -98,13 +90,23 @@ export function useAudioEngine(severity: SeverityMode): UseAudioEngineResult {
     startSound(severity);
   }, [severity, audioEnabled, startSound]);
 
-  // ── Resurrection chime ───────────────────────────────────────────────────
+  // ── Resurrection chime: play chime then cross-fade to heartbeat ──────────
 
   const playResurrectionChime = useCallback((): void => {
     if (!audioEnabled) return;
     const ctx = getContext();
     if (ctx.state === 'suspended') return;
-    getEngine().playResurrectionChime();
+
+    const engine = getEngine();
+    // Stop the flatline immediately, play the chime, then start the heartbeat
+    engine.stopFlatline();
+    engine.playResurrectionChime();
+
+    // Start the healthy heartbeat after the chime's longest note ends (~800 ms)
+    setTimeout(() => {
+      if (!engineRef.current) return;
+      engineRef.current.startHeartbeat(70);
+    }, 800);
   }, [audioEnabled, getContext, getEngine]);
 
   // ── Cleanup on unmount ───────────────────────────────────────────────────
