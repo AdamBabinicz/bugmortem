@@ -49,32 +49,62 @@ export interface CookiesDictionary {
 export interface LegalDictionary {
   modalTitle?: string;
   title?: string;
+  lastUpdated?: string;
+
+  // ── Terms of Service ──────────────────────────────────────────────────────
   terms?: string;
   termsTitle?: string;
-  termsContent?: string;
+  termsScopeHeader?: string;
+  termsScopeText?: string;
   termsGeneralHeader?: string;
   termsGeneralText?: string;
+  termsDisclaimerHeader?: string;
+  termsDisclaimerIntro?: string;
+  termsDisclaimerPoints?: string[];
   termsLiabilityHeader?: string;
   termsLiabilityText?: string;
+  termsLicenseHeader?: string;
+  termsLicenseText?: string;
+  termsLicenseBullets?: string[];
+
+  // ── Privacy Policy ────────────────────────────────────────────────────────
   privacy?: string;
   privacyTitle?: string;
-  privacyContent?: string;
+  privacyArchHeader?: string;
+  privacyArchText?: string;
+  privacyArchBullets?: string[];
   privacyAdminHeader?: string;
   privacyAdminText?: string;
   privacyScopeHeader?: string;
   privacyScopeText?: string;
+  privacyLocalStorageHeader?: string;
+  privacyLocalStorageIntro?: string;
+  privacyLocalStorageKeys?: Array<{ key: string; desc: string }>;
+  privacyNoTrackingHeader?: string;
+  privacyNoTrackingText?: string;
+  privacyNoTrackingBullets?: string[];
+  privacyUserRightsHeader?: string;
+  privacyUserRightsText?: string;
+  privacyUserRightsBullets?: string[];
+  privacyPurgeHeader?: string;
+  privacyPurgeText?: string;
+
+  // ── Cookie Policy ─────────────────────────────────────────────────────────
   cookies?: string;
   cookiesTitle?: string;
-  cookiesContent?: string;
   cookiesUsageHeader?: string;
   cookiesUsageText?: string;
+
+  // legacy / kept for backward compat
+  termsContent?: string;
+  privacyContent?: string;
+  cookiesContent?: string;
   disclaimer?: string;
   disclaimerTitle?: string;
   disclaimerContent?: string;
   gdpr?: string;
   gdprTitle?: string;
   gdprContent?: string;
-  lastUpdated?: string;
   [key: string]: any;
 }
 

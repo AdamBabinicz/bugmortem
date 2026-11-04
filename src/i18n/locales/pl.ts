@@ -89,32 +89,110 @@ export const pl: Dictionary = {
   legal: {
     modalTitle: 'Informacje Prawne i Zgodność',
     title: 'Informacje Prawne',
-    lastUpdated: 'Ostatnia aktualizacja: Listopad 2026',
+    lastUpdated: 'Ostatnia aktualizacja: 4 listopada 2026',
+
+    // ── Regulamin ────────────────────────────────────────────────────────────
     terms: 'Regulamin Serwisu',
     termsTitle: 'Regulamin Użytkowania BugMortem',
-    termsContent: 'BugMortem to otwartoźródłowy symulator sekcji zwłok awarii i generator raportów post-mortem stworzony na hackathon Kiroween 2026. Udostępniany w celach edukacyjnych i prewencji SRE.',
+
+    termsScopeHeader: 'Zakres i Cel Narzędzia',
+    termsScopeText:
+      'BugMortem to forensyczne studio edukacyjne i diagnostyczne SRE zgłoszone na Hackathon Kiroween 2026, organizowany przez AWS & Devpost. Narzędzie umożliwia porównawczą sekcję zwłok incydentów, automatyczne generowanie raportów post-mortem oraz przeglądanie wyselekcjonowanych „Wzorców Wskrzeszenia Kodu" — algorytmicznych wzorców odtwarzania systemów zaczerpniętych z rzeczywistych podręczników SRE.',
+
     termsGeneralHeader: 'Warunki Ogólne',
-    termsGeneralText: 'BugMortem udostępniany jest w stanie, w jakim się znajduje, wyłącznie do celów edukacyjnych i prewencji SRE, jako projekt na hackathon Kiroween 2026. Nie udziela się żadnych gwarancji.',
+    termsGeneralText:
+      'BugMortem jest udostępniany w stanie „takim, jaki jest" i „w miarę dostępności", wyłącznie do celów edukacyjnych i prewencji SRE. Nie udziela się żadnych wyraźnych ani dorozumianych gwarancji — w tym gwarancji przydatności handlowej, przydatności do określonego celu ani nienaruszania praw. Korzystanie z narzędzia w jakimkolwiek kontekście podejmowania decyzji produkcyjnych odbywa się wyłącznie na ryzyko użytkownika.',
+
+    termsDisclaimerHeader: '⚠ Zastrzeżenie Inżynieryjne — Wzorce Wskrzeszenia Kodu',
+    termsDisclaimerIntro:
+      'Wszystkie „Wzorce Wskrzeszenia Kodu" generowane przez BugMortem są algorytmicznymi rekomendacjami naprawczymi produkowanymi przez silnik wspomagany modelem językowym. NIE są to certyfikowane poprawki produkcyjne. Przed wdrożeniem jakiegokolwiek sugerowanego wzorca na środowisko produkcyjne należy:',
+    termsDisclaimerPoints: [
+      'Zwalidować wszystkie wygenerowane łatki w izolowanym środowisku stagingowym lub canary.',
+      'Uzyskać recenzję łatki od kwalifikowanego starszego inżyniera lub SRE przed scaleniem.',
+      'Uruchomić pełny zestaw testów integracyjnych i regresyjnych na usłudze z zastosowaną łatką.',
+      'Traktować kod wygenerowany przez AI tak samo jak niezaufany kod zewnętrzny — przeprowadzić audyt przed uruchomieniem.',
+      'Nigdy nie pomijać bramek CI/CD, bramek wdrożeniowych ani przepływów zatwierdzania wyłącznie na podstawie rekomendacji BugMortem.',
+    ],
+
     termsLiabilityHeader: 'Ograniczenie Odpowiedzialności',
-    termsLiabilityText: 'Autorzy BugMortem nie ponoszą odpowiedzialności za decyzje podjęte na podstawie wygenerowanych raportów post-mortem lub wzorców SRE. Zawsze weryfikuj rozwiązania na środowisku stagingowym.',
+    termsLiabilityText:
+      'W maksymalnym zakresie dozwolonym przez obowiązujące prawo autorzy, współtwórcy i sponsorzy BugMortem nie ponoszą odpowiedzialności za jakiekolwiek bezpośrednie, pośrednie, przypadkowe, następcze ani karne szkody wynikające z polegania na wygenerowanych raportach post-mortem, analizach śladów stosu lub bezpiecznych wzorcach SRE — w tym szkody wynikające z utraty danych, zakłócenia przychodów lub incydentów produkcyjnych.',
+
+    termsLicenseHeader: 'Licencja Open Source i Własność Intelektualna',
+    termsLicenseText:
+      'BugMortem jest wydany na licencji MIT. Możesz swobodnie używać, kopiować, modyfikować, łączyć, publikować, dystrybuować, sublicencjonować i/lub sprzedawać kopie oprogramowania, pod warunkiem spełnienia następujących wymogów:',
+    termsLicenseBullets: [
+      'Informacja o licencji MIT i informacja o prawach autorskich muszą być zawarte we wszystkich kopiach lub istotnych częściach oprogramowania.',
+      'Wszystkie presety incydentów, opisy wzorców SRE i szablony raportów post-mortem zawarte w tym projekcie są oryginalnymi dziełami współtwórców BugMortem.',
+      '„Kiroween" i „AWS" są znakami towarowymi ich odpowiednich właścicieli. BugMortem jest niezależnym zgłoszeniem i nie jest popierany ani powiązany z Amazon Web Services, Inc.',
+    ],
+
+    // ── Polityka Prywatności ─────────────────────────────────────────────────
     privacy: 'Polityka Prywatności',
     privacyTitle: 'Polityka Prywatności i Suwerenność Danych',
-    privacyContent: 'Wszelkie analizy awarii, logi i wygenerowane raporty są przetwarzane lokalnie w pamięci Twojej przeglądarki. Dane telemetryczne nie są przekazywane podmiotom trzecim.',
+
+    privacyArchHeader: 'Zero Wycieku Danych — Architektura Local-First',
+    privacyArchText:
+      'BugMortem jest zbudowany na ścisłym modelu local-first bez ruchu wychodzącego. Całe przetwarzanie — parsowanie śladów stosu, generowanie sekcji zwłok, renderowanie raportów post-mortem — odbywa się wyłącznie w środowisku JavaScript Twojej przeglądarki. Żadne dane nigdy nie opuszczają Twojego urządzenia.',
+    privacyArchBullets: [
+      'Surowe logi incydentów i ślady stosu istnieją wyłącznie w pamięci sterty JavaScript podczas sesji i nigdy nie są serializowane do zdalnego punktu końcowego.',
+      'Własne sekcje zwłok incydentów, które zapisujesz, są zapisywane wyłącznie w localStorage Twojej przeglądarki — nie na żadnym serwerze, w bazie danych ani w pamięci chmurowej.',
+      'Eksporty Markdown raportów post-mortem są generowane po stronie klienta i pobierane bezpośrednio do Twojego systemu plików.',
+      'Żadne wywołanie WebSocket, XHR ani fetch nie jest kierowane do żadnego punktu końcowego analityki, telemetrii ani logowania.',
+      'Żaden service worker nie przechwytuje ani nie buforuje Twoich danych incydentów.',
+    ],
+
     privacyAdminHeader: 'Administrator Danych',
-    privacyAdminText: 'BugMortem przetwarza wszystkie dane wyłącznie w lokalnej pamięci przeglądarki. Żadne dane osobowe nie są przekazywane na zewnętrzne serwery.',
+    privacyAdminText:
+      'Ponieważ BugMortem przetwarza wszystkie dane wyłącznie w lokalnym środowisku Twojej przeglądarki, jesteś jedynym administratorem i podmiotem przetwarzającym własne dane incydentów. Zespół projektu BugMortem nie otrzymuje, nie przechowuje ani nie ma dostępu do żadnych danych wprowadzonych do aplikacji.',
+
     privacyScopeHeader: 'Zakres Przetwarzania Danych',
-    privacyScopeText: 'Jedynie tytuły awarii, zrzuty stosu i notatki sekcji zwłok są przechowywane lokalnie. Dane nie są udostępniane podmiotom trzecim.',
+    privacyScopeText:
+      'Aplikacja przetwarza wyłącznie dane jawnie podane przez użytkownika: tytuły incydentów, fragmenty śladów stosu, fragmenty kodu i notatki sekcji zwłok. Dane te są wykorzystywane wyłącznie do renderowania interfejsu użytkownika w przeglądarce i generowania plików Markdown do pobrania. Nigdy nie są przesyłane, udostępniane ani sprzedawane.',
+
+    privacyLocalStorageHeader: 'Dokładne Klucze localStorage',
+    privacyLocalStorageIntro:
+      'BugMortem zapisuje dane pod następującymi kluczami localStorage w Twojej przeglądarce. Możesz je w każdej chwili sprawdzić i usunąć za pomocą DevTools → Aplikacja → Lokalne Przechowywanie:',
+    privacyLocalStorageKeys: [
+      { key: 'bm_cookie_consent',           desc: 'Przechowuje Twoje preferencje dotyczące plików cookie/przechowywania (zaakceptowane, niezbędne lub własny obiekt JSON). Ustawiane przy pierwszej wizycie.' },
+      { key: 'bugmortem_custom_incidents',   desc: 'Tablica JSON własnych sekcji zwłok incydentów, które utworzyłeś i zapisałeś. Nigdy nie synchronizowana zewnętrznie.' },
+      { key: 'bugmortem_locale',             desc: 'Wybrany język interfejsu ("en" lub "pl"). Domyślnie "pl", jeśli nie ustawiono.' },
+      { key: 'bm_theme',                     desc: 'Wybrany motyw kolorystyczny ("dark" lub "light"). Utrzymywany między sesjami.' },
+    ],
+
+    privacyNoTrackingHeader: 'Brak Telemetrii Podmiotów Trzecich, Reklam i Trackerów',
+    privacyNoTrackingText:
+      'BugMortem nie zawiera żadnych zewnętrznych skryptów śledzących, reklamowych ani analitycznych. Poniższe rozwiązania są jawnie nieobecne w aplikacji:',
+    privacyNoTrackingBullets: [
+      'Brak Google Analytics, Google Tag Manager ani Firebase Analytics.',
+      'Brak Meta Pixel, LinkedIn Insight Tag ani żadnego trackera mediów społecznościowych.',
+      'Brak Hotjar, FullStory, Heap, Mixpanel, Segment ani żadnego SDK analityki behawioralnej.',
+      'Brak Sentry, Datadog RUM ani żadnego beacona monitorowania błędów przesyłającego ślady stosu na zewnątrz.',
+      'Brak sieci reklamowych, platform DSP ani pikseli retargetingowych.',
+      'Brak hostowanych zewnętrznie czcionek ani zasobów generujących żądania do podmiotów trzecich (wszystkie zasoby są hostowane lokalnie lub wbudowane).',
+    ],
+
+    privacyUserRightsHeader: 'Twoje Prawa — RODO i CCPA',
+    privacyUserRightsText:
+      'Ponieważ BugMortem jest w pełni aplikacją local-first bez serwerowego przechowywania danych, zespół projektu BugMortem nie posiada żadnych danych osobowych do udostępnienia, poprawienia ani usunięcia na Twoje żądanie. Niemniej jednak posiadasz następujące prawa dotyczące danych przechowywanych w Twojej przeglądarce:',
+    privacyUserRightsBullets: [
+      'Prawo dostępu — Otwórz DevTools → Aplikacja → Lokalne Przechowywanie, aby w każdej chwili wyświetlić wszystkie zapisane klucze i wartości.',
+      'Prawo do usunięcia — Usuń natychmiastowo wszystkie dane BugMortem za pomocą funkcji jednym kliknięciem opisanej poniżej lub przez DevTools.',
+      'Prawo do przenoszenia danych — Eksportuj dowolny incydent jako plik Markdown za pomocą przycisku „Eksportuj Raport do Markdown".',
+      'Prawo do wycofania zgody — Zaktualizuj lub wycofaj preferencje przechowywania za pomocą przycisku „Ustawienia Cookies" w stopce w dowolnym momencie.',
+      'CCPA — BugMortem nie „sprzedaje" danych osobowych, ponieważ nie gromadzi ani nie przechowuje danych osobowych na żadnym serwerze.',
+    ],
+
+    privacyPurgeHeader: 'Jednorazowe Czyszczenie Danych Lokalnych',
+    privacyPurgeText:
+      'Aby trwale usunąć wszystkie dane BugMortem z przeglądarki, otwórz DevTools przeglądarki (F12), przejdź do Aplikacja → Lokalne Przechowywanie → Twoja domena i usuń wszystkie klucze z prefiksem „bm_" lub „bugmortem_". Ewentualnie wyczyszczenie danych witryny dla tej domeny usuwa wszystkie przechowywane dane natychmiastowo.',
+
+    // ── Polityka Cookies ─────────────────────────────────────────────────────
     cookies: 'Polityka Cookies',
-    cookiesTitle: 'Polityka Cookies i Pamięci Podręcznej',
-    cookiesContent: 'Aplikacja wykorzystuje wyłącznie pamięć podręczną localStorage do zachowania motywu, szkiców awarii oraz historii wygenerowanych raportów.',
+    cookiesTitle: 'Polityka Cookies i Pamięci Lokalnej',
     cookiesUsageHeader: 'Użycie Pamięci Lokalnej',
-    cookiesUsageText: 'BugMortem używa localStorage dla: preferencji motywu (bm_theme), języka (bugmortem_locale), zgody na cookies (bm_cookie_consent) oraz własnych sekcji zwłok (bugmortem_custom_incidents). Żadne pliki cookie nie są ustawiane.',
-    disclaimer: 'Zastrzeżenia Inżynieryjne',
-    disclaimerTitle: 'Zastrzeżenia Inżynieryjne SRE',
-    disclaimerContent: 'Automatycznie generowane bezpieczne wzorce i procedury naprawcze stanowią rekomendacje inżynieryjne. Przed wdrożeniem skryptów na produkcję należy przetestować je na środowisku stagingowym.',
-    gdpr: 'RODO',
-    gdprTitle: 'Ochrona Danych Osobowych (RODO)',
-    gdprContent: 'BugMortem jest w pełni zgodny z zasadami RODO/GDPR. Użytkownik zachowuje pełną kontrolę nad generowanymi raportami markdown i lokalną historią.',
+    cookiesUsageText:
+      'BugMortem nie ustawia plików cookie HTTP. Wykorzystuje wyłącznie localStorage przeglądarki. Cztery klucze udokumentowane powyżej w Polityce Prywatności stanowią kompletną i wyczerpującą listę wszystkich danych zapisywanych przez tę aplikację w pamięci przeglądarki.',
   },
 
   presets: {
