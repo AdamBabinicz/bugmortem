@@ -5,7 +5,7 @@ import { IncidentPreset, TimelineEvent } from '../i18n/types';
 import { useTheme } from '@/context/ThemeContext';
 import { useI18n } from '@/i18n/context';
 import { LegalModal, LegalDocType } from '@/components/legal/LegalModal';
-import { Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX, Sun, Moon } from 'lucide-react';
 import { useAudioEngine } from '@/hooks/useAudioEngine';
 import { EcgMonitor, WaveformState } from '@/components/EcgMonitor';
 
@@ -354,13 +354,13 @@ try {
             </div>
           </div>
 
-          {/* Controls: Language + Theme */}
+          {/* Controls: Language + Theme (Zsynchronizowana wysokość i wyraźna ikona) */}
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-            <div className="flex items-center bg-stone-200 dark:bg-stone-800 rounded-lg p-0.5 sm:p-1 border border-stone-300 dark:border-stone-700 text-xs font-semibold">
+            <div className="h-8 sm:h-9 flex items-center bg-stone-200 dark:bg-stone-800 rounded-lg p-0.5 sm:p-1 border border-stone-300 dark:border-stone-700 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => changeLocale('pl')}
-                className={`px-2 sm:px-2.5 py-1 rounded transition-colors cursor-pointer ${
+                className={`h-full flex items-center px-2 sm:px-2.5 rounded transition-colors cursor-pointer ${
                   locale === 'pl'
                     ? 'bg-rose-600 text-white font-bold shadow-sm'
                     : 'text-stone-800 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white'
@@ -372,7 +372,7 @@ try {
               <button
                 type="button"
                 onClick={() => changeLocale('en')}
-                className={`px-2 sm:px-2.5 py-1 rounded transition-colors cursor-pointer ${
+                className={`h-full flex items-center px-2 sm:px-2.5 rounded transition-colors cursor-pointer ${
                   locale === 'en'
                     ? 'bg-rose-600 text-white font-bold shadow-sm'
                     : 'text-stone-800 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white'
@@ -387,9 +387,13 @@ try {
               type="button"
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className="p-1.5 sm:p-2 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 transition-colors cursor-pointer shadow-sm text-sm"
+              className="h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-700 hover:text-stone-950 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-amber-400 dark:hover:text-amber-300 dark:border-stone-700 transition-colors cursor-pointer shadow-sm"
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-stone-700" />
+              )}
             </button>
           </div>
         </div>
