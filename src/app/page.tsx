@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { IncidentPreset, TimelineEvent } from '../i18n/types';
 import { useTheme } from '@/context/ThemeContext';
 import { useI18n } from '@/i18n/context';
@@ -19,7 +19,6 @@ export function fixOrphans(text: string): string {
   if (!text || typeof text !== 'string') return text;
   return text.replace(/(^|\s)([aiouwz]|do|na|od|po|ze|we|za|co|że|to)(\s+)/gi, '$1$2\u00A0');
 }
-
 
 export default function Home() {
   // Global Theme Context
@@ -45,6 +44,10 @@ export default function Home() {
 
   // Custom Autopsy Modal & Form State
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const [analysisStep, setAnalysisStep] = useState<number>(0);
+  const [newIncidentNotice, setNewIncidentNotice] = useState<string>('');
+
   const [formTitle, setFormTitle] = useState<string>('');
   const [formCategory, setFormCategory] = useState<'frontend' | 'backend' | 'database' | 'infra'>('frontend');
   const [formSeverity, setFormSeverity] = useState<'P0' | 'P1' | 'P2'>('P0');
@@ -52,6 +55,9 @@ export default function Home() {
   const [formStackTrace, setFormStackTrace] = useState<string>('');
   const [formResurrectedCode, setFormResurrectedCode] = useState<string>('');
   const [formError, setFormError] = useState<string>('');
+
+  // Ref do sekcji kodu dla płynnego scrollowania
+  const codeSectionRef = useRef<HTMLElement | null>(null);
 
   // Inicjalizacja z localStorage oraz bezpieczna kalkulacja daty
   useEffect(() => {
@@ -110,22 +116,19 @@ export default function Home() {
     defaultFallback;
 
   // Audio synthesizer — muted by default (browser autoplay policy).
-  // Severity drives the sound program: P0 = flatline drone, P1/P2 = heartbeat.
   const activeSeverity = activeIncident?.severity ?? 'P1';
   const { audioEnabled, toggleAudio, playResurrectionChime } = useAudioEngine(activeSeverity);
 
   // Sync waveform to incident severity whenever the selected preset changes.
-  // P0 → flatline (dead), P1/P2/other → p1-heartbeat (active warning).
-  // The 'resurrected' state is only set by the copy action and cleared here.
   useEffect(() => {
-    const sev = activeIncident?.severity ?? '';
-    if (sev === 'P0') {
+    const sev = String(activeIncident?.severity || '').trim().toUpperCase();
+    if (sev === 'P0' || sev.includes('P0')) {
       setWaveformState('flatline');
     } else {
       setWaveformState('p1-heartbeat');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPreset]);
+  }, [selectedPreset, activeIncident]);
 
   const safeTimeline: SafeTimelineEvent[] = Array.isArray(activeIncident?.timeline)
     ? (activeIncident.timeline as SafeTimelineEvent[])
@@ -141,7 +144,6 @@ export default function Home() {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(activeIncident.resurrectedCode);
       } else {
-        // Fallback for HTTP / non-secure contexts
         const textarea = document.createElement('textarea');
         textarea.value = activeIncident.resurrectedCode;
         textarea.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
@@ -156,7 +158,7 @@ export default function Home() {
       setWaveformState('resurrected');
       setTimeout(() => setIsCopied(false), 2000);
     } catch {
-      // Ignore silently — clipboard unavailable
+      // Ignore silently
     }
   };
 
@@ -230,35 +232,33 @@ ${activeIncident.resurrectedCode || ''}
       return;
     }
 
-    const customId = `custom-${Date.now()}`;
-    const now = new Date();
-    const timeStr = now.toTimeString().split(' ')[0];
+    setFormError('');
+    setIsAnalyzing(true);
+    setAnalysisStep(1);
 
-    // Bezpieczne ustalenie kategorii bez zagnieżdżonych operatorów trójargumentowych
-    let categoryBadge = 'Frontend';
-    if (formCategory === 'frontend') {
-      categoryBadge = t?.categoryFrontend || 'Frontend';
-    } else if (formCategory === 'backend') {
-      categoryBadge = t?.categoryBackend || 'Backend';
-    } else if (formCategory === 'database') {
-      categoryBadge = t?.categoryDatabase || 'Database';
-    } else {
-      categoryBadge = t?.categoryInfra || 'Infra';
-    }
+    // Sekwencja kinematograficznego skanowania w modalu
+    setTimeout(() => setAnalysisStep(2), 500);
+    setTimeout(() => setAnalysisStep(3), 1100);
 
-    // Bezpieczne ustalenie priorytetu
-    let severityLabel = 'Major (P2)';
-    if (formSeverity === 'P0') {
-      severityLabel = t?.severityP0 || 'Fatal (P0)';
-    } else if (formSeverity === 'P1') {
-      severityLabel = t?.severityP1 || 'Critical (P1)';
-    } else {
-      severityLabel = t?.severityP2 || 'Major (P2)';
-    }
+    setTimeout(() => {
+      const customId = `custom-${Date.now()}`;
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
 
-    const fallbackResurrected =
-      formResurrectedCode.trim() ||
-      `// ✅ RESURRECTED SRE PATTERN (Auto-Generated Fallback)
+      let categoryBadge = 'Frontend';
+      if (formCategory === 'frontend') {
+        categoryBadge = t?.categoryFrontend || 'Frontend';
+      } else if (formCategory === 'backend') {
+        categoryBadge = t?.categoryBackend || 'Backend';
+      } else if (formCategory === 'database') {
+        categoryBadge = t?.categoryDatabase || 'Database';
+      } else {
+        categoryBadge = t?.categoryInfra || 'Infra';
+      }
+
+      const fallbackResurrected =
+        formResurrectedCode.trim() ||
+        `// ✅ RESURRECTED SRE PATTERN (Auto-Generated Fallback)
 try {
   await executeWithCircuitBreaker(async () => {
     ${formCrashedCode.trim() ? formCrashedCode.split('\n').map((l) => `  ${l}`).join('\n') : '  // Execute protected workload'}
@@ -269,49 +269,70 @@ try {
   return fallbackResponse();
 }`;
 
-    const customTimeline: SafeTimelineEvent[] = [
-      { time: timeStr, desc: `${categoryBadge} anomaly initiated under active workload` },
-      { time: `${timeStr}.250`, desc: `Exception bubbled up to runtime boundary`, isFatal: true },
-      { time: `${timeStr}.500`, desc: `Fatal crash handler terminated process execution`, isFatal: true }
-    ];
+      const customTimeline: SafeTimelineEvent[] = [
+        { time: timeStr, desc: `${categoryBadge} anomaly initiated under active workload` },
+        { time: `${timeStr}.250`, desc: `Exception bubbled up to runtime boundary`, isFatal: true },
+        { time: `${timeStr}.500`, desc: `Fatal crash handler terminated process execution`, isFatal: true }
+      ];
 
-    const newIncident: IncidentPreset = {
-      id: customId,
-      badge: categoryBadge,
-      severity: (severityLabel as any) || formSeverity,
-      title: formTitle.trim(),
-      desc: formStackTrace.split('\n')[0].slice(0, 140) || formTitle.trim(),
-      crashedCode: formCrashedCode.trim() || `// ❌ CRASH STATE\n${formStackTrace.slice(0, 300)}`,
-      resurrectedCode: fallbackResurrected,
-      stackTrace: formStackTrace.trim(),
-      timeline: customTimeline as any,
-      postMortemReport: {
-        summary: `${severityLabel} incident in ${categoryBadge}: ${formTitle.trim()}. Captured via live autopsy ingestion.`,
-        impact: `Service interruption detected. Immediate mitigation executed via SRE safety guardrails.`,
-        actionItems: [
-          `Review stack trace root cause in ${categoryBadge} subsystem.`,
-          `Implement automated canary regression testing in deployment pipeline.`,
-          `Harden error boundaries and apply circuit breaker patterns.`
-        ]
-      }
-    };
+      const newIncident: IncidentPreset = {
+        id: customId,
+        badge: categoryBadge,
+        severity: formSeverity, // Czysty kod 'P0' / 'P1' / 'P2' dla bezbłędnej synchronizacji EKG
+        title: formTitle.trim(),
+        desc: formStackTrace.split('\n')[0].slice(0, 140) || formTitle.trim(),
+        crashedCode: formCrashedCode.trim() || `// ❌ CRASH STATE\n${formStackTrace.slice(0, 300)}`,
+        resurrectedCode: fallbackResurrected,
+        stackTrace: formStackTrace.trim(),
+        timeline: customTimeline as any,
+        postMortemReport: {
+          summary: `${formSeverity} incident in ${categoryBadge}: ${formTitle.trim()}. Captured via live autopsy ingestion.`,
+          impact: `Service interruption detected. Immediate mitigation executed via SRE safety guardrails.`,
+          actionItems: [
+            `Review stack trace root cause in ${categoryBadge} subsystem.`,
+            `Implement automated canary regression testing in deployment pipeline.`,
+            `Harden error boundaries and apply circuit breaker patterns.`
+          ]
+        }
+      };
 
-    const updatedCustom = { ...customIncidents, [customId]: newIncident };
-    setCustomIncidents(updatedCustom);
-    localStorage.setItem('bugmortem_custom_incidents', JSON.stringify(updatedCustom));
+      const updatedCustom = { ...customIncidents, [customId]: newIncident };
+      setCustomIncidents(updatedCustom);
+      localStorage.setItem('bugmortem_custom_incidents', JSON.stringify(updatedCustom));
 
-    setSelectedPreset(customId);
-    setIsModalOpen(false);
-    setFormTitle('');
-    setFormCrashedCode('');
-    setFormStackTrace('');
-    setFormResurrectedCode('');
-    setFormError('');
+      setSelectedPreset(customId);
+      setIsAnalyzing(false);
+      setIsModalOpen(false);
+
+      // Reset formularza
+      setFormTitle('');
+      setFormCrashedCode('');
+      setFormStackTrace('');
+      setFormResurrectedCode('');
+      setFormError('');
+
+      // Komunikat sukcesu i płynne przewinięcie ekranu do sekcji kodu
+      setNewIncidentNotice(newIncident.title);
+      setTimeout(() => setNewIncidentNotice(''), 5000);
+
+      setTimeout(() => {
+        codeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }, 1600);
   };
-
 
   return (
     <div className="min-h-screen bg-stone-100 text-stone-900 dark:bg-stone-950 dark:text-stone-100 font-sans">
+      {/* Banner informacyjny po pomyślnej sekcji zwłok */}
+      {newIncidentNotice && (
+        <div className="bg-rose-600 text-white px-4 py-2 text-xs font-mono font-bold text-center flex items-center justify-center gap-2 shadow-lg sticky top-0 z-50 animate-bounce">
+          <span>💀</span>
+          <span>{locale === 'pl' ? 'SEKCJA ZWŁOK UKOŃCZONA:' : 'AUTOPSY COMPLETED:'}</span>
+          <span className="underline">{newIncidentNotice}</span>
+          <span>— {locale === 'pl' ? 'Zarejestrowano w protokole kostnicy.' : 'Registered in morgue protocol.'}</span>
+        </div>
+      )}
+
       {/* Top Navigation */}
       <header className="border-b border-stone-200 bg-white/80 dark:border-stone-800 dark:bg-stone-900/80 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
@@ -393,13 +414,8 @@ try {
 
           <div className="z-10 flex flex-col items-start md:items-end gap-3 w-full md:w-auto">
             <div className="w-full md:w-auto bg-stone-100 border-stone-200 dark:bg-stone-950/80 dark:border-stone-800 rounded-xl px-3 sm:px-4 py-3 border shadow-inner">
-              {/*
-                HUD layout (single row, left → right):
-                [Speaker toggle]  [ECG — flex-1, fills available space]  [• Status label + value]
-              */}
               <div className="flex items-center gap-3">
-
-                {/* ── Audio toggle ── */}
+                {/* Audio toggle */}
                 <button
                   type="button"
                   onClick={toggleAudio}
@@ -411,18 +427,15 @@ try {
                       : 'bg-stone-200 border-stone-300 text-stone-500 hover:bg-stone-300 dark:bg-stone-800 dark:border-stone-700 dark:text-stone-400 dark:hover:bg-stone-700'
                   }`}
                 >
-                  {audioEnabled
-                    ? <Volume2 className="w-3.5 h-3.5" />
-                    : <VolumeX className="w-3.5 h-3.5" />
-                  }
+                  {audioEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
                 </button>
 
-                {/* ── ECG waveform — flex-1 so it expands to fill ── */}
+                {/* ECG waveform */}
                 <div className="flex-1 min-w-0">
                   <EcgMonitor state={waveformState} />
                 </div>
 
-                {/* ── Status indicator ── */}
+                {/* Status indicator */}
                 <div className="shrink-0 text-right">
                   <div className="text-[10px] uppercase font-bold tracking-widest text-stone-700 dark:text-stone-300 whitespace-nowrap">
                     {t?.statusLabel}
@@ -450,7 +463,6 @@ try {
                     </span>
                   </div>
                 </div>
-
               </div>
             </div>
 
@@ -465,7 +477,7 @@ try {
           </div>
         </div>
 
-        {/* Preset Cards & Case Selection – W3C HTML5 Valid (Phrasing Content inside Button) */}
+        {/* Preset Cards & Case Selection */}
         <section className="space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300">
@@ -477,6 +489,7 @@ try {
             {Object.entries(allIncidents).map(([incidentKey, incident], idx) => {
               const incidentId = incident?.id || incidentKey;
               const isSelected = selectedPreset === incidentId;
+              const isCustom = incidentId.startsWith('custom-');
               return (
                 <button
                   key={`incident-${incidentId}-${idx}`}
@@ -484,13 +497,14 @@ try {
                   onClick={() => setSelectedPreset(incidentId)}
                   className={`text-left p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-rose-50/80 border-rose-500 shadow-md ring-1 ring-rose-500/50 dark:bg-stone-900 dark:border-rose-500 dark:shadow-lg dark:shadow-rose-950/30'
+                      ? 'bg-rose-50/80 border-rose-500 shadow-md ring-2 ring-rose-500/60 dark:bg-stone-900 dark:border-rose-500 dark:shadow-lg dark:shadow-rose-950/40'
                       : 'bg-white border-stone-200 hover:border-stone-300 hover:bg-stone-50 dark:bg-stone-900/40 dark:border-stone-800/80 dark:hover:border-stone-700 dark:hover:bg-stone-900/80'
-                  }`}
+                  } ${isCustom ? 'border-dashed' : ''}`}
                 >
                   <span className="block space-y-2 w-full">
                     <span className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                        {isCustom && <span>⚡</span>}
                         {incident?.badge}
                       </span>
                       <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-stone-100 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700">
@@ -512,8 +526,10 @@ try {
 
         {/* Side-by-Side Code Autopsy */}
         <section
+          ref={codeSectionRef}
+          id="code-autopsy-section"
           style={{ contentVisibility: 'auto', containIntrinsicSize: '450px' }}
-          className="space-y-3 sm:space-y-4"
+          className="space-y-3 sm:space-y-4 pt-2"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
@@ -665,7 +681,7 @@ try {
         <LegalModal docType={legalDoc} onClose={() => setLegalDoc(null)} />
       )}
 
-      {/* Custom Autopsy Modal */}
+      {/* Custom Autopsy Modal z Kinematograficznym Skanerem */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
           <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-2xl w-full p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-2xl relative my-6 text-stone-900 dark:text-stone-100">
@@ -679,13 +695,15 @@ try {
                   {fixOrphans(t?.customModalSubtitle)}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white text-lg p-1 cursor-pointer"
-              >
-                ✕
-              </button>
+              {!isAnalyzing && (
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white text-lg p-1 cursor-pointer"
+                >
+                  ✕
+                </button>
+              )}
             </div>
 
             {formError && (
@@ -694,114 +712,138 @@ try {
               </div>
             )}
 
-            <form onSubmit={handleCreateCustomAutopsy} className="space-y-4">
-              <div>
-                <label htmlFor="formTitle" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
-                  {t?.fieldIncidentTitle} *
-                </label>
-                <input
-                  id="formTitle"
-                  type="text"
-                  value={formTitle}
-                  onChange={(e) => setFormTitle(e.target.value)}
-                  placeholder={t?.fieldIncidentTitlePlaceholder}
-                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 placeholder-stone-500 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 dark:placeholder-stone-500 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
-                />
+            {/* Ekran ładowania / animacji sekcji zwłok */}
+            {isAnalyzing ? (
+              <div className="py-12 space-y-6 text-center font-mono">
+                <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-full border-4 border-rose-500/20 animate-ping" />
+                  <div className="w-16 h-16 rounded-full border-4 border-t-rose-500 border-r-rose-500/40 border-b-rose-500/10 border-l-rose-500/80 animate-spin" />
+                  <span className="text-2xl absolute">💀</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-sm font-bold text-rose-600 dark:text-rose-400 tracking-wider uppercase animate-pulse">
+                    {analysisStep === 1 && (locale === 'pl' ? '⚡ Izolowanie Pacjenta Zero i parsowanie śladu stosu...' : '⚡ Isolating Patient Zero & parsing stack trace...')}
+                    {analysisStep === 2 && (locale === 'pl' ? '🔬 Analiza przyczyn źródłowych (RCA) & synteza wzorca SRE...' : '🔬 Analyzing Root Cause & synthesizing SRE mitigation...')}
+                    {analysisStep === 3 && (locale === 'pl' ? '💀 Sekcja zwłok ukończona. Przenoszenie do prosektorium...' : '💀 Autopsy complete. Ingesting into morgue archive...')}
+                  </div>
+                  <div className="w-64 h-1.5 bg-stone-200 dark:bg-stone-800 rounded-full mx-auto overflow-hidden">
+                    <div className={`h-full bg-rose-500 transition-all duration-500 ${
+                      analysisStep === 1 ? 'w-1/3' : analysisStep === 2 ? 'w-2/3' : 'w-full'
+                    }`} />
+                  </div>
+                </div>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            ) : (
+              <form onSubmit={handleCreateCustomAutopsy} className="space-y-4">
                 <div>
-                  <label htmlFor="formCategory" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
-                    {t?.fieldCategory}
+                  <label htmlFor="formTitle" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
+                    {t?.fieldIncidentTitle} *
                   </label>
-                  <select
-                    id="formCategory"
-                    value={formCategory}
-                    onChange={(e) => setFormCategory(e.target.value as any)}
-                    className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
-                  >
-                    <option value="frontend">{t?.categoryFrontend}</option>
-                    <option value="backend">{t?.categoryBackend}</option>
-                    <option value="database">{t?.categoryDatabase}</option>
-                    <option value="infra">{t?.categoryInfra}</option>
-                  </select>
+                  <input
+                    id="formTitle"
+                    type="text"
+                    value={formTitle}
+                    onChange={(e) => setFormTitle(e.target.value)}
+                    placeholder={t?.fieldIncidentTitlePlaceholder}
+                    className="w-full bg-stone-50 border border-stone-300 text-stone-900 placeholder-stone-500 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 dark:placeholder-stone-500 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="formCategory" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
+                      {t?.fieldCategory}
+                    </label>
+                    <select
+                      id="formCategory"
+                      value={formCategory}
+                      onChange={(e) => setFormCategory(e.target.value as any)}
+                      className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
+                    >
+                      <option value="frontend">{t?.categoryFrontend}</option>
+                      <option value="backend">{t?.categoryBackend}</option>
+                      <option value="database">{t?.categoryDatabase}</option>
+                      <option value="infra">{t?.categoryInfra}</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="formSeverity" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
+                      {t?.fieldSeverity}
+                    </label>
+                    <select
+                      id="formSeverity"
+                      value={formSeverity}
+                      onChange={(e) => setFormSeverity(e.target.value as any)}
+                      className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
+                    >
+                      <option value="P0">{t?.severityP0}</option>
+                      <option value="P1">{t?.severityP1}</option>
+                      <option value="P2">{t?.severityP2}</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div>
-                  <label htmlFor="formSeverity" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
-                    {t?.fieldSeverity}
+                  <label htmlFor="formStackTrace" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
+                    {t?.fieldStackTrace} *
                   </label>
-                  <select
-                    id="formSeverity"
-                    value={formSeverity}
-                    onChange={(e) => setFormSeverity(e.target.value as any)}
-                    className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-rose-500"
-                  >
-                    <option value="P0">{t?.severityP0}</option>
-                    <option value="P1">{t?.severityP1}</option>
-                    <option value="P2">{t?.severityP2}</option>
-                  </select>
+                  <textarea
+                    id="formStackTrace"
+                    rows={4}
+                    value={formStackTrace}
+                    onChange={(e) => setFormStackTrace(e.target.value)}
+                    placeholder={t?.fieldStackTracePlaceholder}
+                    className="w-full bg-stone-900 border border-stone-800 rounded-lg p-3 font-mono text-xs text-rose-300 placeholder-stone-400 focus:outline-none focus:border-rose-500"
+                  />
                 </div>
-              </div>
 
-              <div>
-                <label htmlFor="formStackTrace" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
-                  {t?.fieldStackTrace} *
-                </label>
-                <textarea
-                  id="formStackTrace"
-                  rows={4}
-                  value={formStackTrace}
-                  onChange={(e) => setFormStackTrace(e.target.value)}
-                  placeholder={t?.fieldStackTracePlaceholder}
-                  className="w-full bg-stone-900 border border-stone-800 rounded-lg p-3 font-mono text-xs text-rose-300 placeholder-stone-400 focus:outline-none focus:border-rose-500"
-                />
-              </div>
+                <div>
+                  <label htmlFor="formCrashedCode" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
+                    {t?.fieldCrashedCode}
+                  </label>
+                  <textarea
+                    id="formCrashedCode"
+                    rows={3}
+                    value={formCrashedCode}
+                    onChange={(e) => setFormCrashedCode(e.target.value)}
+                    placeholder={t?.fieldCrashedCodePlaceholder}
+                    className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-200 placeholder-stone-500 dark:placeholder-stone-500 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-rose-500"
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="formCrashedCode" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
-                  {t?.fieldCrashedCode}
-                </label>
-                <textarea
-                  id="formCrashedCode"
-                  rows={3}
-                  value={formCrashedCode}
-                  onChange={(e) => setFormCrashedCode(e.target.value)}
-                  placeholder={t?.fieldCrashedCodePlaceholder}
-                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-200 placeholder-stone-500 dark:placeholder-stone-500 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-rose-500"
-                />
-              </div>
+                <div>
+                  <label htmlFor="formResurrectedCode" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
+                    {t?.fieldResurrectedCode}
+                  </label>
+                  <textarea
+                    id="formResurrectedCode"
+                    rows={3}
+                    value={formResurrectedCode}
+                    onChange={(e) => setFormResurrectedCode(e.target.value)}
+                    placeholder={t?.fieldResurrectedCodePlaceholder}
+                    className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-emerald-300 placeholder-stone-500 dark:placeholder-stone-500 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="formResurrectedCode" className="block text-xs font-mono font-bold uppercase text-stone-800 dark:text-stone-200 mb-1">
-                  {t?.fieldResurrectedCode}
-                </label>
-                <textarea
-                  id="formResurrectedCode"
-                  rows={3}
-                  value={formResurrectedCode}
-                  onChange={(e) => setFormResurrectedCode(e.target.value)}
-                  placeholder={t?.fieldResurrectedCodePlaceholder}
-                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-emerald-300 placeholder-stone-500 dark:placeholder-stone-500 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white cursor-pointer"
-                >
-                  {t?.btnCancel}
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 dark:shadow-rose-900/40 border border-rose-400/30 cursor-pointer"
-                >
-                  {t?.btnAnalyzeAndGenerate}
-                </button>
-              </div>
-            </form>
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white cursor-pointer"
+                  >
+                    {t?.btnCancel}
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 dark:shadow-rose-900/40 border border-rose-400/30 cursor-pointer flex items-center gap-2"
+                  >
+                    <span>⚡</span>
+                    {t?.btnAnalyzeAndGenerate}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}
@@ -839,7 +881,6 @@ try {
           </div>
         </div>
       </footer>
-
     </div>
   );
 }
