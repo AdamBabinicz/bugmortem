@@ -585,21 +585,23 @@ try {
           </div>
         </section>
 
-        {/* Stack Trace & Timeline */}
+        {/* Stack Trace & Timeline (Zsynchronizowany wygląd w motywie jasnym i ciemnym) */}
         <div
           style={{ contentVisibility: 'auto', containIntrinsicSize: '350px' }}
           className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6"
         >
+          {/* Surowy Ślad Stosu */}
           <section className="space-y-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
               <span>&gt;_</span>
               {t?.stackTraceTitle}
             </h2>
-            <div className="rounded-xl border border-stone-800 bg-stone-950 p-3 sm:p-4 font-mono text-xs text-rose-400/90 leading-relaxed overflow-x-auto shadow-inner">
+            <div className="rounded-xl border border-stone-200 bg-white text-rose-800 dark:border-stone-800 dark:bg-stone-950 dark:text-rose-400/90 p-3 sm:p-4 font-mono text-xs leading-relaxed overflow-x-auto shadow-sm dark:shadow-inner">
               <pre className="whitespace-pre-wrap">{activeIncident?.stackTrace}</pre>
             </div>
           </section>
 
+          {/* Chronologiczna Oś Czasu */}
           <section className="space-y-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
               <span>⏱</span>
@@ -798,7 +800,7 @@ try {
                     value={formStackTrace}
                     onChange={(e) => setFormStackTrace(e.target.value)}
                     placeholder={t?.fieldStackTracePlaceholder}
-                    className="w-full bg-stone-900 border border-stone-800 rounded-lg p-3 font-mono text-xs text-rose-300 placeholder-stone-400 focus:outline-none focus:border-rose-500"
+                    className="w-full bg-stone-50 border border-stone-300 text-rose-800 placeholder-stone-500 dark:bg-stone-950 dark:border-stone-800 dark:text-rose-300 dark:placeholder-stone-500 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-rose-500"
                   />
                 </div>
 
