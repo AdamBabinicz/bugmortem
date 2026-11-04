@@ -2,84 +2,248 @@
 
 ### *Digital Incident Morgue & Automated Post-Mortem Report Generator*
 
-**Official Submission to the Devpost Hackathon: KIROWEEN (2026)**  
-*Contest Track: Costume Contest (Spooky & Distinctive Developer Tools)*
+**Official Submission — Devpost Hackathon: KIROWEEN 2026**  
+*Track: Costume Contest · Spooky & Distinctive Developer Tools*
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.4-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38bdf8?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
-[![pnpm](https://img.shields.io/badge/pnpm-fast-orange?style=flat-square&logo=pnpm)](https://pnpm.io/)
+[![Vitest](https://img.shields.io/badge/Vitest-2.1-6e9f18?style=flat-square&logo=vitest)](https://vitest.dev/)
+[![pnpm](https://img.shields.io/badge/pnpm-12-orange?style=flat-square&logo=pnpm)](https://pnpm.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 🎃 About The Project (The Nightmare Incident Morgue)
+## 🎃 What Is BugMortem?
 
-Every software developer and SRE engineer has lived through this recurring nightmare: production is dead, monitoring is flatlining at **0 BPM**, and terminal logs are screaming an incomprehensible, blood-chilling stack trace.
+Every SRE engineer knows the nightmare: production is dead, the monitor is **flatlined at 0 BPM**, and the terminal is screaming an incomprehensible stack trace at 3 AM.
 
-**BugMortem** is an interactive, cyber-gothic digital morgue and automated post-mortem generator for software incidents. Instead of panic in the console, the application conducts a forensic autopsy of catastrophic bugs:
+**BugMortem** is an interactive, cyber-gothic digital morgue and automated post-mortem studio for software incidents. Instead of panic in the console, it conducts a forensic autopsy of catastrophic production bugs — complete with a reactive ECG heart monitor, procedural audio telemetry, and a one-click SRE report exporter.
 
-1. **Root Cause Analysis (RCA)** — Surgical diagnosis of underlying code pathology.
-2. **Timeline of Doom** — Chronological reconstruction of the fatal seconds preceding the catastrophe.
-3. **Side-by-Side Code Autopsy** — Immediate juxtaposition of the cursed code against its resurrected, safe SRE counterpart with 1-click clipboard copy.
-4. **Custom Incident Ingestion (Live Autopsy Form)** — Interactive modal allowing engineers to ingest their own real-world production crashes, custom stack traces, and code snippets, instantly generating a dynamic post-mortem case study.
-5. **SRE Post-Mortem Protocol Generator & Export** — Production-ready incident report generator with direct 1-click export to formatted Markdown (`.md`) for Jira, Confluence, and GitHub Issues.
+> *"Where dead services come for their autopsy."*
 
 ---
 
-## ⚰️ The Canonical Nightmare Presets & Custom Autopsy
+## ✨ Core Features
 
-BugMortem comes equipped with 4 curated, production-authentic autopsy presets, plus dynamic custom ingestion:
+### 🔬 Digital Autopsy Engine
+- **Side-by-Side Code Autopsy** — Cursed code (crash state) vs. Resurrected SRE code (safe pattern), with one-click clipboard copy.
+- **Chronological Incident Timeline** — Forensic reconstruction of the fatal seconds preceding each catastrophe.
+- **Raw Stack Trace Viewer** — Monospace, syntax-highlighted crash log display.
+- **Custom Incident Ingestion** — Live autopsy form: paste any real-world stack trace, choose severity & category, and instantly generate a full post-mortem case study persisted in `localStorage`.
 
-* **React SSR / Next.js:** *Hydration Mismatch Nightmare (P0)* — DOM tree divergence caused by illegal client-only `localStorage` access during initial server render.
-* **Node.js Heap:** *Silent Memory Leak & Linux OOM Killer 137 (P0)* — Dangling `EventEmitter` listeners retaining 4GB of heap allocations until host kernel SIGKILL termination.
-* **HTTP Handshake:** *CORS & Auth Headers Preflight Massacre (P1)* — Unhandled `OPTIONS` preflight requests causing token refresh failure cascades across cross-origin single-page applications.
-* **PostgreSQL / Prisma:** *Connection Pool Starvation (P1)* — Bypassed `finally` blocks leaking connection handles under transient error spikes, locking checkout transactions.
-* **⚡ Custom Incident Autopsy Engine:** Ingest any custom application crash, stack trace, and severity level to generate automated timelines, circuit-breaker mitigation patterns, and formal protocols persisted in `localStorage`.
+### 📄 SRE Post-Mortem Protocol & Markdown Export
+- One-click export to formatted `.md` Markdown — ready to paste into Jira, Confluence, GitHub Issues, or Notion.
+- Structured report with all required SRE sections: Executive Summary, Blast Radius & Impact, Preventative Action Items, Timeline, Stack Trace, Code Autopsy.
+
+### 🫀 Reactive ECG Heart Monitor
+The Hero HUD contains a live ECG waveform that reacts to the active incident state:
+
+| State | Waveform | Color |
+|---|---|---|
+| **P0 — Fatal / Flatline** | Flat horizontal line with micro-jitter | Crimson `#ef4444` |
+| **P1 — Active Warning** | Animated QRS peaks at 90 BPM | Crimson `#ef4444` |
+| **Resurrected — Healthy** | Animated QRS peaks at 70 BPM | Toxic Emerald `#10b981` |
+
+The HUD status label also transitions: *"Active Incident (P0 Critical)"* → *"Telemetry Warning (P1 Major)"* → *"Service Resurrected (Healthy · 200 OK)"*.
+
+### 🔊 Procedural Web Audio API Synthesizer
+Zero external files. Zero dependencies. 100% browser-native Web Audio API:
+
+| Event | Sound |
+|---|---|
+| **P0 Fatal Incident** | Continuous 750 Hz sawtooth routed through resonant low-pass filter + 0.6 Hz LFO tremolo — eerie, atmospheric flatline alarm |
+| **P1 Warning Incident** | Rhythmic 880 Hz sine blips at 90 BPM — clinical ECG monitor pulse synchronized with the waveform animation |
+| **Copy Resurrected Code** | Uplifting C5 → E5 → G5 harmonic sweep with vibrato — the resurrection chime, followed by a calm 70 BPM heartbeat |
+
+- Muted by default to comply with browser autoplay policies.
+- One-click `Volume2 / VolumeX` toggle inside the HUD.
+- Full `AudioContext` suspend/resume lifecycle with zero memory leaks on unmount.
+- Fully localized `aria-label` in EN and PL.
+
+### 🌍 Full Bilingual i18n (EN / PL)
+- Complete EN and PL translations for every UI string, status label, legal document, and modal copy.
+- Language switcher in the top navigation bar.
+- Locale preference persisted in `localStorage`.
+
+### 🔒 Legal & Privacy Documents
+- **Privacy Policy** — Full data sovereignty statement, exact `localStorage` keys documented, GDPR/CCPA user rights, one-click purge guide.
+- **Terms of Service** — Scope disclaimer, AS-IS engineering disclaimer for Resurrection Code Patches, MIT license reference.
+- **Cookie Policy** — No HTTP cookies; complete `localStorage`-only model documented.
+- Localized LegalModal with scrollable sections, structured headers, and bullet lists.
+
+### 🍪 Cookie & Privacy Consent
+- GDPR-compliant banner on first visit with granular analytics/marketing preference drawer.
+- Consent state persisted in `localStorage` under `bm_cookie_consent`.
 
 ---
 
-## 🤖 Kiro Specs Compliance (`/.kiro`)
+## ⚰️ The 5 Canonical Nightmare Presets
 
-BugMortem was architected from the ground up for native integration with the **Kiro Agent**:
+BugMortem ships with five production-authentic, hand-crafted autopsy presets covering the most feared categories of production disasters:
 
-* `/.kiro/specs/bugmortem/requirements.md` — Formal specification of functional and non-functional requirements.
-* `/.kiro/specs/bugmortem/tasks.md` — Roadmap of deployment, audit, and automated verification tasks for the Kiro agent.
-* `/.kiro/steering/rules.md` — Architectural boundaries, code hygiene, and strict clean-code enforcement directives.
+| # | Preset | Severity | Domain |
+|---|---|---|---|
+| 1 | **React Hydration Mismatch & DOM Tree Collapse** | P0 | Frontend / SSR |
+| 2 | **The Connection Pool Death Spiral** | P0 | Database / Aurora |
+| 3 | **The OOM Reaper Awakening** | P0 | Runtime / Memory |
+| 4 | **The Cascading Retry Storm** | P1 | Concurrency / Network |
+| 5 | **The CORS Preflight Nightmare** | P1 | Network / Security |
 
----
-
-## 🏗️ Architecture & Ironclad Rules
-
-* **Scalable i18n Architecture (EN / PL):** Complete bilingual support without binary flags; comprehensive dictionary structures located in `src/i18n/locales/` with English as default for international hackathon evaluation.
-* **100% UI Key Coverage:** Zero hardcoded strings across UI components; every single label, badge, timestamp description, and post-mortem section resolves dynamically via `t.*`.
-* **Zero Inline Styles:** Pure Tailwind CSS v4 design system adhering to strict zero-pill discipline and accessible typographic hierarchy.
-* **Dual-Theme Adaptive Engine:** Seamless switching between deep cyber-gothic on-call night mode (`dark:`) and crisp clinical laboratory day mode (`light:`), with user preference persisted in `localStorage`.
-* **Advanced Polish & Global Typography:** Integrated non-breaking space enforcement (`fixOrphans`) and modern CSS `text-wrap: pretty;` eliminating orphaned hanging conjunctions (*a, i, o, u, w, z, do, na, ze*).
-* **Privacy & GDPR Compliance:** Legally compliant cookie consent banner with granular analytics/marketing preferences drawer and persistent consent state.
-* **Mobile-First Ergonomics:** Fully responsive layouts tailored for mobile devices (320px–390px) up to ultra-wide desktop monitors without text clipping.
+Each preset includes: incident description, cursed crash code, resurrected SRE safe pattern, raw stack trace, chronological timeline with fatal event markers, and a full post-mortem report with Executive Summary, Blast Radius, and Preventative Action Items.
 
 ---
 
-## 📁 Repository Structure
+## 🧪 Property-Based Testing Suite (PBT)
+
+BugMortem includes a rigorous property-based testing suite built with **[fast-check](https://github.com/dubzzz/fast-check)** and **[Vitest](https://vitest.dev/)**, fulfilling the Kiroween 2026 hackathon PBT judging criteria.
+
+### Run the tests
+
+```bash
+pnpm test          # run once (CI mode)
+pnpm test:pbt      # identical alias
+pnpm test:pbt:watch # watch mode for development
+```
+
+### Results
+
+```
+ Test Files  1 passed (1)
+      Tests  33 passed (33)
+   Duration  ~1.1s
+```
+
+### The 4 Invariants (150 random runs each)
+
+| Invariant | Property | Runs |
+|---|---|---|
+| **1 — Resilience** | The autopsy engine never throws on any input — fuzz strings, null, unicode, control chars, 50KB payloads, `<script>` injection | 150 × 9 props |
+| **2 — Severity Validity** | `classifySeverity()` always resolves to `'P0' \| 'P1'`; the function is idempotent | 150 × 6 props |
+| **3 — Timeline Integrity** | `buildTimeline()` always produces exactly 3 events in strict non-decreasing chronological order; first event non-fatal, last event fatal | 150 × 5 props |
+| **4 — Export Fidelity** | `generateMarkdownReport()` always contains all 3 required SRE headers: *Executive Summary*, *Blast Radius*, *Preventative Action Items* | 150 × 8 props |
+
+Plus a **Regression suite** (5 tests) covering 14 known edge-case inputs including empty incidents, null bytes, and very long strings.
+
+### Tested modules
+
+The pure autopsy engine (`src/utils/autopsyEngine.ts`) exports all testable functions:
+
+- `classifySeverity(raw)` — severity string → `'P0' | 'P1'`
+- `parseStackTrace(raw)` — raw string → `StackFrame[]` (V8 + Firefox formats)
+- `buildTimeline(frames, category, anchor)` — structured `TimelineEvent[]`
+- `buildPostMortem(title, badge, sev)` → `PostMortemReport`
+- `generateMarkdownReport(incident, labels)` → full SRE markdown string
+- `createAutopsyIncident(input)` → complete `IncidentPreset`
+- `fixOrphans(text)` → typographic utility
+
+---
+
+## 🔒 Privacy & Data Sovereignty
+
+BugMortem is architected on a **zero-data-leakage, local-first model**:
+
+- All incident logs, stack traces, and post-mortem reports are processed exclusively inside your browser's JavaScript runtime.
+- **No data ever leaves your device.** Zero WebSocket, XHR, or fetch calls to analytics, telemetry, or logging endpoints.
+- No Google Analytics, Meta Pixel, Hotjar, Sentry, or any third-party tracker.
+- No HTTP cookies are set.
+
+### Exact `localStorage` keys written by BugMortem
+
+| Key | Purpose |
+|---|---|
+| `bm_cookie_consent` | Your cookie/storage preference (set on first visit) |
+| `bugmortem_custom_incidents` | JSON of your saved custom incident autopsies |
+| `bugmortem_locale` | Your selected UI language (`"en"` or `"pl"`) |
+| `bm_theme` | Your selected color theme (`"dark"` or `"light"`) |
+
+To purge all data: DevTools → Application → Local Storage → delete all keys prefixed `bm_` or `bugmortem_`.
+
+---
+
+## 🏗️ Repository Structure
 
 ```text
 bugmortem/
-├── .kiro/                       # Kiro Agent Specs & Steering Directives
-│   ├── specs/bugmortem/         # Requirements & Roadmap Tasks
-│   └── steering/                # Architectural Rules
-├── public/                      # Static Assets & Icons
+├── .kiro/
+│   ├── specs/bugmortem/         # Kiro Agent specs (requirements & tasks)
+│   └── steering/rules.md        # Architectural rules & code hygiene directives
+├── public/                      # Static assets, favicon, OG image, robots.txt
 ├── src/
+│   ├── __tests__/
+│   │   └── autopsy-pbt.test.ts  # 33-test PBT suite (fast-check + vitest)
 │   ├── app/
-│   │   ├── globals.css          # Tailwind CSS v4 & Typography Wraps
-│   │   ├── layout.tsx           # Metadata, Font Setup & i18n Skeleton
-│   │   └── page.tsx             # Main Morgue Dashboard, Modal & Markdown Exporter
-│   └── i18n/
-│       ├── config.ts            # Default Locale Configuration (en)
-│       ├── context.tsx           # i18n Context Provider & Hooks
-│       ├── types.ts             # Dictionary & Incident Preset Interfaces
-│       └── locales/
-│           ├── en.ts            # Complete English Morgue Dictionary
-│           └── pl.ts            # Complete Polish Morgue Dictionary
-├── package.json
+│   │   ├── globals.css          # Tailwind CSS v4 + typography utilities
+│   │   ├── layout.tsx           # Metadata, font setup, provider wiring
+│   │   └── page.tsx             # Main morgue dashboard — state, handlers, JSX
+│   ├── components/
+│   │   ├── CookieBanner.tsx     # GDPR cookie consent banner
+│   │   ├── EcgMonitor.tsx       # Reactive SVG ECG waveform (3 states)
+│   │   ├── Providers.tsx        # App-level context providers
+│   │   ├── ScrollToTop.tsx      # Scroll restoration utility
+│   │   └── legal/
+│   │       ├── CookieSettingsModal.tsx  # Granular cookie preferences drawer
+│   │       └── LegalModal.tsx   # Privacy Policy / ToS / Cookie Policy modal
+│   ├── context/
+│   │   └── ThemeContext.tsx     # Dark / light theme context + persistence
+│   ├── hooks/
+│   │   └── useAudioEngine.ts   # React hook — AudioContext lifecycle & program switching
+│   ├── i18n/
+│   │   ├── config.ts            # Default locale configuration
+│   │   ├── context.tsx          # i18n provider, hook, locale persistence
+│   │   ├── types.ts             # Dictionary, IncidentPreset & LegalDictionary types
+│   │   └── locales/
+│   │       ├── en.ts            # Complete English dictionary (all keys)
+│   │       └── pl.ts            # Complete Polish dictionary (all keys)
+│   └── utils/
+│       ├── autopsyEngine.ts     # Pure autopsy engine — all PBT-tested functions
+│       └── soundEngine.ts       # Web Audio API synthesizer class (SoundEngine)
+├── vitest.config.ts             # Vitest configuration with @/* path alias
+├── package.json                 # Scripts: dev, build, test, test:pbt
+├── pnpm-workspace.yaml          # pnpm workspace + approved build scripts
 └── README.md
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm 12+
+
+### Install & Run
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Run production build
+pnpm build
+
+# Run property-based test suite
+pnpm test
+```
+
+---
+
+## 🎨 Design System
+
+- **Theme:** Cyber-Gothic — obsidian backgrounds, toxic emerald (`#10b981`), crimson (`#ef4444`)
+- **Framework:** Next.js 15 App Router + React 19 + TypeScript strict mode
+- **Styling:** Tailwind CSS v4 — zero inline styles, full dark/light adaptive theming
+- **Icons:** lucide-react
+- **Typography:** Polish orphan elimination (`fixOrphans`) + CSS `text-wrap: pretty`
+
+---
+
+## 📜 License
+
+MIT © 2026 BugMortem Contributors  
+Built for the **Kiroween 2026 Hackathon** organized by AWS & Devpost.
+
+> *"The service is dead. Long live the service."*
