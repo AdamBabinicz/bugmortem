@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { IncidentPreset, TimelineEvent } from '../i18n/types';
 import { useTheme } from '@/context/ThemeContext';
 import { useI18n } from '@/i18n/context';
+import { LegalModal, LegalDocType } from '@/components/legal/LegalModal';
 
 // Bezpieczne rozszerzenie typu zdarzenia na osi czasu
 export interface SafeTimelineEvent extends TimelineEvent {
@@ -32,6 +33,9 @@ export default function Home() {
 
   // Dynamiczny, automatyczny zakres praw autorskich
   const [copyrightYears, setCopyrightYears] = useState<string>('2026');
+
+  // Legal Modal State
+  const [legalDoc, setLegalDoc] = useState<LegalDocType>(null);
 
   // Custom Autopsy Modal & Form State
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -611,6 +615,11 @@ try {
         </section>
       </main>
 
+      {/* Legal Modal (Privacy Policy / Terms of Service) */}
+      {legalDoc && (
+        <LegalModal docType={legalDoc} onClose={() => setLegalDoc(null)} />
+      )}
+
       {/* Custom Autopsy Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
@@ -759,9 +768,21 @@ try {
             © {copyrightYears} BugMortem. {t?.footerRights}
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white cursor-pointer">{t?.footerPrivacy}</span>
+            <button
+              type="button"
+              onClick={() => setLegalDoc('privacy')}
+              className="text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white underline cursor-pointer"
+            >
+              {t?.footerPrivacy}
+            </button>
             <span>•</span>
-            <span className="text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white cursor-pointer">{t?.footerTerms}</span>
+            <button
+              type="button"
+              onClick={() => setLegalDoc('terms')}
+              className="text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white underline cursor-pointer"
+            >
+              {t?.footerTerms}
+            </button>
             <span>•</span>
             <button
               type="button"
