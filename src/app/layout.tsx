@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Script from 'next/script';
-import { ThemeProvider } from '@/context/ThemeContext';
+import { Providers } from '@/components/Providers';
 import './globals.css';
 
 // Wymuszenie globalnego, statycznego cache na Vercel Edge CDN (TTFB ~30ms)
@@ -147,7 +147,7 @@ export default function RootLayout({
           />
         </noscript>
 
-        <ThemeProvider>{children}</ThemeProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

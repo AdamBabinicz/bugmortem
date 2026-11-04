@@ -92,8 +92,17 @@ export default function Home() {
       setLocaleState(savedLocale);
     }
 
-    const storedConsent = localStorage.getItem('bugmortem_cookie_consent');
-    setCookieConsent(storedConsent);
+    const storedConsent = localStorage.getItem('bm_cookie_consent');
+    // Parse structured consent or treat legacy string as decided
+    if (storedConsent) {
+      try {
+        const parsed = JSON.parse(storedConsent);
+        setCookieConsent(parsed.decided ? storedConsent : null);
+      } catch {
+        // Legacy string value — treat as decided
+        setCookieConsent(storedConsent);
+      }
+    }
 
     try {
       const storedIncidents = localStorage.getItem('bugmortem_custom_incidents');
@@ -154,11 +163,23 @@ export default function Home() {
   const handleCopyCode = async () => {
     if (!activeIncident?.resurrectedCode) return;
     try {
-      await navigator.clipboard.writeText(activeIncident.resurrectedCode);
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(activeIncident.resurrectedCode);
+      } else {
+        // Fallback for HTTP / non-secure contexts
+        const textarea = document.createElement('textarea');
+        textarea.value = activeIncident.resurrectedCode;
+        textarea.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
     } catch {
-      // Ignore
+      // Ignore silently — clipboard unavailable
     }
   };
 
@@ -312,21 +333,23 @@ try {
   };
 
   const handleAcceptAllCookies = () => {
-    localStorage.setItem('bugmortem_cookie_consent', 'all');
-    setCookieConsent('all');
+    const consent = { essential: true, analytics: true, marketing: true, decided: true };
+    localStorage.setItem('bm_cookie_consent', JSON.stringify(consent));
+    setCookieConsent(JSON.stringify(consent));
     pushGtmConsent(true, true);
   };
 
   const handleAcceptEssential = () => {
-    localStorage.setItem('bugmortem_cookie_consent', 'essential');
-    setCookieConsent('essential');
+    const consent = { essential: true, analytics: false, marketing: false, decided: true };
+    localStorage.setItem('bm_cookie_consent', JSON.stringify(consent));
+    setCookieConsent(JSON.stringify(consent));
     pushGtmConsent(false, false);
   };
 
   const handleSaveCookiePreferences = () => {
-    const consentVal = `custom_analytics_${analyticsCookies}_marketing_${marketingCookies}`;
-    localStorage.setItem('bugmortem_cookie_consent', consentVal);
-    setCookieConsent(consentVal);
+    const consent = { essential: true, analytics: analyticsCookies, marketing: marketingCookies, decided: true };
+    localStorage.setItem('bm_cookie_consent', JSON.stringify(consent));
+    setCookieConsent(JSON.stringify(consent));
     setIsCookieDrawerOpen(false);
     pushGtmConsent(analyticsCookies, marketingCookies);
   };
@@ -414,6 +437,37 @@ try {
 
           <div className="z-10 flex flex-col items-start md:items-end gap-3 w-full md:w-auto">
             <div className="w-full md:w-auto bg-stone-100 border-stone-200 dark:bg-stone-950/80 dark:border-stone-800 rounded-xl p-3 sm:p-4 border flex items-center justify-between md:justify-end gap-4 shadow-inner">
+              {/* ECG Flatline Monitor */}
+              <svg
+                viewBox="0 0 120 32"
+                className="w-24 sm:w-32 h-6 shrink-0"
+                aria-label="ECG vital signs monitor"
+                aria-hidden="true"
+              >
+                <style>{`
+                  @keyframes ecg-scroll {
+                    0%   { stroke-dashoffset: 300; }
+                    100% { stroke-dashoffset: 0; }
+                  }
+                  .ecg-line {
+                    stroke-dasharray: 300;
+                    stroke-dashoffset: 300;
+                    animation: ecg-scroll 2.4s linear infinite;
+                  }
+                `}</style>
+                {/* Flat baseline */}
+                <line x1="0" y1="16" x2="120" y2="16" stroke="currentColor" strokeWidth="0.5" className="text-rose-900/30 dark:text-rose-900/50" />
+                {/* ECG spike path */}
+                <path
+                  className="ecg-line"
+                  d="M0,16 L20,16 L25,16 L28,4 L31,28 L34,10 L37,16 L60,16 L65,16 L68,4 L71,28 L74,10 L77,16 L100,16 L105,16 L108,4 L111,28 L114,10 L117,16 L120,16"
+                  fill="none"
+                  stroke="#ef4444"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
               <div className="text-left md:text-right">
                 <div className="text-[10px] uppercase font-bold tracking-widest text-stone-700 dark:text-stone-300">
                   {t?.statusLabel}

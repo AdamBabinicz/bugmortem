@@ -52,18 +52,29 @@ export interface LegalDictionary {
   terms?: string;
   termsTitle?: string;
   termsContent?: string;
+  termsGeneralHeader?: string;
+  termsGeneralText?: string;
+  termsLiabilityHeader?: string;
+  termsLiabilityText?: string;
   privacy?: string;
   privacyTitle?: string;
   privacyContent?: string;
+  privacyAdminHeader?: string;
+  privacyAdminText?: string;
+  privacyScopeHeader?: string;
+  privacyScopeText?: string;
   cookies?: string;
   cookiesTitle?: string;
   cookiesContent?: string;
+  cookiesUsageHeader?: string;
+  cookiesUsageText?: string;
   disclaimer?: string;
   disclaimerTitle?: string;
   disclaimerContent?: string;
   gdpr?: string;
   gdprTitle?: string;
   gdprContent?: string;
+  lastUpdated?: string;
   [key: string]: any;
 }
 

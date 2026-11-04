@@ -89,15 +89,26 @@ export const en: Dictionary = {
   legal: {
     modalTitle: 'Legal & Compliance',
     title: 'Legal & Compliance',
+    lastUpdated: 'Last updated: November 2026',
     terms: 'Terms of Service',
     termsTitle: 'Terms of Service',
     termsContent: 'BugMortem is an incident post-mortem analysis and autopsy tool developed for the Kiroween 2026 hackathon. Provided as-is for educational and incident mitigation purposes.',
+    termsGeneralHeader: 'General Terms',
+    termsGeneralText: 'BugMortem is provided as-is for educational and incident mitigation purposes as a Kiroween 2026 hackathon entry. No warranties are expressed or implied.',
+    termsLiabilityHeader: 'Limitation of Liability',
+    termsLiabilityText: 'The authors of BugMortem accept no liability for decisions made based on generated post-mortem reports or SRE safe patterns. Always validate in staging.',
     privacy: 'Privacy Policy',
     privacyTitle: 'Privacy Policy',
     privacyContent: 'All incident logs, custom autopsies, and post-mortems are processed locally in your browser storage. No proprietary outage data is uploaded to third-party tracking services.',
+    privacyAdminHeader: 'Data Controller',
+    privacyAdminText: 'BugMortem processes all data exclusively in your local browser storage. No personal data is transmitted to external servers.',
+    privacyScopeHeader: 'Scope of Data Processing',
+    privacyScopeText: 'Only incident titles, stack traces, and custom autopsy notes you choose to enter are stored locally. Data is never shared with third parties.',
     cookies: 'Cookie Policy',
     cookiesTitle: 'Cookie & Local Storage Policy',
     cookiesContent: 'We use browser localStorage solely to persist your theme preference, incident drafts, and custom autopsy analyses across sessions.',
+    cookiesUsageHeader: 'Local Storage Usage',
+    cookiesUsageText: 'BugMortem uses browser localStorage for: theme preference (bm_theme), locale preference (bugmortem_locale), cookie consent (bm_cookie_consent), and custom incident autopsies (bugmortem_custom_incidents). No cookies are set.',
     disclaimer: 'SRE Disclaimer',
     disclaimerTitle: 'SRE & Reliability Disclaimer',
     disclaimerContent: 'Generated root causes and safe patterns are assistive recommendations. Always verify mitigation scripts in a staging sandbox before applying to production clusters.',
@@ -277,6 +288,65 @@ async function fetchWithRetry(url, retries = 3, baseDelay = 100) {
           'Mandate exponential backoff with full jitter across all internal RPC clients.',
           'Deploy circuit breakers to shed traffic before downstream pool saturation.',
           'Configure Envoy adaptive concurrency limits on edge gateways.'
+        ]
+      }
+    },
+    'cors-nightmare': {
+      id: 'cors-nightmare',
+      badge: 'Network / Security',
+      severity: 'P1',
+      title: 'The CORS Preflight Nightmare',
+      desc: 'Missing CORS headers on API gateway caused all cross-origin preflight OPTIONS requests to fail with 403, blocking the entire frontend SPA.',
+      crashedCode: `// ❌ CURSED CODE: Missing CORS headers on Express API
+const express = require('express');
+const app = express();
+
+// No CORS middleware — browser preflight OPTIONS blocked with 403
+app.get('/api/data', (req, res) => {
+  res.json({ data: 'sensitive payload' });
+});`,
+      resurrectedCode: `// ✅ RESURRECTED SRE PATTERN: Explicit CORS Hardening
+const express = require('express');
+const cors = require('cors');
+const app = express();
+
+const ALLOWED_ORIGINS = [
+  'https://app.example.com',
+  'https://staging.example.com',
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(\`CORS: Origin \${origin} not allowed\`));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
+  credentials: true,
+  maxAge: 86400, // Cache preflight for 24h
+}));
+
+app.options('*', cors()); // Explicit OPTIONS preflight handler`,
+      stackTrace: `Access to fetch at 'https://api.example.com/data' from origin 'https://app.example.com'
+has been blocked by CORS policy: Response to preflight request doesn't pass access control check:
+No 'Access-Control-Allow-Origin' header is present on the requested resource.
+    at fetch (<anonymous>)
+    at loadUserData (app.bundle.js:1:4821)`,
+      timeline: [
+        { time: '10:00 UTC', desc: 'Frontend SPA deployed to new subdomain app.example.com', isFatal: false },
+        { time: '10:01 UTC', desc: 'All API calls fail — browser preflight OPTIONS returns 403 Forbidden', isFatal: false },
+        { time: '10:02 UTC', desc: 'Entire frontend app non-functional; CORS policy blocks every cross-origin fetch', isFatal: true }
+      ],
+      postMortemReport: {
+        summary: 'Missing CORS middleware on Express API gateway caused 100% of cross-origin preflight requests to fail with 403.',
+        impact: 'Frontend SPA completely non-functional for all users after subdomain migration. Full service outage for 22 minutes.',
+        actionItems: [
+          'Deploy explicit CORS allowlist middleware before any route handler.',
+          'Add automated preflight OPTIONS smoke test to CI/CD deployment pipeline.',
+          'Audit all API gateway configs for missing CORS headers before subdomain changes.'
         ]
       }
     }

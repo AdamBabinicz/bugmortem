@@ -17,9 +17,9 @@ export function LegalModal({
   if (!docType) return null;
 
   const titles: Record<NonNullable<LegalDocType>, string> = {
-    privacy: t.legal.privacyTitle,
-    terms: t.legal.termsTitle,
-    cookies: t.legal.cookiesTitle,
+    privacy: t.legal.privacyTitle ?? 'Privacy Policy',
+    terms: t.legal.termsTitle ?? 'Terms of Service',
+    cookies: t.legal.cookiesTitle ?? 'Cookie Policy',
   };
 
   return (

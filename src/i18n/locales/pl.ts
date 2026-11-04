@@ -89,15 +89,26 @@ export const pl: Dictionary = {
   legal: {
     modalTitle: 'Informacje Prawne i Zgodność',
     title: 'Informacje Prawne',
+    lastUpdated: 'Ostatnia aktualizacja: Listopad 2026',
     terms: 'Regulamin Serwisu',
     termsTitle: 'Regulamin Użytkowania BugMortem',
     termsContent: 'BugMortem to otwartoźródłowy symulator sekcji zwłok awarii i generator raportów post-mortem stworzony na hackathon Kiroween 2026. Udostępniany w celach edukacyjnych i prewencji SRE.',
+    termsGeneralHeader: 'Warunki Ogólne',
+    termsGeneralText: 'BugMortem udostępniany jest w stanie, w jakim się znajduje, wyłącznie do celów edukacyjnych i prewencji SRE, jako projekt na hackathon Kiroween 2026. Nie udziela się żadnych gwarancji.',
+    termsLiabilityHeader: 'Ograniczenie Odpowiedzialności',
+    termsLiabilityText: 'Autorzy BugMortem nie ponoszą odpowiedzialności za decyzje podjęte na podstawie wygenerowanych raportów post-mortem lub wzorców SRE. Zawsze weryfikuj rozwiązania na środowisku stagingowym.',
     privacy: 'Polityka Prywatności',
     privacyTitle: 'Polityka Prywatności i Suwerenność Danych',
     privacyContent: 'Wszelkie analizy awarii, logi i wygenerowane raporty są przetwarzane lokalnie w pamięci Twojej przeglądarki. Dane telemetryczne nie są przekazywane podmiotom trzecim.',
+    privacyAdminHeader: 'Administrator Danych',
+    privacyAdminText: 'BugMortem przetwarza wszystkie dane wyłącznie w lokalnej pamięci przeglądarki. Żadne dane osobowe nie są przekazywane na zewnętrzne serwery.',
+    privacyScopeHeader: 'Zakres Przetwarzania Danych',
+    privacyScopeText: 'Jedynie tytuły awarii, zrzuty stosu i notatki sekcji zwłok są przechowywane lokalnie. Dane nie są udostępniane podmiotom trzecim.',
     cookies: 'Polityka Cookies',
     cookiesTitle: 'Polityka Cookies i Pamięci Podręcznej',
     cookiesContent: 'Aplikacja wykorzystuje wyłącznie pamięć podręczną localStorage do zachowania motywu, szkiców awarii oraz historii wygenerowanych raportów.',
+    cookiesUsageHeader: 'Użycie Pamięci Lokalnej',
+    cookiesUsageText: 'BugMortem używa localStorage dla: preferencji motywu (bm_theme), języka (bugmortem_locale), zgody na cookies (bm_cookie_consent) oraz własnych sekcji zwłok (bugmortem_custom_incidents). Żadne pliki cookie nie są ustawiane.',
     disclaimer: 'Zastrzeżenia Inżynieryjne',
     disclaimerTitle: 'Zastrzeżenia Inżynieryjne SRE',
     disclaimerContent: 'Automatycznie generowane bezpieczne wzorce i procedury naprawcze stanowią rekomendacje inżynieryjne. Przed wdrożeniem skryptów na produkcję należy przetestować je na środowisku stagingowym.',
@@ -277,6 +288,65 @@ async function fetchWithRetry(url, retries = 3, baseDelay = 100) {
           'Wymuszenie algorytmu Full Jitter z wykładniczym wycofywaniem we wszystkich klientach RPC.',
           'Wdrożenie circuit breakerów odcinających ruch przed nasyceniem bazy.',
           'Konfiguracja adaptacyjnego ograniczania przepustowości na bramce Envoy.'
+        ]
+      }
+    },
+    'cors-nightmare': {
+      id: 'cors-nightmare',
+      badge: 'Sieć / Bezpieczeństwo',
+      severity: 'P1',
+      title: 'Koszmar Preflight CORS',
+      desc: 'Brakujące nagłówki CORS na bramce API spowodowały, że wszystkie żądania OPTIONS z innej domeny zakończyły się błędem 403, blokując całe SPA.',
+      crashedCode: `// ❌ PRZEKLĘTY KOD: Brak nagłówków CORS w Express API
+const express = require('express');
+const app = express();
+
+// Brak middleware CORS — przeglądarka blokuje preflight OPTIONS z 403
+app.get('/api/data', (req, res) => {
+  res.json({ data: 'wrażliwe dane' });
+});`,
+      resurrectedCode: `// ✅ WSKRZESZONY WZORZEC SRE: Jawne Utwardzenie CORS
+const express = require('express');
+const cors = require('cors');
+const app = express();
+
+const DOZWOLONE_DOMENY = [
+  'https://app.example.com',
+  'https://staging.example.com',
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || DOZWOLONE_DOMENY.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(\`CORS: Domena \${origin} jest niedozwolona\`));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
+  credentials: true,
+  maxAge: 86400, // Buforuj preflight przez 24h
+}));
+
+app.options('*', cors()); // Jawna obsługa OPTIONS preflight`,
+      stackTrace: `Access to fetch at 'https://api.example.com/data' from origin 'https://app.example.com'
+has been blocked by CORS policy: Response to preflight request doesn't pass access control check:
+No 'Access-Control-Allow-Origin' header is present on the requested resource.
+    at fetch (<anonymous>)
+    at loadUserData (app.bundle.js:1:4821)`,
+      timeline: [
+        { time: '10:00 UTC', desc: 'Frontend SPA wdrożono na nową subdomenę app.example.com', isFatal: false },
+        { time: '10:01 UTC', desc: 'Wszystkie żądania API kończą się błędem — preflight OPTIONS zwraca 403 Forbidden', isFatal: false },
+        { time: '10:02 UTC', desc: 'Cała aplikacja frontendowa przestaje działać; polityka CORS blokuje każde żądanie cross-origin', isFatal: true }
+      ],
+      postMortemReport: {
+        summary: 'Brak middleware CORS na bramce Express API spowodował 100% niepowodzeń żądań preflight z błędem 403.',
+        impact: 'Frontend SPA całkowicie niedostępny dla wszystkich użytkowników po migracji do subdomeny. Pełna awaria serwisu przez 22 minuty.',
+        actionItems: [
+          'Wdrożenie jawnej listy dozwolonych domen CORS przed każdym handlerem tras.',
+          'Dodanie automatycznego testu dymnego OPTIONS preflight do pipeline CI/CD.',
+          'Audyt konfiguracji bramek API pod kątem brakujących nagłówków CORS przed zmianami subdomen.'
         ]
       }
     }
