@@ -40,7 +40,7 @@ export default function Home() {
   // Legal Modal State
   const [legalDoc, setLegalDoc] = useState<LegalDocType>(null);
 
-  // ECG waveform display state — flatline until user resurrects the service
+  // ECG waveform display state — driven by incident severity and resurrection event
   const [waveformState, setWaveformState] = useState<WaveformState>('flatline');
 
   // Custom Autopsy Modal & Form State
@@ -114,9 +114,17 @@ export default function Home() {
   const activeSeverity = activeIncident?.severity ?? 'P1';
   const { audioEnabled, toggleAudio, playResurrectionChime } = useAudioEngine(activeSeverity);
 
-  // Reset waveform to flatline whenever the active incident changes
+  // Sync waveform to incident severity whenever the selected preset changes.
+  // P0 → flatline (dead), P1/P2/other → p1-heartbeat (active warning).
+  // The 'resurrected' state is only set by the copy action and cleared here.
   useEffect(() => {
-    setWaveformState('flatline');
+    const sev = activeIncident?.severity ?? '';
+    if (sev === 'P0') {
+      setWaveformState('flatline');
+    } else {
+      setWaveformState('p1-heartbeat');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPreset]);
 
   const safeTimeline: SafeTimelineEvent[] = Array.isArray(activeIncident?.timeline)
@@ -145,7 +153,7 @@ export default function Home() {
       }
       setIsCopied(true);
       playResurrectionChime();
-      setWaveformState('heartbeat');
+      setWaveformState('resurrected');
       setTimeout(() => setIsCopied(false), 2000);
     } catch {
       // Ignore silently — clipboard unavailable
@@ -419,17 +427,27 @@ try {
                   <div className="text-[10px] uppercase font-bold tracking-widest text-stone-700 dark:text-stone-300 whitespace-nowrap">
                     {t?.statusLabel}
                   </div>
-                  <div className={`text-xs sm:text-sm font-mono font-bold flex items-center justify-end gap-1.5 ${
-                    waveformState === 'heartbeat'
+                  <div className={`text-[10px] sm:text-xs font-mono font-bold flex items-center justify-end gap-1.5 leading-tight ${
+                    waveformState === 'resurrected'
                       ? 'text-emerald-600 dark:text-emerald-400'
+                      : waveformState === 'p1-heartbeat'
+                      ? 'text-amber-600 dark:text-amber-400'
                       : 'text-rose-600 dark:text-rose-500'
                   }`}>
-                    <span className={`inline-block w-2 h-2 rounded-full ${
-                      waveformState === 'heartbeat'
-                        ? 'bg-emerald-500 shadow-[0_0_6px_#10b981] animate-pulse'
-                        : 'bg-rose-500 shadow-[0_0_6px_#f43f5e] animate-pulse'
+                    <span className={`inline-block w-2 h-2 rounded-full shrink-0 animate-pulse ${
+                      waveformState === 'resurrected'
+                        ? 'bg-emerald-500 shadow-[0_0_6px_#10b981]'
+                        : waveformState === 'p1-heartbeat'
+                        ? 'bg-amber-500 shadow-[0_0_6px_#f59e0b]'
+                        : 'bg-rose-500 shadow-[0_0_6px_#f43f5e]'
                     }`} />
-                    {t?.statusValue}
+                    <span className="whitespace-nowrap">
+                      {waveformState === 'resurrected'
+                        ? t?.statusResurrected
+                        : waveformState === 'p1-heartbeat'
+                        ? t?.statusP1
+                        : t?.statusP0}
+                    </span>
                   </div>
                 </div>
 
