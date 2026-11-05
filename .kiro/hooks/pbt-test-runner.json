@@ -1,0 +1,16 @@
+{
+  "name": "Property-Based Invariant Verification",
+  "description": "Automatically runs Vitest property-based test suites whenever source files or test specifications are modified, guaranteeing forensic parser invariants.",
+  "trigger": "on-file-change",
+  "pattern": "src/**/*.{ts,tsx}",
+  "action": {
+    "type": "command",
+    "command": "pnpm test --run"
+  },
+  "blocking": false,
+  "metadata": {
+    "suite": "vitest",
+    "engine": "fast-check",
+    "assertionsCount": 33
+  }
+}
