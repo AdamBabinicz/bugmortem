@@ -57,30 +57,30 @@ export const en: Dictionary = {
   footerTerms: 'Terms of Service',
   footerCookieSettings: 'Cookie Preferences',
   cookieTitle: 'Cookie & Storage Transparency',
-  cookieDesc: 'BugMortem uses localStorage strictly to persist your post-mortem incident autopsies and theme preferences locally. We do not track or sell your telemetry.',
+  cookieDesc: 'BugMortem processes incident analyses strictly in-browser. Google Analytics 4 telemetry is blocked by default and only activates upon your explicit consent (Google Consent Mode v2).',
   cookieAcceptAll: 'Accept All',
   cookieEssentialOnly: 'Essential Only',
   cookieCustomize: 'Customize Preferences',
   cookieDrawerTitle: 'Cookie & Privacy Preferences',
-  cookieAnalytics: 'Analytics Storage',
-  cookieAnalyticsDesc: 'Allows saving analytical metrics of simulated outage mitigations locally.',
+  cookieAnalytics: 'Analytics Telemetry (GA4 / GTM)',
+  cookieAnalyticsDesc: 'Anonymous pageview and interaction telemetry governed by Google Consent Mode v2.',
   cookieMarketing: 'Marketing Storage',
-  cookieMarketingDesc: 'BugMortem does not serve ads or third-party tracking scripts.',
+  cookieMarketingDesc: 'BugMortem does not serve ads, profile users, or utilize marketing pixels.',
   cookieSavePreferences: 'Save Preferences',
 
   cookies: {
     title: 'Cookie & Privacy Transparency',
-    description: 'BugMortem uses local browser storage strictly to persist incident reports, autopsy notes, and your interface preferences. No personal telemetry is sold.',
+    description: 'BugMortem processes your incident data and reports locally in your browser. Visitor analytics (GA4) are subject to explicit user consent.',
     essential: 'Essential Storage',
-    essentialDesc: 'Required for core session state, dark/light theme persistence, and local incident autopsy caching.',
+    essentialDesc: 'Required for core session state: dark/light theme persistence, language settings, and local incident autopsy caching.',
     alwaysActive: 'Always Active',
-    analytics: 'Analytics Storage',
-    analyticsDesc: 'Allows anonymous client-side performance timing for simulated SRE incident mitigations.',
+    analytics: 'Analytics Telemetry (Google Analytics 4)',
+    analyticsDesc: 'Anonymous traffic metrics (GA4 / GTM) protected by Google Consent Mode v2 (disabled by default; activated strictly upon explicit consent).',
     marketing: 'Marketing Storage',
     marketingDesc: 'Zero advertising scripts, tracking pixels, or third-party behavioral profiling.',
     savePreferences: 'Save Preferences',
     acceptAll: 'Accept All',
-    rejectAll: 'Reject Non-Essential',
+    rejectAll: 'Essential Only',
     hideDetails: 'Hide Details',
     customize: 'Preferences',
   },
@@ -96,7 +96,7 @@ export const en: Dictionary = {
   legal: {
     modalTitle: 'Legal & Compliance',
     title: 'Legal & Compliance',
-    lastUpdated: 'Last updated: November 4, 2026',
+    lastUpdated: 'Last updated: November 5, 2026',
 
     // ── Terms of Service ────────────────────────────────────────────────────
     terms: 'Terms of Service',
@@ -138,68 +138,67 @@ export const en: Dictionary = {
     privacy: 'Privacy Policy',
     privacyTitle: 'Privacy Policy & Data Sovereignty',
 
-    privacyArchHeader: 'Zero Data Leakage — Local-First Architecture',
+    privacyArchHeader: 'Zero Incident Data Leakage — Local-First Architecture',
     privacyArchText:
-      'BugMortem is architected on a strict local-first, zero-egress data model. All processing — stack trace parsing, autopsy generation, post-mortem rendering — occurs exclusively inside your browser\'s JavaScript runtime. No data ever leaves your device.',
+      'BugMortem is architected on a strict local-first data model for all sensitive incident data. All autopsy processing — stack trace parsing, code comparison, post-mortem generation, and PDF death certificate rendering — takes place entirely within your browser\'s memory. Your production code and error logs never leave your device.',
     privacyArchBullets: [
-      'Raw incident logs and stack traces exist only in JavaScript heap memory during your session and are never serialized to a remote endpoint.',
-      'Custom incident autopsies you save are written exclusively to your own browser\'s localStorage — not to any server, database, or cloud storage.',
-      'Post-mortem Markdown exports are generated client-side and downloaded directly to your filesystem.',
-      'No WebSocket, XHR, or fetch call is made to any analytics, telemetry, or logging endpoint.',
-      'No service worker intercepts or caches your incident data.',
+      'Raw incident logs, code snippets, and stack traces exist solely in browser JavaScript heap memory and are never transmitted to remote servers or third-party AI endpoints.',
+      'Custom incident autopsies you save are written exclusively to your browser\'s localStorage.',
+      'Markdown exports and PDF death certificates are rendered 100% client-side using browser-native engines.',
+      'No incident data or stack traces are ever forwarded to analytics or error-logging beacons.',
     ],
 
     privacyAdminHeader: 'Data Controller',
     privacyAdminText:
-      'Because BugMortem processes all data exclusively in your local browser environment, you are the sole controller and processor of your own incident data. The BugMortem project team does not receive, store, or have access to any data you enter into the application.',
+      'Because BugMortem processes incident data exclusively in your local browser environment, you are the sole controller and processor of that information. The BugMortem project team does not receive, store, or have access to any logs or code entered into the application.',
 
     privacyScopeHeader: 'Scope of Data Processing',
     privacyScopeText:
-      'The application only touches data you explicitly provide: incident titles, stack trace snippets, code fragments, and autopsy notes. This data is used solely to render the in-browser UI and generate downloadable Markdown reports. It is never transmitted, shared, or sold.',
+      'The application only touches data you explicitly provide (incident titles, error logs, code snippets) solely to generate the interactive autopsy and downloadable files. It is never synced to external databases or sold.',
 
-    privacyLocalStorageHeader: 'Exact localStorage Keys Used',
+    privacyLocalStorageHeader: 'Local Storage (localStorage) and Cookies',
     privacyLocalStorageIntro:
-      'BugMortem writes to the following localStorage keys in your browser. You can inspect and delete these at any time via your browser\'s DevTools → Application → Local Storage:',
+      'BugMortem stores session preferences locally and — strictly upon voluntary consent — sets analytics cookies:',
     privacyLocalStorageKeys: [
-      { key: 'bm_cookie_consent',           desc: 'Stores your cookie/storage preference (accepted, essential, or custom JSON object). Set on first visit.' },
-      { key: 'bugmortem_custom_incidents',   desc: 'JSON array of custom incident autopsies you have created and saved. Never synced externally.' },
-      { key: 'bugmortem_locale',             desc: 'Your selected UI language ("en" or "pl"). Defaults to "en" if not set.' },
-      { key: 'bm_theme',                     desc: 'Your selected color theme ("dark" or "light"). Persists across sessions.' },
+      { key: 'bm_cookie_consent',           desc: 'Stores your telemetry and cookie consent choice (Google Consent Mode v2).' },
+      { key: 'bugmortem_custom_incidents',   desc: 'Local JSON storage of custom incident autopsies created by the user.' },
+      { key: 'bugmortem_locale',             desc: 'Selected user interface language ("en" or "pl").' },
+      { key: 'bm_theme',                     desc: 'Selected color theme preference ("dark" or "light").' },
+      { key: '_ga / _ga_* (optional)',       desc: 'Google Analytics 4 session cookies stored ONLY after clicking "Accept All" in the cookie banner.' },
     ],
 
-    privacyNoTrackingHeader: 'No Third-Party Telemetry, Ads, or Trackers',
+    privacyNoTrackingHeader: 'Telemetry Transparency & Privacy Protection',
     privacyNoTrackingText:
-      'BugMortem contains zero third-party tracking, advertising, or analytics scripts. The following are explicitly absent from this application:',
+      'The application utilizes Google Tag Manager (GTM-K77D4NHB) and Google Analytics 4 (G-KVMM511ZWD) strictly for anonymous visitor analytics, under the rigid enforcement of Google Consent Mode v2. The following principles guarantee your privacy:',
     privacyNoTrackingBullets: [
-      'No Google Analytics, Google Tag Manager, or Firebase Analytics.',
-      'No Meta Pixel, LinkedIn Insight Tag, or any social media tracker.',
-      'No Hotjar, FullStory, Heap, Mixpanel, Segment, or behavioral analytics SDK.',
-      'No Sentry, Datadog RUM, or any error-monitoring beacon that transmits stack traces externally.',
-      'No advertising networks, demand-side platforms, or retargeting pixels.',
-      'No CDN-hosted fonts or assets that create third-party requests (all assets are self-hosted or inlined).',
+      'Default Zero Tracking (Consent Mode v2): Prior to explicit consent in the cookie banner, all analytics and advertising storage parameters are set to "denied".',
+      'Zero Code Profiling: Incident logs, stack traces, and code snippets are strictly excluded from telemetry events.',
+      'No Advertising Networks: No Meta (Facebook) Pixel, LinkedIn Insight Tag, TikTok Pixel, or DSP/SSP advertising trackers.',
+      'No Invasive Session Replay: No Hotjar, FullStory, Smartlook, or Microsoft Clarity screen recording.',
+      'No External Error Beacons: No Sentry or Datadog RUM beacons transmitting stack traces externally.',
+      'No CDN Fonts: All typefaces and icons are self-hosted or system-native.',
     ],
 
     privacyUserRightsHeader: 'Your Rights — GDPR & CCPA',
     privacyUserRightsText:
-      'Because BugMortem is a fully local-first application with no server-side data storage, there is no personal data held by the BugMortem project team to access, correct, or delete on your behalf. Nevertheless, you hold the following rights over data stored in your own browser:',
+      'You maintain full control over all data stored in your browser and your telemetry consent status:',
     privacyUserRightsBullets: [
-      'Right of Access — Open DevTools → Application → Local Storage to view all stored keys and values at any time.',
-      'Right to Erasure — Clear all BugMortem data instantly via the one-click purge function below, or via DevTools.',
-      'Right to Portability — Export any incident as a Markdown file using the "Export Markdown Report" button.',
-      'Right to Withdraw Consent — Update or revoke your storage consent preferences via the "Cookie Preferences" button in the footer at any time.',
-      'CCPA — BugMortem does not "sell" personal information because it does not collect or store personal information on any server.',
+      'Right of Access — Open DevTools → Application → Local Storage / Cookies to view all stored values at any time.',
+      'Right to Erasure — Clear all stored data instantly via the purge instructions below or your browser\'s site data settings.',
+      'Right to Withdraw Consent — Update or revoke your analytics consent at any time via "Cookie Preferences" in the footer.',
+      'Data Sovereignty — No personal data or production error logs are ever sold to third parties.',
     ],
 
     privacyPurgeHeader: 'One-Click Local Data Purge',
     privacyPurgeText:
-      'To permanently erase all BugMortem data from your browser, open your browser DevTools (F12), navigate to Application → Local Storage → your domain, and delete all keys prefixed with "bm_" or "bugmortem_". Alternatively, clearing your browser\'s site data for this domain removes all stored data instantly.',
+      'To permanently erase all BugMortem data and analytics cookies from your browser, open browser DevTools (F12) → Application → Clear site data, or delete all keys prefixed with "bm_" and "bugmortem_".',
 
     // ── Cookie Policy ───────────────────────────────────────────────────────
     cookies: 'Cookie Policy',
     cookiesTitle: 'Cookie & Local Storage Policy',
-    cookiesUsageHeader: 'Local Storage Usage',
+    cookiesUsageHeader: 'Cookie & Local Storage Usage',
     cookiesUsageText:
-      'BugMortem does not set HTTP cookies. It uses browser localStorage exclusively. The four keys documented in the Privacy Policy above are the complete and exhaustive list of all browser storage written by this application.',
+      'BugMortem relies primarily on browser localStorage. HTTP cookies (Google Analytics 4: _ga, _ga_*) are set only when the user grants voluntary consent via the cookie banner. Without consent or under "Essential Only", Google Consent Mode v2 prevents analytics cookies from being written, preserving full sovereign operation.',
   },
 
   presets: {

@@ -57,30 +57,30 @@ export const pl: Dictionary = {
   footerTerms: 'Regulamin',
   footerCookieSettings: 'Ustawienia Cookies',
   cookieTitle: 'Przejrzystość Danych i Ciasteczek',
-  cookieDesc: 'BugMortem wykorzystuje localStorage wyłącznie do zapamiętania Twoich raportów awarii i preferencji motywu. Nie śledzimy ani nie profilujemy Twoich działań.',
+  cookieDesc: 'BugMortem przetwarza analizy awarii lokalnie w przeglądarce. Telemetria Google Analytics 4 jest domyślnie zablokowana i uruchamia się wyłącznie za Twoją zgodą (Google Consent Mode v2).',
   cookieAcceptAll: 'Akceptuję wszystkie',
   cookieEssentialOnly: 'Tylko niezbędne',
   cookieCustomize: 'Dostosuj preferencje',
   cookieDrawerTitle: 'Preferencje Prywatności i Cookies',
-  cookieAnalytics: 'Pamięć analityczna',
-  cookieAnalyticsDesc: 'Umożliwia lokalne zapisywanie symulowanych metryk naprawczych.',
+  cookieAnalytics: 'Pomiary analityczne (GA4 / GTM)',
+  cookieAnalyticsDesc: 'Anonimowe statystyki odsłon i ruchu serwisu pod kontrolą Google Consent Mode v2.',
   cookieMarketing: 'Pamięć marketingowa',
-  cookieMarketingDesc: 'BugMortem nie wyświetla reklam ani nie korzysta ze skryptów śledzących.',
+  cookieMarketingDesc: 'BugMortem nie wyświetla reklam, nie profiluje użytkowników ani nie korzysta z pikseli marketingowych.',
   cookieSavePreferences: 'Zapisz preferencje',
 
   cookies: {
     title: 'Przejrzystość Danych i Plików Cookies',
-    description: 'BugMortem wykorzystuje pamięć lokalną przeglądarki wyłącznie do zapisu raportów z awarii oraz preferencji interfejsu. Żadne dane telemetryczne nie są sprzedawane.',
-    essential: 'Niezbędne pliki cookies',
-    essentialDesc: 'Konieczne do prawidłowego działania aplikacji, zapamiętania motywu ciemnego/jasnego i zapisu sekcji zwłok.',
+    description: 'BugMortem przetwarza Twoje dane i raporty z awarii lokalnie w przeglądarce. Statystyki odwiedzin (GA4) podlegają ścisłej zgodzie użytkownika.',
+    essential: 'Niezbędna pamięć lokalna',
+    essentialDesc: 'Wymagana do prawidłowego działania aplikacji: zapamiętania motywu ciemnego/jasnego, języka oraz lokalnych sekcji zwłok.',
     alwaysActive: 'Zawsze aktywne',
-    analytics: 'Pomiary analityczne',
-    analyticsDesc: 'Pomagają nam anonimowo badać wydajność symulatora procedur naprawczych SRE.',
+    analytics: 'Pomiary analityczne (Google Analytics 4)',
+    analyticsDesc: 'Anonimowa telemetria ruchu (GA4 / GTM) chroniona przez Google Consent Mode v2 (domyślnie wyłączona; aktywowana wyłącznie po wyrażeniu zgody).',
     marketing: 'Pliki marketingowe',
-    marketingDesc: 'Zero reklam, skryptów śledzących i profilowania przez podmioty trzecie.',
+    marketingDesc: 'Całkowity brak reklam, pikseli śledzących i profilowania przez podmioty trzecie.',
     savePreferences: 'Zapisz preferencje',
     acceptAll: 'Zaakceptuj wszystkie',
-    rejectAll: 'Odrzuć opcjonalne',
+    rejectAll: 'Tylko niezbędne',
     hideDetails: 'Ukryj szczegóły',
     customize: 'Dostosuj',
   },
@@ -96,7 +96,7 @@ export const pl: Dictionary = {
   legal: {
     modalTitle: 'Informacje Prawne i Zgodność',
     title: 'Informacje Prawne',
-    lastUpdated: 'Ostatnia aktualizacja: 4 listopada 2026',
+    lastUpdated: 'Ostatnia aktualizacja: 5 listopada 2026',
 
     // ── Regulamin ────────────────────────────────────────────────────────────
     terms: 'Regulamin Serwisu',
@@ -138,68 +138,67 @@ export const pl: Dictionary = {
     privacy: 'Polityka Prywatności',
     privacyTitle: 'Polityka Prywatności i Suwerenność Danych',
 
-    privacyArchHeader: 'Zero Wycieku Danych — Architektura Local-First',
+    privacyArchHeader: 'Zero Wycieku Kodu Incydentów — Architektura Local-First',
     privacyArchText:
-      'BugMortem jest zbudowany na ścisłym modelu local-first bez ruchu wychodzącego. Całe przetwarzanie — parsowanie śladów stosu, generowanie sekcji zwłok, renderowanie raportów post-mortem — odbywa się wyłącznie w środowisku JavaScript Twojej przeglądarki. Żadne dane nigdy nie opuszczają Twojego urządzenia.',
+      'BugMortem jest zbudowany w oparciu o model local-first dla wszelkich danych wrażliwych. Całe przetwarzanie awarii — parsowanie śladów stosu, generowanie sekcji zwłok, analiza kodu oraz renderowanie raportów i kart zgonu PDF — odbywa się wyłącznie w pamięci Twojej przeglądarki. Twój kod produkcyjny i zrzuty błędów nigdy nie opuszczają Twojego urządzenia.',
     privacyArchBullets: [
-      'Surowe logi incydentów i ślady stosu istnieją wyłącznie w pamięci sterty JavaScript podczas sesji i nigdy nie są serializowane do zdalnego punktu końcowego.',
-      'Własne sekcje zwłok incydentów, które zapisujesz, są zapisywane wyłącznie w localStorage Twojej przeglądarki — nie na żadnym serwerze, w bazie danych ani w pamięci chmurowej.',
-      'Eksporty Markdown raportów post-mortem są generowane po stronie klienta i pobierane bezpośrednio do Twojego systemu plików.',
-      'Żadne wywołanie WebSocket, XHR ani fetch nie jest kierowane do żadnego punktu końcowego analityki, telemetrii ani logowania.',
-      'Żaden service worker nie przechwytuje ani nie buforuje Twoich danych incydentów.',
+      'Surowe logi incydentów, fragmenty kodu i ślady stosu istnieją wyłącznie w pamięci operacyjnej JavaScript i nigdy nie są wysyłane do zdalnych serwerów ani systemów AI podmiotów trzecich.',
+      'Własne sekcje zwłok incydentów, które zapisujesz, trafiają wyłącznie do pamięci localStorage Twojej przeglądarki.',
+      'Eksporty Markdown oraz karty zgonu PDF są generowane w 100% po stronie klienta za pomocą lokalnych silników przeglądarki.',
+      'Żadne dane o awariach nie są przekazywane do skryptów analitycznych ani logowania błędów.',
     ],
 
     privacyAdminHeader: 'Administrator Danych',
     privacyAdminText:
-      'Ponieważ BugMortem przetwarza wszystkie dane wyłącznie w lokalnym środowisku Twojej przeglądarki, jesteś jedynym administratorem i podmiotem przetwarzającym własne dane incydentów. Zespół projektu BugMortem nie otrzymuje, nie przechowuje ani nie ma dostępu do żadnych danych wprowadzonych do aplikacji.',
+      'Ponieważ BugMortem przetwarza dane incydentów wyłącznie w lokalnym środowisku Twojej przeglądarki, jesteś jedynym administratorem i dysponentem tych informacji. Zespół projektu BugMortem nie gromadzi, nie przechowuje ani nie ma wglądu w żadne logi ani kody wprowadzane do aplikacji.',
 
     privacyScopeHeader: 'Zakres Przetwarzania Danych',
     privacyScopeText:
-      'Aplikacja przetwarza wyłącznie dane jawnie podane przez użytkownika: tytuły incydentów, fragmenty śladów stosu, fragmenty kodu i notatki sekcji zwłok. Dane te są wykorzystywane wyłącznie do renderowania interfejsu użytkownika w przeglądarce i generowania plików Markdown do pobrania. Nigdy nie są przesyłane, udostępniane ani sprzedawane.',
+      'Aplikacja przetwarza dane podane przez użytkownika (tytuły incydentów, logi błędów, fragmenty kodu) wyłącznie w celu wygenerowania interaktywnej sekcji zwłok i plików do pobrania. Dane te nigdy nie są synchronizowane z zewnętrznymi bazami danych ani odsprzedawane.',
 
-    privacyLocalStorageHeader: 'Dokładne Klucze localStorage',
+    privacyLocalStorageHeader: 'Pamięć Lokalna (localStorage) i Ciasteczka',
     privacyLocalStorageIntro:
-      'BugMortem zapisuje dane pod następującymi kluczami localStorage w Twojej przeglądarce. Możesz je w każdej chwili sprawdzić i usunąć za pomocą DevTools → Aplikacja → Lokalne Przechowywanie:',
+      'BugMortem zapisuje konfigurację sesji w pamięci lokalnej oraz — wyłącznie po wyrażeniu dobrowolnej zgody — w plikach cookies:',
     privacyLocalStorageKeys: [
-      { key: 'bm_cookie_consent',           desc: 'Przechowuje Twoje preferencje dotyczące plików cookie/przechowywania (zaakceptowane, niezbędne lub własny obiekt JSON). Ustawiane przy pierwszej wizycie.' },
-      { key: 'bugmortem_custom_incidents',   desc: 'Tablica JSON własnych sekcji zwłok incydentów, które utworzyłeś i zapisałeś. Nigdy nie synchronizowana zewnętrznie.' },
-      { key: 'bugmortem_locale',             desc: 'Wybrany język interfejsu ("en" lub "pl"). Domyślnie "pl", jeśli nie ustawiono.' },
-      { key: 'bm_theme',                     desc: 'Wybrany motyw kolorystyczny ("dark" lub "light"). Utrzymywany między sesjami.' },
+      { key: 'bm_cookie_consent',           desc: 'Przechowuje Twoją decyzję dotyczącą zgody na telemetrię i cookies (Google Consent Mode v2).' },
+      { key: 'bugmortem_custom_incidents',   desc: 'Lokalna baza JSON własnych sekcji zwłok incydentów wprowadzonych przez użytkownika.' },
+      { key: 'bugmortem_locale',             desc: 'Wybrany język interfejsu ("pl" lub "en").' },
+      { key: 'bm_theme',                     desc: 'Preferencja motywu wizualnego ("dark" lub "light").' },
+      { key: '_ga / _ga_* (opcjonalne)',     desc: 'Ciasteczka analityczne Google Analytics 4 zapisywane WYŁĄCZNIE po kliknięciu „Akceptuję wszystkie” w banerze cookies.' },
     ],
 
-    privacyNoTrackingHeader: 'Brak Telemetrii Podmiotów Trzecich, Reklam i Trackerów',
+    privacyNoTrackingHeader: 'Przejrzystość Telemetrii i Ochrona Prywatności',
     privacyNoTrackingText:
-      'BugMortem nie zawiera żadnych zewnętrznych skryptów śledzących, reklamowych ani analitycznych. Poniższe rozwiązania są jawnie nieobecne w aplikacji:',
+      'Aplikacja korzysta z Google Tag Manager (GTM-K77D4NHB) oraz Google Analytics 4 (G-KVMM511ZWD) wyłącznie do anonimowych statystyk odwiedzin, pod ścisłym nadzorem Google Consent Mode v2. Poniższe zasady gwarantują pełną ochronę prywatności:',
     privacyNoTrackingBullets: [
-      'Brak Google Analytics, Google Tag Manager ani Firebase Analytics.',
-      'Brak Meta Pixel, LinkedIn Insight Tag ani żadnego trackera mediów społecznościowych.',
-      'Brak Hotjar, FullStory, Heap, Mixpanel, Segment ani żadnego SDK analityki behawioralnej.',
-      'Brak Sentry, Datadog RUM ani żadnego beacona monitorowania błędów przesyłającego ślady stosu na zewnątrz.',
-      'Brak sieci reklamowych, platform DSP ani pikseli retargetingowych.',
-      'Brak hostowanych zewnętrznie czcionek ani zasobów generujących żądania do podmiotów trzecich (wszystkie zasoby są hostowane lokalnie lub wbudowane).',
+      'Domyślny brak śledzenia (Consent Mode v2): Przed kliknięciem zgody w banerze cookies wszelkie identyfikatory analityczne i reklamowe posiadają status „denied”.',
+      'Zero profilowania kodu: Dane o awariach, ślady stosu i kod źródłowy są całkowicie wyłączone ze zdarzeń telemetrycznych.',
+      'Brak sieci reklamowych i retargetingu: Brak pikseli reklamowych Meta (Facebook), LinkedIn, TikTok czy platform DSP/SSP.',
+      'Brak inwazyjnego nagrywania sesji: Brak narzędzi typu Hotjar, FullStory, Smartlook czy Microsoft Clarity.',
+      'Brak zewnętrznych agregatorów błędów: Brak beacona Sentry lub Datadog RUM wysyłającego ślady awarii na zewnątrz.',
+      'Brak zewnętrznych czcionek CDN: Wszystkie czcionki i ikony są wbudowane lub serwowane bezpośrednio z domeny aplikacji.',
     ],
 
     privacyUserRightsHeader: 'Twoje Prawa — RODO i CCPA',
     privacyUserRightsText:
-      'Ponieważ BugMortem jest w pełni aplikacją local-first bez serwerowego przechowywania danych, zespół projektu BugMortem nie posiada żadnych danych osobowych do udostępnienia, poprawienia ani usunięcia na Twoje żądanie. Niemniej jednak posiadasz następujące prawa dotyczące danych przechowywanych w Twojej przeglądarce:',
+      'Masz pełną kontrolę nad wszelkimi danymi zapisanymi w Twojej przeglądarce oraz nad statusem zgód telemetrycznych:',
     privacyUserRightsBullets: [
-      'Prawo dostępu — Otwórz DevTools → Aplikacja → Lokalne Przechowywanie, aby w każdej chwili wyświetlić wszystkie zapisane klucze i wartości.',
-      'Prawo do usunięcia — Usuń natychmiastowo wszystkie dane BugMortem za pomocą funkcji jednym kliknięciem opisanej poniżej lub przez DevTools.',
-      'Prawo do przenoszenia danych — Eksportuj dowolny incydent jako plik Markdown za pomocą przycisku „Eksportuj Raport do Markdown".',
-      'Prawo do wycofania zgody — Zaktualizuj lub wycofaj preferencje przechowywania za pomocą przycisku „Ustawienia Cookies" w stopce w dowolnym momencie.',
-      'CCPA — BugMortem nie „sprzedaje" danych osobowych, ponieważ nie gromadzi ani nie przechowuje danych osobowych na żadnym serwerze.',
+      'Prawo dostępu — Otwórz DevTools → Aplikacja → Lokalne Przechowywanie / Pliki cookie, aby w każdej chwili sprawdzić zapisane wartości.',
+      'Prawo do usunięcia — Możesz natychmiast wyczyścić dane za pomocą poniższej instrukcji lub wyczyszczenia pamięci witryny w przeglądarce.',
+      'Prawo do wycofania zgody — W każdej chwili możesz zmienić lub wycofać zgodę analityczną, klikając „Ustawienia Cookies” w stopce serwisu.',
+      'Suwerenność danych — Żadne dane osobowe ani logi produkcyjne nie są i nigdy nie będą sprzedawane podmiotom trzecim.',
     ],
 
     privacyPurgeHeader: 'Jednorazowe Czyszczenie Danych Lokalnych',
     privacyPurgeText:
-      'Aby trwale usunąć wszystkie dane BugMortem z przeglądarki, otwórz DevTools przeglądarki (F12), przejdź do Aplikacja → Lokalne Przechowywanie → Twoja domena i usuń wszystkie klucze z prefiksem „bm_" lub „bugmortem_". Ewentualnie wyczyszczenie danych witryny dla tej domeny usuwa wszystkie przechowywane dane natychmiastowo.',
+      'Aby trwale usunąć wszystkie dane BugMortem oraz ciasteczka analityczne z przeglądarki, otwórz DevTools (F12) → Aplikacja → Wyczyść dane witryny (Clear site data), lub usuń klucze z prefiksem „bm_" oraz „bugmortem_".',
 
     // ── Polityka Cookies ─────────────────────────────────────────────────────
     cookies: 'Polityka Cookies',
     cookiesTitle: 'Polityka Cookies i Pamięci Lokalnej',
-    cookiesUsageHeader: 'Użycie Pamięci Lokalnej',
+    cookiesUsageHeader: 'Użycie Ciasteczek i Pamięci Lokalnej',
     cookiesUsageText:
-      'BugMortem nie ustawia plików cookie HTTP. Wykorzystuje wyłącznie localStorage przeglądarki. Cztery klucze udokumentowane powyżej w Polityce Prywatności stanowią kompletną i wyczerpującą listę wszystkich danych zapisywanych przez tę aplikację w pamięci przeglądarki.',
+      'BugMortem w warstwie podstawowej opiera się na pamięci lokalnej (localStorage). Pliki cookie HTTP (Google Analytics 4: _ga, _ga_*) są tworzone wyłącznie wtedy, gdy użytkownik wyrazi dobrowolną zgodę w banerze cookies. W przypadku braku zgody lub wyboru trybu „Tylko niezbędne”, Google Consent Mode v2 blokuje zapis ciasteczek analitycznych, a serwis funkcjonuje w trybie całkowicie suwerennym.',
   },
 
   presets: {
