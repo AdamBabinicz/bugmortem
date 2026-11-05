@@ -8,13 +8,13 @@ export const pl: Dictionary = {
   statusValue: 'Aktywny Incydent (P0)',
   customAutopsyBtn: '+ Wprowadź Własną Awarię',
   presetsSectionTitle: 'Archiwum Sekcji Zwłok Awarii',
-  autopsyTitle: 'Sekcja Kodu: Przeklęty vs Wskrzeszony Kod',
+  autopsyTitle: 'Sekcja Kodu: Przeklęty a Wskrzeszony Kod',
   copyCodeBtn: 'Kopiuj Wskrzeszony Kod',
   copiedCodeBtn: 'Skopiowano do Schowka!',
   crashedCodeTitle: 'Przeklęty Kod (Crash na Produkcji)',
   crashedBadge: 'Błąd Krytyczny',
   resurrectedCodeTitle: 'Wskrzeszony Kod SRE (Bezpieczny Wzorzec)',
-  resurrectedBadge: 'Circuit Breaker',
+  resurrectedBadge: 'Wzorzec: Circuit Breaker',
   stackTraceTitle: 'Surowy Ślad Stosu (Stack Trace)',
   timelineTitle: 'Chronologiczna Oś Czasu Awarii',
   postMortemTitle: 'Oficjalny Raport Sekcji Zwłok Incydentu',
@@ -43,7 +43,7 @@ export const pl: Dictionary = {
   fieldCrashedCode: 'Przeklęty Kod (Opcjonalnie)',
   fieldCrashedCodePlaceholder: 'Wklej fragment kodu, który wywołał awarię...',
   fieldResurrectedCode: 'Wskrzeszony Kod SRE (Opcjonalnie)',
-  fieldResurrectedCodePlaceholder: 'Pozostaw puste, aby wygenerować automatyczny circuit breaker...',
+  fieldResurrectedCodePlaceholder: 'Pozostaw puste, aby wygenerować bezpieczny wzorzec Circuit Breaker...',
   btnCancel: 'Anuluj',
   btnAnalyzeAndGenerate: 'Przeprowadź Sekcję Zwłok',
   validationErrorRequired: 'Proszę podać tytuł awarii oraz ślad stosu.',
@@ -104,7 +104,7 @@ export const pl: Dictionary = {
 
     termsScopeHeader: 'Zakres i Cel Narzędzia',
     termsScopeText:
-      'BugMortem to forensyczne studio edukacyjne i diagnostyczne SRE zgłoszone na Hackathon Kiroween 2026, organizowany przez AWS & Devpost. Narzędzie umożliwia porównawczą sekcję zwłok incydentów, automatyczne generowanie raportów post-mortem oraz przeglądanie wyselekcjonowanych „Wzorców Wskrzeszenia Kodu" — algorytmicznych wzorców odtwarzania systemów zaczerpniętych z rzeczywistych podręczników SRE.',
+      'BugMortem to diagnostyczne studio śledcze SRE zgłoszone na Hackathon Kiroween 2026, organizowany przez AWS & Devpost. Narzędzie umożliwia porównawczą sekcję zwłok incydentów, automatyczne generowanie raportów post-mortem oraz przeglądanie wyselekcjonowanych „Wzorców Wskrzeszenia Kodu" — algorytmicznych wzorców odtwarzania systemów zaczerpniętych z rzeczywistych podręczników SRE.',
 
     termsGeneralHeader: 'Warunki Ogólne',
     termsGeneralText:
