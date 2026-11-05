@@ -11,6 +11,7 @@ import { Volume2, VolumeX, Sun, Moon, Mic, Square } from 'lucide-react';
 import { useAudioEngine } from '@/hooks/useAudioEngine';
 import { EcgMonitor, WaveformState } from '@/components/EcgMonitor';
 import { BlastRadiusMap } from '@/components/BlastRadiusMap';
+import { ChaosSandbox } from '@/components/ChaosSandbox';
 
 // Bezpieczne rozszerzenie typu zdarzenia na osi czasu
 export interface SafeTimelineEvent extends TimelineEvent {
@@ -25,6 +26,31 @@ export function fixOrphans(text: string): string {
 
 export default function Home() {
   const [isDispatcherOpen, setIsDispatcherOpen] = useState<boolean>(false);
+  const [activeChaos, setActiveChaos] = useState<string | null>(null);
+
+  const handleTriggerChaos = (scenarioId: string, severity: 'P0' | 'P1') => {
+    setActiveChaos(scenarioId);
+    if (severity === 'P0') {
+      setWaveformState('flatline');
+    } else {
+      setWaveformState('p1-heartbeat');
+    }
+  };
+
+  const handleMitigateChaos = () => {
+    setActiveChaos(null);
+    playResurrectionChime();
+    setWaveformState('resurrected');
+    setTimeout(() => {
+      const sev = activeIncident?.severity ?? '';
+      if (sev === 'P0') {
+        setWaveformState('flatline');
+      } else {
+        setWaveformState('p1-heartbeat');
+      }
+    }, 4000);
+  };
+
 
   // Global Theme Context
   const { theme, toggleTheme } = useTheme();
@@ -766,6 +792,16 @@ try {
           category={activeIncident?.badge}
           isResurrected={waveformState === 'resurrected'}
         />
+
+        {/* MODUŁ 4: Piaskownica Inżynierii Chaosu (Live Chaos Sandbox) */}
+        <ChaosSandbox
+          t={t}
+          activeChaos={activeChaos}
+          onTriggerChaos={handleTriggerChaos}
+          onMitigate={handleMitigateChaos}
+          isResurrected={waveformState === 'resurrected'}
+        />
+
 
         {/* Official Post-Mortem Report Protocol & Exporters */}
         <section

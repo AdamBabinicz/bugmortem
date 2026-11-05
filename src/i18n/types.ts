@@ -198,6 +198,28 @@ export interface DispatcherDictionary {
   githubLabels: string;
 }
 
+
+export interface ChaosDictionary {
+  sectionTitle: string;
+  sectionSubtitle: string;
+  btnInject: string;
+  btnMitigate: string;
+  statusActive: string;
+  statusNominal: string;
+  scenarioLatencyTitle: string;
+  scenarioLatencyDesc: string;
+  scenarioDbPoolTitle: string;
+  scenarioDbPoolDesc: string;
+  scenarioMemoryTitle: string;
+  scenarioMemoryDesc: string;
+  scenarioAuthStormTitle: string;
+  scenarioAuthStormDesc: string;
+  liveTelemetryTitle: string;
+  metricRps: string;
+  metricLatency: string;
+  metricErrorRate: string;
+}
+
 export interface Dictionary {
   title: string;
   subtitle: string;
@@ -239,6 +261,7 @@ export interface Dictionary {
   // ── Mapa Skażenia Architektury (Blast Radius Heatmap) ─────────────────────
   blastRadius: BlastRadiusDictionary;
   dispatcher: DispatcherDictionary;
+  chaos: ChaosDictionary;
 
   postMortemSummaryHeading: string;
   postMortemImpactHeading: string;

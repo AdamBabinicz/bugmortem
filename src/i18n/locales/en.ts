@@ -110,6 +110,27 @@ export const en: Dictionary = {
     pdRoutingKeyNotice: "Replace 'SERVICE_INTEGRATION_KEY' with your PagerDuty service routing key.",
     githubLabels: "Labels: incident, sre-triage, production, bugmortem",
   },
+  chaos: {
+    sectionTitle: "Live Chaos Engineering Sandbox",
+    sectionSubtitle: "Inject real-time failure modes and observe cascading telemetry reactions",
+    btnInject: "Inject Fault",
+    btnMitigate: "SRE Mitigation (Rollback)",
+    statusActive: "FAULT ACTIVE",
+    statusNominal: "SYSTEM NOMINAL",
+    scenarioLatencyTitle: "Edge Latency Spike",
+    scenarioLatencyDesc: "Artificial +2500ms delay on Edge Gateway causing cascading UI timeouts",
+    scenarioDbPoolTitle: "DB Connection Pool Saturation",
+    scenarioDbPoolDesc: "100% PostgreSQL connection exhaustion causing 503 Service Unavailable errors",
+    scenarioMemoryTitle: "Worker Heap Memory Leak (OOM)",
+    scenarioMemoryDesc: "Exponential memory footprint growth in background worker queue",
+    scenarioAuthStormTitle: "Auth Token Invalidation Storm",
+    scenarioAuthStormDesc: "Massive JWT rejection wave triggering a storm of re-authentication requests",
+    liveTelemetryTitle: "Real-Time Telemetry",
+    metricRps: "Throughput",
+    metricLatency: "p99 Latency",
+    metricErrorRate: "Error Rate",
+  },
+
 
 
   postMortemSummaryHeading: 'Executive Summary',

@@ -110,6 +110,27 @@ export const pl: Dictionary = {
     pdRoutingKeyNotice: "Zastap 'SERVICE_INTEGRATION_KEY' kluczem routingu serwisu w PagerDuty.",
     githubLabels: "Labels: incident, sre-triage, production, bugmortem",
   },
+  chaos: {
+    sectionTitle: "Piaskownica Inzynierii Chaosu (Live Chaos Sandbox)",
+    sectionSubtitle: "Wstrzykuj awarie w czasie rzeczywistym i obserwuj kaskadowa reakcje telemetrii",
+    btnInject: "Wstrzyknij awarie",
+    btnMitigate: "Szybka mitigacja (SRE Rollback)",
+    statusActive: "AWARIA AKTYWNA",
+    statusNominal: "SYSTEM NOMINALNY",
+    scenarioLatencyTitle: "Skok opoznien brzegowych (Latency Spike)",
+    scenarioLatencyDesc: "Sztuczne opoznienie +2500ms na Edge Gateway, powodujace timeouty w UI",
+    scenarioDbPoolTitle: "Nasycenie puli bazy danych (DB Pool Saturation)",
+    scenarioDbPoolDesc: "100% wykorzystania polaczen PostgreSQL, kaskada bledow 503",
+    scenarioMemoryTitle: "Wyciek pamieci (Heap OOM Leak)",
+    scenarioMemoryDesc: "Eksponencjalny wzrost zuzycia RAM w puli workerow asynchronicznych",
+    scenarioAuthStormTitle: "Burza uniewaznienia sesji (Auth Storm)",
+    scenarioAuthStormDesc: "Zmasowane odrzucenia tokenow JWT i lawina zadan ponownego logowania",
+    liveTelemetryTitle: "Telemetria w czasie rzeczywistym",
+    metricRps: "Przepustowosc",
+    metricLatency: "Opoznienie p99",
+    metricErrorRate: "Wskaznik bledow",
+  },
+
 
 
   postMortemSummaryHeading: 'Podsumowanie Wykonawcze',
