@@ -877,7 +877,7 @@ try {
       <IncidentDispatcherModal
         isOpen={isDispatcherOpen}
         onClose={() => setIsDispatcherOpen(false)}
-        incident={selectedIncident}
+        incident={incident}
         postMortem={postMortem}
         isResurrected={isResurrected}
         t={t}
