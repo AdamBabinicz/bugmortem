@@ -46,6 +46,31 @@ export interface CookiesDictionary {
   [key: string]: any;
 }
 
+export interface PdfDictionary {
+  certTitle: string;
+  subTitle: string;
+  recordRef: string;
+  timestamp: string;
+  labelService: string;
+  labelDomain: string;
+  labelSeverity: string;
+  labelStatus: string;
+  statusResurrected: string;
+  section1Title: string;
+  section2Title: string;
+  section3Title: string;
+  section4Title: string;
+  summary: string;
+  impact: string;
+  fatalEvent: string;
+  noStackTrace: string;
+  appliedFallback: string;
+  commanderRole: string;
+  sealLine1: string;
+  sealLine2: string;
+  [key: string]: any;
+}
+
 export interface LegalDictionary {
   modalTitle?: string;
   title?: string;
@@ -142,6 +167,22 @@ export interface Dictionary {
   exportPdfBtn: string;
   downloadSuccess: string;
   downloadPdfSuccess: string;
+  mdReportFooter: string;
+
+  // ── Głosowa Diagnoza Lekarza Sądowego SRE (Speech API) ────────────────────
+  coronerVerdictBtn: string;
+  coronerVerdictStopBtn: string;
+  coronerVerdictPlaying: string;
+  coronerSpeechPrefix: string;
+  coronerSpeechIncident: string;
+  coronerSpeechSeverity: string;
+  coronerSpeechTime: string;
+  coronerSpeechCause: string;
+  coronerSpeechMitigation: string;
+
+  // ── Urzędowa Karta Zgonu (PDF) ────────────────────────────────────────────
+  pdf: PdfDictionary;
+
   postMortemSummaryHeading: string;
   postMortemImpactHeading: string;
   postMortemActionsHeading: string;
