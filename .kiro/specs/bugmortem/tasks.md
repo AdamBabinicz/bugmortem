@@ -17,6 +17,6 @@
 - [x] 12. Full dual-locale dictionary coverage (English & Polish i18n with automated orphan suppression).
 
 ## Phase 3: Kiro Automation & Forensic Artifact Export
-- [ ] 13. Automated Kiro agent test runner hook in `.kiro/hooks/` triggered on file modification.
-- [ ] 14. Dedicated SRE Autopsy Agent specification in `.kiro/agents/` for incident analysis.
+- [x] 13. Automated Kiro agent test runner hook in `.kiro/hooks/` triggered on file modification.
+- [x] 14. Dedicated SRE Autopsy Agent specification in `.kiro/agents/` for incident analysis.
 - [ ] 15. Cyber-Gothic "Death Certificate" PDF generator with hospital seal, vital stats, and code diff.
