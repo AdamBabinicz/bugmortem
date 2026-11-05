@@ -24,6 +24,8 @@ export function fixOrphans(text: string): string {
 }
 
 export default function Home() {
+  const [isDispatcherOpen, setIsDispatcherOpen] = useState<boolean>(false);
+
   // Global Theme Context
   const { theme, toggleTheme } = useTheme();
 
