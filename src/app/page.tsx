@@ -776,7 +776,14 @@ try {
 
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               {/* SRE Coroner Voice Verdict Audio */}
-              <button
+                          <button
+              onClick={() => setIsDispatcherOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-amber-300 dark:border-amber-800/80 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 text-amber-800 dark:text-amber-300 transition-colors shadow-sm"
+            >
+              <Radio className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              {t.dispatcher.openBtn}
+            </button>
+<button
                 type="button"
                 onClick={handlePlayCoronerVerdict}
                 className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer flex-1 sm:flex-initial shadow-sm ${
@@ -861,6 +868,17 @@ try {
             </div>
           </div>
         </section>
+      
+      {/* On-Call Incident Dispatcher Modal */}
+      <IncidentDispatcherModal
+        isOpen={isDispatcherOpen}
+        onClose={() => setIsDispatcherOpen(false)}
+        incident={selectedIncident}
+        postMortem={postMortem}
+        isResurrected={isResurrected}
+        t={t}
+      />
+
       </main>
 
       {/* Legal Modal */}

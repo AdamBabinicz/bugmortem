@@ -71,6 +71,32 @@ export interface PdfDictionary {
   [key: string]: any;
 }
 
+export interface BlastRadiusDictionary {
+  title: string;
+  subtitle: string;
+  legendPatientZero: string;
+  legendCascading: string;
+  legendHealthy: string;
+  nodeClientSpa: string;
+  nodeClientSpaDesc: string;
+  nodeEdgeGateway: string;
+  nodeEdgeGatewayDesc: string;
+  nodeAuthService: string;
+  nodeAuthServiceDesc: string;
+  nodeDatabase: string;
+  nodeDatabaseDesc: string;
+  nodeWorkerPool: string;
+  nodeWorkerPoolDesc: string;
+  statusPatientZero: string;
+  statusDegraded: string;
+  statusHealthy: string;
+  statusResurrected: string;
+  metricCritical: string;
+  metricDegraded: string;
+  metricHealthy: string;
+  [key: string]: any;
+}
+
 export interface LegalDictionary {
   modalTitle?: string;
   title?: string;
@@ -145,6 +171,33 @@ export interface CommonDictionary {
   [key: string]: any;
 }
 
+
+export interface DispatcherDictionary {
+  openBtn: string;
+  modalTitle: string;
+  modalSubtitle: string;
+  tabSlack: string;
+  tabPagerDuty: string;
+  tabGithub: string;
+  copyBtn: string;
+  copiedBtn: string;
+  openGithubBtn: string;
+  closeBtn: string;
+  fieldIncidentId: string;
+  fieldSeverity: string;
+  fieldService: string;
+  fieldStatus: string;
+  fieldBlastRadius: string;
+  fieldWarRoom: string;
+  fieldRunbook: string;
+  fieldChecklist: string;
+  slackHeader: string;
+  slackActionRequired: string;
+  slackJoinWarRoom: string;
+  pdRoutingKeyNotice: string;
+  githubLabels: string;
+}
+
 export interface Dictionary {
   title: string;
   subtitle: string;
@@ -182,6 +235,10 @@ export interface Dictionary {
 
   // ── Urzędowa Karta Zgonu (PDF) ────────────────────────────────────────────
   pdf: PdfDictionary;
+
+  // ── Mapa Skażenia Architektury (Blast Radius Heatmap) ─────────────────────
+  blastRadius: BlastRadiusDictionary;
+  dispatcher: DispatcherDictionary;
 
   postMortemSummaryHeading: string;
   postMortemImpactHeading: string;
