@@ -874,12 +874,13 @@ try {
         </section>
       
       {/* On-Call Incident Dispatcher Modal */}
+            {/* On-Call Incident Dispatcher Modal */}
       <IncidentDispatcherModal
         isOpen={isDispatcherOpen}
         onClose={() => setIsDispatcherOpen(false)}
-        incident={incident}
-        postMortem={postMortem}
-        isResurrected={isResurrected}
+        incident={activeIncident}
+        postMortem={activeIncident?.postMortemReport || null}
+        isResurrected={waveformState === 'resurrected'}
         t={t}
       />
 

@@ -30,6 +30,8 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
 
   if (!isOpen) return null;
 
+  const serviceName = (incident as any).service || incident.badge || 'production-core';
+  const domainName = (incident as any).domain || domainName || 'infra';
   const incidentRef = `INC-${incident.id.toUpperCase()}-${incident.severity}`;
   const statusLabel = isResurrected ? t.pdf.statusResurrected : incident.badge;
   const summaryText = postMortem?.summary || incident.title;
@@ -41,7 +43,7 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
     return [
       `🚨 *[${incident.severity}] ${t.dispatcher.slackHeader}*`,
       `*${t.dispatcher.fieldIncidentId}:* \`${incidentRef}\``,
-      `*${t.dispatcher.fieldService}:* \`${incident.service}\` (${incident.domain})`,
+      `*${t.dispatcher.fieldService}:* \`${serviceName}\` (${domainName})`,
       `*${t.dispatcher.fieldStatus}:* ${statusLabel}`,
       `*${t.dispatcher.fieldSeverity}:* *${incident.severity}*`,
       "",
@@ -63,13 +65,13 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
       event_action: isResurrected ? "resolve" : "trigger",
       dedup_key: incidentRef,
       payload: {
-        summary: `[${incident.severity}] ${incident.service}: ${incident.title}`,
-        source: incident.service,
+        summary: `[${incident.severity}] ${serviceName}: ${incident.title}`,
+        source: serviceName,
         severity: incident.severity === "P0" ? "critical" : "error",
         timestamp: new Date().toISOString(),
-        component: incident.domain,
+        component: domainName,
         group: "infrastructure-sre",
-        class: incident.category,
+        class: domainName,
         custom_details: {
           incident_id: incidentRef,
           status: statusLabel,
@@ -92,10 +94,10 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
       `| Metadata | Value |`,
       `|---|---|`,
       `| **Incident Ref** | \`${incidentRef}\` |`,
-      `| **Service** | \`${incident.service}\` (${incident.domain}) |`,
+      `| **Service** | \`${serviceName}\` (${domainName}) |`,
       `| **Severity** | **${incident.severity}** |`,
       `| **Status** | ${statusLabel} |`,
-      `| **Category** | ${incident.category} |`,
+      `| **Category** | ${domainName} |`,
       "",
       `### 1. ${t.pdf.section1Title}`,
       summaryText,
@@ -137,7 +139,7 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
   };
 
   const handleOpenGithub = () => {
-    const title = encodeURIComponent(`[${incident.severity}] ${incident.service}: ${incident.title}`);
+    const title = encodeURIComponent(`[${incident.severity}] ${serviceName}: ${incident.title}`);
     const body = encodeURIComponent(generateGithubIssue());
     const githubUrl = `https://github.com/AdamBabinicz/bugmortem/issues/new?title=${title}&body=${body}`;
     window.open(githubUrl, "_blank", "noopener,noreferrer");
