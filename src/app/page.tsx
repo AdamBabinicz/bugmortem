@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { IncidentPreset, TimelineEvent } from '../i18n/types';
 import { useTheme } from '@/context/ThemeContext';
 import { useI18n } from '@/i18n/context';
@@ -20,7 +20,6 @@ export function fixOrphans(text: string): string {
   return text.replace(/(^|\s)([aiouwz]|do|na|od|po|ze|we|za|co|że|to)(\s+)/gi, '$1$2\u00A0');
 }
 
-
 export default function Home() {
   // Global Theme Context
   const { theme, toggleTheme } = useTheme();
@@ -33,6 +32,7 @@ export default function Home() {
   const [customIncidents, setCustomIncidents] = useState<Record<string, IncidentPreset>>({});
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [exportNotice, setExportNotice] = useState<boolean>(false);
+  const [pdfNotice, setPdfNotice] = useState<boolean>(false);
 
   // Dynamiczny, automatyczny zakres praw autorskich
   const [copyrightYears, setCopyrightYears] = useState<string>('2026');
@@ -109,14 +109,9 @@ export default function Home() {
     Object.values(presetsMap)[0] ||
     defaultFallback;
 
-  // Audio synthesizer — muted by default (browser autoplay policy).
-  // Severity drives the sound program: P0 = flatline drone, P1/P2 = heartbeat.
   const activeSeverity = activeIncident?.severity ?? 'P1';
   const { audioEnabled, toggleAudio, playResurrectionChime } = useAudioEngine(activeSeverity);
 
-  // Sync waveform to incident severity whenever the selected preset changes.
-  // P0 → flatline (dead), P1/P2/other → p1-heartbeat (active warning).
-  // The 'resurrected' state is only set by the copy action and cleared here.
   useEffect(() => {
     const sev = activeIncident?.severity ?? '';
     if (sev === 'P0') {
@@ -124,8 +119,7 @@ export default function Home() {
     } else {
       setWaveformState('p1-heartbeat');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPreset]);
+  }, [selectedPreset, activeIncident?.severity]);
 
   const safeTimeline: SafeTimelineEvent[] = Array.isArray(activeIncident?.timeline)
     ? (activeIncident.timeline as SafeTimelineEvent[])
@@ -141,7 +135,6 @@ export default function Home() {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(activeIncident.resurrectedCode);
       } else {
-        // Fallback for HTTP / non-secure contexts
         const textarea = document.createElement('textarea');
         textarea.value = activeIncident.resurrectedCode;
         textarea.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
@@ -223,6 +216,122 @@ ${activeIncident.resurrectedCode || ''}
     setTimeout(() => setExportNotice(false), 3000);
   };
 
+  const handleExportPdf = () => {
+    if (!activeIncident) return;
+
+    const printDate = new Date().toUTCString();
+    const isPl = locale === 'pl';
+    const certTitle = isPl ? 'URZĘDOWA KARTA ZGONU AWARII' : 'OFFICIAL INCIDENT DEATH CERTIFICATE';
+    const subTitle = isPl
+      ? 'CYFROWE PROSEKTORIUM SRE // HACKATHON KIROWEEN 2026'
+      : 'FORENSIC SRE MORGUE // KIROWEEN 2026 HACKATHON';
+    const certNumber = `BM-${Date.now().toString(36).toUpperCase()}-${(activeIncident.id || 'INC').toUpperCase()}`;
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const htmlContent = `<!DOCTYPE html>
+<html lang="${locale}">
+<head>
+  <meta charset="UTF-8">
+  <title>${certTitle} - ${activeIncident.title}</title>
+  <style>
+    @page { size: A4 portrait; margin: 12mm 15mm; }
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: #fff; color: #0c0a09; margin: 0; padding: 20px; font-size: 11px; line-height: 1.4; }
+    .border-frame { border: 3px double #7f1d1d; padding: 18px; border-radius: 4px; }
+    .header { text-align: center; border-bottom: 2px solid #991b1b; padding-bottom: 12px; margin-bottom: 16px; }
+    .morgue-badge { display: inline-block; background: #450a0a; color: #fecdd3; padding: 3px 8px; font-size: 9px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; border-radius: 2px; }
+    h1 { margin: 8px 0 4px 0; font-size: 18px; letter-spacing: 1.5px; color: #991b1b; text-transform: uppercase; }
+    .meta-sub { font-size: 9px; color: #78716c; letter-spacing: 1px; }
+    .vitals-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #fafaf9; border: 1px solid #e7e5e4; padding: 10px; margin-bottom: 14px; border-radius: 4px; }
+    .vital-item label { display: block; font-size: 8px; text-transform: uppercase; color: #78716c; font-weight: bold; }
+    .vital-item span { font-size: 11px; font-weight: bold; color: #0c0a09; }
+    .vital-sev { color: #dc2626 !important; }
+    .section-title { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #991b1b; border-bottom: 1px solid #fca5a5; padding-bottom: 3px; margin: 12px 0 6px 0; }
+    .findings { background: #fff5f5; border-left: 3px solid #dc2626; padding: 8px 10px; margin-bottom: 10px; font-size: 10px; }
+    pre { background: #1c1917; color: #fecdd3; padding: 8px; border-radius: 3px; font-size: 9px; overflow-x: auto; margin: 4px 0 10px 0; white-space: pre-wrap; word-break: break-all; }
+    pre.resurrected { background: #064e3b; color: #a7f3d0; border-left: 3px solid #10b981; }
+    .timeline-list { margin: 4px 0 10px 0; padding-left: 16px; font-size: 9px; }
+    .timeline-list li { margin-bottom: 3px; }
+    .footer-seal { margin-top: 18px; border-top: 2px dashed #d6d3d1; padding-top: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .seal-box { border: 2px solid #059669; color: #059669; padding: 6px 12px; text-align: center; font-weight: bold; font-size: 9px; letter-spacing: 1px; transform: rotate(-3deg); border-radius: 4px; }
+    .signature-line { border-bottom: 1px solid #0c0a09; width: 180px; text-align: center; font-size: 8px; padding-bottom: 2px; }
+  </style>
+</head>
+<body>
+  <div class="border-frame">
+    <div class="header">
+      <div class="morgue-badge">${subTitle}</div>
+      <h1>💀 ${certTitle}</h1>
+      <div class="meta-sub">RECORD REF: ${certNumber} • TIMESTAMP: ${printDate}</div>
+    </div>
+
+    <div class="vitals-grid">
+      <div class="vital-item">
+        <label>${isPl ? 'Nazwa Usługi / Awarii' : 'Service / Incident'}</label>
+        <span>${activeIncident.title || 'Unknown Outage'}</span>
+      </div>
+      <div class="vital-item">
+        <label>${isPl ? 'Domena' : 'Domain'}</label>
+        <span>${activeIncident.badge || 'N/A'}</span>
+      </div>
+      <div class="vital-item">
+        <label>${isPl ? 'Krytyczność Zgonu' : 'Severity at Crash'}</label>
+        <span class="vital-sev">${activeIncident.severity || 'P0 FATAL'}</span>
+      </div>
+      <div class="vital-item">
+        <label>${isPl ? 'Status Prosektorium' : 'Forensic Status'}</label>
+        <span style="color:#059669;">${isPl ? 'WSKRZESZONY (SRE 200 OK)' : 'RESURRECTED (SRE OK)'}</span>
+      </div>
+    </div>
+
+    <div class="section-title">1. ${isPl ? 'Sekcja Zwłok: Przyczyna Zgonu i Promień Rażenia' : 'Autopsy Findings: Root Cause & Blast Radius'}</div>
+    <div class="findings">
+      <strong>${isPl ? 'Podsumowanie' : 'Summary'}:</strong> ${activeIncident.postMortemReport?.summary || ''}<br/>
+      <strong>${isPl ? 'Wpływ Biznesowy' : 'Impact'}:</strong> ${activeIncident.postMortemReport?.impact || ''}
+    </div>
+
+    <div class="section-title">2. ${isPl ? 'Chronologia Zapadu Systemowego' : 'Timeline of Collapse'}</div>
+    <ul class="timeline-list">
+      ${safeTimeline.map((e) => `<li><strong>[${e.time}]</strong> ${e.desc} ${e.isFatal ? '⚠️ <em>(FATAL EVENT)</em>' : ''}</li>`).join('')}
+    </ul>
+
+    <div class="section-title">3. ${isPl ? 'Ślad Stosu w Momencie Zgonu (Biopsja Pamięci)' : 'Stack Trace at Termination (Memory Biopsy)'}</div>
+    <pre>${activeIncident.stackTrace || 'No stack trace recorded.'}</pre>
+
+    <div class="section-title">4. ${isPl ? 'Zastosowany Wzorzec Wskrzeszenia SRE (Lekarstwo)' : 'Applied SRE Resurrection Patch (Remediation)'}</div>
+    <pre class="resurrected">${activeIncident.resurrectedCode || '// Standard circuit breaker applied'}</pre>
+
+    <div class="footer-seal">
+      <div>
+        <div class="signature-line">Adam Gierczak (@AdamBabinicz)</div>
+        <div style="font-size:8px;color:#78716c;margin-top:2px;">Lead Incident Commander • BugMortem Engine</div>
+      </div>
+      <div class="seal-box">
+        ✓ SRE RESURRECTED<br/>
+        BUGMORTEM APPROVED
+      </div>
+    </div>
+  </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 250);
+    };
+  </script>
+</body>
+</html>`;
+
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+
+    setPdfNotice(true);
+    setTimeout(() => setPdfNotice(false), 3000);
+  };
+
   const handleCreateCustomAutopsy = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTitle.trim() || !formStackTrace.trim()) {
@@ -234,7 +343,6 @@ ${activeIncident.resurrectedCode || ''}
     const now = new Date();
     const timeStr = now.toTimeString().split(' ')[0];
 
-    // Bezpieczne ustalenie kategorii bez zagnieżdżonych operatorów trójargumentowych
     let categoryBadge = 'Frontend';
     if (formCategory === 'frontend') {
       categoryBadge = t?.categoryFrontend || 'Frontend';
@@ -246,7 +354,6 @@ ${activeIncident.resurrectedCode || ''}
       categoryBadge = t?.categoryInfra || 'Infra';
     }
 
-    // Bezpieczne ustalenie priorytetu
     let severityLabel = 'Major (P2)';
     if (formSeverity === 'P0') {
       severityLabel = t?.severityP0 || 'Fatal (P0)';
@@ -308,7 +415,6 @@ try {
     setFormResurrectedCode('');
     setFormError('');
   };
-
 
   return (
     <div className="min-h-screen bg-stone-100 text-stone-900 dark:bg-stone-950 dark:text-stone-100 font-sans">
@@ -393,13 +499,8 @@ try {
 
           <div className="z-10 flex flex-col items-start md:items-end gap-3 w-full md:w-auto">
             <div className="w-full md:w-auto bg-stone-100 border-stone-200 dark:bg-stone-950/80 dark:border-stone-800 rounded-xl px-3 sm:px-4 py-3 border shadow-inner">
-              {/*
-                HUD layout (single row, left → right):
-                [Speaker toggle]  [ECG — flex-1, fills available space]  [• Status label + value]
-              */}
               <div className="flex items-center gap-3">
-
-                {/* ── Audio toggle ── */}
+                {/* Audio toggle */}
                 <button
                   type="button"
                   onClick={toggleAudio}
@@ -417,12 +518,12 @@ try {
                   }
                 </button>
 
-                {/* ── ECG waveform — flex-1 so it expands to fill ── */}
+                {/* ECG waveform */}
                 <div className="flex-1 min-w-0">
                   <EcgMonitor state={waveformState} />
                 </div>
 
-                {/* ── Status indicator ── */}
+                {/* Status indicator */}
                 <div className="shrink-0 text-right">
                   <div className="text-[10px] uppercase font-bold tracking-widest text-stone-700 dark:text-stone-300 whitespace-nowrap">
                     {t?.statusLabel}
@@ -450,7 +551,6 @@ try {
                     </span>
                   </div>
                 </div>
-
               </div>
             </div>
 
@@ -465,7 +565,7 @@ try {
           </div>
         </div>
 
-        {/* Preset Cards & Case Selection – W3C HTML5 Valid (Phrasing Content inside Button) */}
+        {/* Preset Cards & Case Selection */}
         <section className="space-y-3 sm:space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300">
@@ -531,7 +631,7 @@ try {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            {/* Cursed Code (Before) */}
+            {/* Cursed Code */}
             <div className="rounded-xl border border-rose-300 bg-rose-50/40 dark:border-rose-900/40 dark:bg-stone-950/80 overflow-hidden shadow-lg">
               <div className="bg-rose-100/80 border-b border-rose-200 dark:bg-rose-950/30 dark:border-rose-900/40 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2">
                 <span className="text-xs font-mono font-bold tracking-wider text-rose-700 dark:text-rose-400 flex items-center gap-1.5 truncate">
@@ -547,7 +647,7 @@ try {
               </pre>
             </div>
 
-            {/* Resurrected Code (After) */}
+            {/* Resurrected Code */}
             <div className="rounded-xl border border-emerald-300 bg-emerald-50/40 dark:border-emerald-900/40 dark:bg-stone-950/80 overflow-hidden shadow-lg">
               <div className="bg-emerald-100/80 border-b border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-900/40 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2">
                 <span className="text-xs font-mono font-bold tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 truncate">
@@ -600,7 +700,7 @@ try {
           </section>
         </div>
 
-        {/* Official Post-Mortem Report Protocol */}
+        {/* Official Post-Mortem Report Protocol & Exporters */}
         <section
           style={{ contentVisibility: 'auto', containIntrinsicSize: '300px' }}
           className="rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/50 p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-xl dark:shadow-2xl relative"
@@ -610,20 +710,41 @@ try {
               <span>📄</span>
               {t?.postMortemTitle}
             </h2>
-            <button
-              type="button"
-              onClick={handleExportReport}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 transition-colors cursor-pointer shadow-sm w-full sm:w-auto"
-            >
-              <span>⬇️</span>
-              {t?.exportReportBtn}
-            </button>
+
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              {/* Markdown Export */}
+              <button
+                type="button"
+                onClick={handleExportReport}
+                className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 transition-colors cursor-pointer shadow-sm flex-1 sm:flex-initial"
+              >
+                <span>⬇️</span>
+                {t?.exportReportBtn}
+              </button>
+
+              {/* PDF Death Certificate Export */}
+              <button
+                type="button"
+                onClick={handleExportPdf}
+                className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider bg-rose-600 hover:bg-rose-500 text-white shadow-md shadow-rose-600/30 border border-rose-400/30 transition-all cursor-pointer flex-1 sm:flex-initial"
+              >
+                <span>📜</span>
+                {t?.exportPdfBtn}
+              </button>
+            </div>
           </div>
 
           {exportNotice && (
             <div className="p-3 rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-800 dark:bg-emerald-950/60 dark:border-emerald-800/50 dark:text-emerald-300 text-xs font-mono flex items-center gap-2">
               <span>✓</span>
               {t?.downloadSuccess}
+            </div>
+          )}
+
+          {pdfNotice && (
+            <div className="p-3 rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-800 dark:bg-emerald-950/60 dark:border-emerald-800/50 dark:text-emerald-300 text-xs font-mono flex items-center gap-2">
+              <span>✓</span>
+              {t?.downloadPdfSuccess}
             </div>
           )}
 
@@ -660,7 +781,7 @@ try {
         </section>
       </main>
 
-      {/* Legal Modal (Privacy Policy / Terms of Service) */}
+      {/* Legal Modal */}
       {legalDoc && (
         <LegalModal docType={legalDoc} onClose={() => setLegalDoc(null)} />
       )}
@@ -806,7 +927,7 @@ try {
         </div>
       )}
 
-      {/* Footer – Pełna zgodność z kontrastem WCAG AA / AAA */}
+      {/* Footer */}
       <footer className="border-t border-stone-200 bg-white dark:border-stone-900 dark:bg-stone-950 py-8 text-xs text-stone-700 dark:text-stone-300">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
@@ -839,7 +960,6 @@ try {
           </div>
         </div>
       </footer>
-
     </div>
   );
 }

@@ -139,7 +139,9 @@ export interface Dictionary {
   timelineTitle: string;
   postMortemTitle: string;
   exportReportBtn: string;
+  exportPdfBtn: string;
   downloadSuccess: string;
+  downloadPdfSuccess: string;
   postMortemSummaryHeading: string;
   postMortemImpactHeading: string;
   postMortemActionsHeading: string;
