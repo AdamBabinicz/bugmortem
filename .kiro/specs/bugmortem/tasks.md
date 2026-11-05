@@ -19,4 +19,4 @@
 ## Phase 3: Kiro Automation & Forensic Artifact Export
 - [x] 13. Automated Kiro agent test runner hook in `.kiro/hooks/` triggered on file modification.
 - [x] 14. Dedicated SRE Autopsy Agent specification in `.kiro/agents/` for incident analysis.
-- [ ] 15. Cyber-Gothic "Death Certificate" PDF generator with hospital seal, vital stats, and code diff.
+- [x] 15. Cyber-Gothic "Death Certificate" PDF generator with hospital seal, vital stats, and code diff.
