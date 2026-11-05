@@ -8,6 +8,7 @@ import { LegalModal, LegalDocType } from '@/components/legal/LegalModal';
 import { Volume2, VolumeX, Sun, Moon, Mic, Square } from 'lucide-react';
 import { useAudioEngine } from '@/hooks/useAudioEngine';
 import { EcgMonitor, WaveformState } from '@/components/EcgMonitor';
+import { BlastRadiusMap } from '@/components/BlastRadiusMap';
 
 // Bezpieczne rozszerzenie typu zdarzenia na osi czasu
 export interface SafeTimelineEvent extends TimelineEvent {
@@ -754,6 +755,13 @@ try {
             </div>
           </section>
         </div>
+
+        {/* MODUŁ 2: Mapa Skażenia Architektury (Blast Radius Heatmap) */}
+        <BlastRadiusMap
+          incidentId={activeIncident?.id || selectedPreset}
+          category={activeIncident?.badge}
+          isResurrected={waveformState === 'resurrected'}
+        />
 
         {/* Official Post-Mortem Report Protocol & Exporters */}
         <section
