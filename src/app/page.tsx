@@ -5,7 +5,7 @@ import { IncidentPreset, TimelineEvent } from '../i18n/types';
 import { useTheme } from '@/context/ThemeContext';
 import { useI18n } from '@/i18n/context';
 import { LegalModal, LegalDocType } from '@/components/legal/LegalModal';
-import { Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX, Sun, Moon } from 'lucide-react';
 import { useAudioEngine } from '@/hooks/useAudioEngine';
 import { EcgMonitor, WaveformState } from '@/components/EcgMonitor';
 
@@ -472,9 +472,13 @@ try {
               type="button"
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className="p-1.5 sm:p-2 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 transition-colors cursor-pointer shadow-sm text-sm"
+              className="p-1.5 sm:p-2 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-700 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-300 dark:border-stone-700 transition-colors cursor-pointer shadow-sm"
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-stone-600" />
+              )}
             </button>
           </div>
         </div>
@@ -670,16 +674,18 @@ try {
           style={{ contentVisibility: 'auto', containIntrinsicSize: '350px' }}
           className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6"
         >
+          {/* Surowy Ślad Stosu (Stack Trace) - spójny jasny/ciemny motyw */}
           <section className="space-y-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
               <span>&gt;_</span>
               {t?.stackTraceTitle}
             </h2>
-            <div className="rounded-xl border border-stone-800 bg-stone-950 p-3 sm:p-4 font-mono text-xs text-rose-400/90 leading-relaxed overflow-x-auto shadow-inner">
+            <div className="rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950 p-3 sm:p-4 font-mono text-xs text-rose-700 dark:text-rose-400/90 leading-relaxed overflow-x-auto shadow-sm dark:shadow-inner">
               <pre className="whitespace-pre-wrap">{activeIncident?.stackTrace}</pre>
             </div>
           </section>
 
+          {/* Chronologiczna Oś Czasu Awarii */}
           <section className="space-y-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
               <span>⏱</span>
@@ -875,7 +881,7 @@ try {
                   value={formStackTrace}
                   onChange={(e) => setFormStackTrace(e.target.value)}
                   placeholder={t?.fieldStackTracePlaceholder}
-                  className="w-full bg-stone-900 border border-stone-800 rounded-lg p-3 font-mono text-xs text-rose-300 placeholder-stone-400 focus:outline-none focus:border-rose-500"
+                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 placeholder-stone-500 dark:bg-stone-950 dark:border-stone-800 dark:text-stone-100 dark:placeholder-stone-500 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-rose-500"
                 />
               </div>
 
@@ -903,7 +909,7 @@ try {
                   value={formResurrectedCode}
                   onChange={(e) => setFormResurrectedCode(e.target.value)}
                   placeholder={t?.fieldResurrectedCodePlaceholder}
-                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-emerald-300 placeholder-stone-500 dark:placeholder-stone-500 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-stone-50 border border-stone-300 text-stone-900 dark:bg-stone-950 dark:border-stone-800 dark:text-emerald-600 dark:placeholder-stone-500 rounded-lg p-3 font-mono text-xs focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
