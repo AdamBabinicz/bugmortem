@@ -18,7 +18,7 @@
 
 Every SRE engineer knows the nightmare: production is dead, the monitor is **flatlined at 0 BPM**, and the terminal is screaming an incomprehensible stack trace at 3 AM.
 
-**BugMortem** is an interactive, cyber-gothic digital morgue and automated post-mortem studio for software incidents. Instead of panic in the console, it conducts a forensic autopsy of catastrophic production bugs — complete with a reactive ECG heart monitor, procedural audio telemetry, and a one-click SRE report exporter.
+**BugMortem** is an interactive, cyber-gothic digital morgue and automated post-mortem studio for software incidents. Instead of panic in the console, it conducts a forensic autopsy of catastrophic production bugs — complete with a reactive ECG heart monitor, procedural audio telemetry, architectural blast radius heatmap, live chaos engineering sandbox, SRE forensic voice verdict, on-call dispatcher, and one-click post-mortem exports (Markdown & printable PDF Death Certificate).
 
 > *"Where dead services come for their autopsy."*
 
@@ -29,8 +29,40 @@ Every SRE engineer knows the nightmare: production is dead, the monitor is **fla
 ### 🔬 Digital Autopsy Engine
 - **Side-by-Side Code Autopsy** — Cursed code (crash state) vs. Resurrected SRE code (safe pattern), with one-click clipboard copy.
 - **Chronological Incident Timeline** — Forensic reconstruction of the fatal seconds preceding each catastrophe.
-- **Raw Stack Trace Viewer** — Monospace, syntax-highlighted crash log display.
+- **Raw Stack Trace Viewer** — Monospace crash log display with adaptive light/dark theme contrast.
 - **Custom Incident Ingestion** — Live autopsy form: paste any real-world stack trace, choose severity & category, and instantly generate a full post-mortem case study persisted in `localStorage`.
+
+### 🗺️ Architecture Blast Radius Heatmap
+- **Interactive Microservice Topology** — Real-time visualization of 5 critical architectural tiers: `Client SPA`, `Edge Gateway`, `Auth Service`, `Database`, and `Worker Pool`.
+- **Cascading Contamination** — Identifies "Patient Zero" and traces cascading dependency degradation across network boundaries.
+- **Visual Recovery Transition** — Watches services transition dynamically from critical red alarm to emerald `200 OK` upon applying the resurrected SRE code pattern.
+
+### ⚡ Live Chaos Engineering Sandbox
+- **In-Browser Outage Injection** — Trigger 4 real-world failure modes:
+  1. *Edge Latency Spike* (+2540ms on Edge Gateway, cascading UI timeouts)
+  2. *DB Connection Pool Exhaustion* (100% PostgreSQL connection exhaustion, 503 cascades)
+  3. *Worker Memory Leak (OOM)* (RAM saturation in background async worker queue)
+  4. *Auth Token Storm* (Massive JWT rejection wave triggering auth storm)
+- **Real-Time Telemetry Bar** — Live indicators for Throughput (RPS), p99 Latency, and Error Rate (%) responding instantly to injected chaos.
+- **1-Click SRE Mitigation Rollback** — Instantly execute automated circuit breakers and restore nominal telemetry.
+
+### 📢 On-Call Incident Dispatcher & Exporter
+- **Multi-Platform Escalation Modal** — 1-click generator for standardized incident alerts:
+  - **Slack / Discord** — War Room notification with `@channel`, severity, blast radius, and direct bridge links.
+  - **PagerDuty / Opsgenie** — Standard Common Event Format (CEF v2 JSON) payload with routing keys and dedup tags.
+  - **GitHub Issues** — Formatted post-mortem issue template with triage checklist, severity tags, and a direct link to open the prefilled ticket.
+- **1-Click Clipboard Copy** with animated confirmation state.
+
+### 🎙️ SRE Forensic Coroner Voice Verdict
+- Procedural, browser-native speech synthesis (`window.speechSynthesis`) delivering spoken incident findings.
+- Customized voice profile: lowered rate (0.9) and deep pitch (0.82) for an authoritative forensic coroner tone.
+- Fully localized in Polish (`pl-PL`) and English (`en-US`).
+- Zero external audio files or dependencies (0 KB runtime overhead).
+
+### 📜 Cyber-Gothic Incident Death Certificate (PDF)
+- Browser-native vector print engine (`@page { size: A4 portrait }`) creating an authentic official Certificate of Outage Death.
+- Complete with gothic hospital seal, biometrics, stack trace biopsy, and SRE coroner signature.
+- 100% client-side rendering with zero heavy PDF runtime bloat.
 
 ### 📄 SRE Post-Mortem Protocol & Markdown Export
 - One-click export to formatted `.md` Markdown — ready to paste into Jira, Confluence, GitHub Issues, or Notion.
@@ -42,7 +74,7 @@ The Hero HUD contains a live ECG waveform that reacts to the active incident sta
 | State | Waveform | Color |
 |---|---|---|
 | **P0 — Fatal / Flatline** | Flat horizontal line with micro-jitter | Crimson `#ef4444` |
-| **P1 — Active Warning** | Animated QRS peaks at 90 BPM | Crimson `#ef4444` |
+| **P1 — Active Warning** | Animated QRS peaks at 90 BPM | Amber `#f59e0b` |
 | **Resurrected — Healthy** | Animated QRS peaks at 70 BPM | Toxic Emerald `#10b981` |
 
 The HUD status label also transitions: *"Active Incident (P0 Critical)"* → *"Telemetry Warning (P1 Major)"* → *"Service Resurrected (Healthy · 200 OK)"*.
@@ -62,14 +94,15 @@ Zero external files. Zero dependencies. 100% browser-native Web Audio API:
 - Fully localized `aria-label` in EN and PL.
 
 ### 🌍 Full Bilingual i18n (EN / PL)
-- Complete EN and PL translations for every UI string, status label, legal document, and modal copy.
+- Complete EN and PL translations for every UI string, status label, legal document, dispatcher template, and chaos scenario.
+- Zero hardcoded strings across all components.
 - Language switcher in the top navigation bar.
 - Locale preference persisted in `localStorage`.
 
 ### 🔒 Legal & Privacy Documents
 - **Privacy Policy** — Full data sovereignty statement, exact `localStorage` keys documented, GDPR/CCPA user rights, one-click purge guide.
 - **Terms of Service** — Scope disclaimer, AS-IS engineering disclaimer for Resurrection Code Patches, MIT license reference.
-- **Cookie Policy** — No HTTP cookies; complete `localStorage`-only model documented.
+- **Cookie Policy** — Transparent disclosure of zero HTTP tracking cookies, with Google Consent Mode v2 support for optional analytics.
 - Localized LegalModal with scrollable sections, structured headers, and bullet lists.
 
 ### 🍪 Cookie & Privacy Consent
@@ -111,7 +144,7 @@ pnpm test:pbt:watch # watch mode for development
 ```
  Test Files  1 passed (1)
       Tests  33 passed (33)
-   Duration  ~1.1s
+   Duration  ~900ms
 ```
 
 ### The 4 Invariants (150 random runs each)
@@ -119,7 +152,7 @@ pnpm test:pbt:watch # watch mode for development
 | Invariant | Property | Runs |
 |---|---|---|
 | **1 — Resilience** | The autopsy engine never throws on any input — fuzz strings, null, unicode, control chars, 50KB payloads, `<script>` injection | 150 × 9 props |
-| **2 — Severity Validity** | `classifySeverity()` always resolves to `'P0' \| 'P1'`; the function is idempotent | 150 × 6 props |
+| **2 — Severity Validity** | `classifySeverity()` always resolves to `'P0' | 'P1'`; the function is idempotent | 150 × 6 props |
 | **3 — Timeline Integrity** | `buildTimeline()` always produces exactly 3 events in strict non-decreasing chronological order; first event non-fatal, last event fatal | 150 × 5 props |
 | **4 — Export Fidelity** | `generateMarkdownReport()` always contains all 3 required SRE headers: *Executive Summary*, *Blast Radius*, *Preventative Action Items* | 150 × 8 props |
 
@@ -144,9 +177,9 @@ The pure autopsy engine (`src/utils/autopsyEngine.ts`) exports all testable func
 BugMortem is architected on a **zero-data-leakage, local-first model**:
 
 - All incident logs, stack traces, and post-mortem reports are processed exclusively inside your browser's JavaScript runtime.
-- **No data ever leaves your device.** Zero WebSocket, XHR, or fetch calls to analytics, telemetry, or logging endpoints.
-- No Google Analytics, Meta Pixel, Hotjar, Sentry, or any third-party tracker.
-- No HTTP cookies are set.
+- **No data ever leaves your device without user initiation.** Zero telemetry or logging endpoints receiving incident data.
+- Google Consent Mode v2 default `denied` state protects privacy for any optional tag managers.
+- No HTTP cookies are set by BugMortem core features.
 
 ### Exact `localStorage` keys written by BugMortem
 
@@ -177,8 +210,11 @@ bugmortem/
 │   │   ├── layout.tsx           # Metadata, font setup, provider wiring
 │   │   └── page.tsx             # Main morgue dashboard — state, handlers, JSX
 │   ├── components/
-│   │   ├── CookieBanner.tsx     # GDPR cookie consent banner
+│   │   ├── BlastRadiusMap.tsx   # Interactive microservice blast radius heatmap
+│   │   ├── ChaosSandbox.tsx     # Live chaos engineering sandbox & telemetry
+│   │   ├── CookieBanner.tsx     # GDPR cookie consent banner (Consent Mode v2)
 │   │   ├── EcgMonitor.tsx       # Reactive SVG ECG waveform (3 states)
+│   │   ├── IncidentDispatcherModal.tsx # Slack / PagerDuty / GitHub dispatcher
 │   │   ├── Providers.tsx        # App-level context providers
 │   │   ├── ScrollToTop.tsx      # Scroll restoration utility
 │   │   └── legal/
@@ -234,7 +270,7 @@ pnpm test
 ## 🎨 Design System
 
 - **Theme:** Cyber-Gothic — obsidian backgrounds, toxic emerald (`#10b981`), crimson (`#ef4444`)
-- **Framework:** Next.js 15 App Router + React 19 + TypeScript strict mode
+- **Framework:** Next.js 16 App Router + React 19 + TypeScript strict mode
 - **Styling:** Tailwind CSS v4 — zero inline styles, full dark/light adaptive theming
 - **Icons:** lucide-react
 - **Typography:** Polish orphan elimination (`fixOrphans`) + CSS `text-wrap: pretty`
@@ -243,7 +279,7 @@ pnpm test
 
 ## 📜 License
 
-MIT © 2026 BugMortem Contributors  
+MIT © 2026 Adam Gierczak (@AdamBabinicz).  
 Built for the **Kiroween 2026 Hackathon** organized by AWS & Devpost.
 
 > *"The service is dead. Long live the service."*
