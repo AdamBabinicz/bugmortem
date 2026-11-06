@@ -86,52 +86,50 @@ export const pl: Dictionary = {
     metricHealthy: 'Węzły Stabilne',
   },
   dispatcher: {
-    openBtn: "Eskalacja On-Call",
-    modalTitle: "Dyspozytor Incydentu SRE",
-    modalSubtitle: "Generuj ustandaryzowane alerty i tickety eskalacyjne dla zespolu on-call",
-    tabSlack: "Slack / Discord",
-    tabPagerDuty: "PagerDuty (CEF)",
-    tabGithub: "GitHub Issue",
-    copyBtn: "Kopiuj do schowka",
-    copiedBtn: "Skopiowano!",
-    openGithubBtn: "Otworz GitHub Issue",
-    closeBtn: "Zamknij",
-    fieldIncidentId: "Identyfikator incydentu",
-    fieldSeverity: "Poziom krytycznosci",
-    fieldService: "Komponent zrodlowy",
-    fieldStatus: "Status operacyjny",
-    fieldBlastRadius: "Zasieg awarii (Blast Radius)",
-    fieldWarRoom: "Mostek incydentu (War Room)",
-    fieldRunbook: "Procedura naprawcza (Runbook)",
-    fieldChecklist: "Lista kontrolna mitigacji",
-    slackHeader: "INCIDENT ALERT - NATYCHMIASTOWA ESKALACJA SRE",
-    slackActionRequired: "Wymagane natychmiastowe podjecie dyzuru on-call.",
-    slackJoinWarRoom: "Dolacz do mostka incydentu",
+    openBtn: 'Eskalacja On-Call',
+    modalTitle: 'Dyspozytor Incydentu SRE',
+    modalSubtitle: 'Generuj ustandaryzowane alerty i tickety eskalacyjne dla zespolu on-call',
+    tabSlack: 'Slack / Discord',
+    tabPagerDuty: 'PagerDuty (CEF)',
+    tabGithub: 'GitHub Issue',
+    copyBtn: 'Kopiuj do schowka',
+    copiedBtn: 'Skopiowano!',
+    openGithubBtn: 'Otworz GitHub Issue',
+    closeBtn: 'Zamknij',
+    fieldIncidentId: 'Identyfikator incydentu',
+    fieldSeverity: 'Poziom krytycznosci',
+    fieldService: 'Komponent zrodlowy',
+    fieldStatus: 'Status operacyjny',
+    fieldBlastRadius: 'Zasieg awarii (Blast Radius)',
+    fieldWarRoom: 'Mostek incydentu (War Room)',
+    fieldRunbook: 'Procedura naprawcza (Runbook)',
+    fieldChecklist: 'Lista kontrolna mitigacji',
+    slackHeader: 'INCIDENT ALERT - NATYCHMIASTOWA ESKALACJA SRE',
+    slackActionRequired: 'Wymagane natychmiastowe podjecie dyzuru on-call.',
+    slackJoinWarRoom: 'Dolacz do mostka incydentu',
     pdRoutingKeyNotice: "Zastap 'SERVICE_INTEGRATION_KEY' kluczem routingu serwisu w PagerDuty.",
-    githubLabels: "Labels: incident, sre-triage, production, bugmortem",
+    githubLabels: 'Labels: incident, sre-triage, production, bugmortem',
   },
   chaos: {
-    sectionTitle: "Piaskownica Inzynierii Chaosu (Live Chaos Sandbox)",
-    sectionSubtitle: "Wstrzykuj awarie w czasie rzeczywistym i obserwuj kaskadowa reakcje telemetrii",
-    btnInject: "Wstrzyknij awarie",
-    btnMitigate: "Szybka mitigacja (SRE Rollback)",
-    statusActive: "AWARIA AKTYWNA",
-    statusNominal: "SYSTEM NOMINALNY",
-    scenarioLatencyTitle: "Skok opoznien brzegowych (Latency Spike)",
-    scenarioLatencyDesc: "Sztuczne opoznienie +2500ms na Edge Gateway, powodujace timeouty w UI",
-    scenarioDbPoolTitle: "Nasycenie puli bazy danych (DB Pool Saturation)",
-    scenarioDbPoolDesc: "100% wykorzystania polaczen PostgreSQL, kaskada bledow 503",
-    scenarioMemoryTitle: "Wyciek pamieci (Heap OOM Leak)",
-    scenarioMemoryDesc: "Eksponencjalny wzrost zuzycia RAM w puli workerow asynchronicznych",
-    scenarioAuthStormTitle: "Burza uniewaznienia sesji (Auth Storm)",
-    scenarioAuthStormDesc: "Zmasowane odrzucenia tokenow JWT i lawina zadan ponownego logowania",
-    liveTelemetryTitle: "Telemetria w czasie rzeczywistym",
-    metricRps: "Przepustowosc",
-    metricLatency: "Opoznienie p99",
-    metricErrorRate: "Wskaznik bledow",
+    sectionTitle: 'Piaskownica Inzynierii Chaosu (Live Chaos Sandbox)',
+    sectionSubtitle: 'Wstrzykuj awarie w czasie rzeczywistym i obserwuj kaskadowa reakcje telemetrii',
+    btnInject: 'Wstrzyknij awarie',
+    btnMitigate: 'Szybka mitigacja (SRE Rollback)',
+    statusActive: 'AWARIA AKTYWNA',
+    statusNominal: 'SYSTEM NOMINALNY',
+    scenarioLatencyTitle: 'Skok opoznien brzegowych (Latency Spike)',
+    scenarioLatencyDesc: 'Sztuczne opoznienie +2500ms na Edge Gateway, powodujace timeouty w UI',
+    scenarioDbPoolTitle: 'Nasycenie puli bazy danych (DB Pool Saturation)',
+    scenarioDbPoolDesc: '100% wykorzystania polaczen PostgreSQL, kaskada bledow 503',
+    scenarioMemoryTitle: 'Wyciek pamieci (Heap OOM Leak)',
+    scenarioMemoryDesc: 'Eksponencjalny wzrost zuzycia RAM w puli workerow asynchronicznych',
+    scenarioAuthStormTitle: 'Burza uniewaznienia sesji (Auth Storm)',
+    scenarioAuthStormDesc: 'Zmasowane odrzucenia tokenow JWT i lawina zadan ponownego logowania',
+    liveTelemetryTitle: 'Telemetria w czasie rzeczywistym',
+    metricRps: 'Przepustowosc',
+    metricLatency: 'Opoznienie p99',
+    metricErrorRate: 'Wskaznik bledow',
   },
-
-
 
   postMortemSummaryHeading: 'Podsumowanie Wykonawcze',
   postMortemImpactHeading: 'Promień Rażenia i Wpływ Biznesowy',
@@ -542,6 +540,66 @@ No 'Access-Control-Allow-Origin' header is present on the requested resource.
           'Wdrożenie jawnej listy dozwolonych domen CORS przed każdym handlerem tras.',
           'Dodanie automatycznego testu dymnego OPTIONS preflight do pipeline CI/CD.',
           'Audyt konfiguracji bramek API pod kątem brakujących nagłówków CORS przed zmianami subdomen.'
+        ]
+      }
+    },
+    'serverless-timeout': {
+      id: 'serverless-timeout',
+      badge: 'Chmura / Serverless',
+      severity: 'P0',
+      title: 'Zapaść Zimnego Startu Serverless i Timeout Bramki 504',
+      desc: 'Inicjalizacja ciężkich połączeń bazy wewnątrz handlera funkcji wywołała kaskadę zimnych startów, przekraczając 29-sekundowy limit bramki API.',
+      crashedCode: `// ❌ PRZEKLĘTY KOD: Inicjalizacja zasobów wewnątrz handlera bez buforowania
+export async function handler(event: any) {
+  // Ciężkie nawiązywanie połączenia przy każdym wywołaniu paraliżuje zimny start
+  const db = await createHeavyDatabaseConnection({
+    host: process.env.DB_HOST,
+    ssl: true,
+    timeout: 30000,
+  });
+
+  const user = await db.query('SELECT * FROM users WHERE id = $1', [event.userId]);
+  await db.disconnect(); // Niszczenie połączenia uniemożliwia reuse
+  return { statusCode: 200, body: JSON.stringify(user) };
+}`,
+      resurrectedCode: `// ✅ WSKRZESZONY WZORZEC SRE: Singleton poza Handlerem i Execution Reuse
+import { getDatabaseClient } from './db';
+
+// Połączenie inicjowane raz w globalnym scope środowiska wykonawczego
+const dbPromise = getDatabaseClient();
+
+export async function handler(event: any, context: any) {
+  // Wykorzystaj zamrożony kontekst wykonania (execution context reuse)
+  context.callbackWaitsForEmptyEventLoop = false;
+
+  // Odporne pobranie zainicjowanego klienta z limitem timeoutu SRE
+  const db = await Promise.race([
+    dbPromise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('SRE: Database connect timeout')), 3000)
+    ),
+  ]);
+
+  const user = await db.query('SELECT * FROM users WHERE id = $1', [event.userId]);
+  return { statusCode: 200, body: JSON.stringify(user) };
+}`,
+      stackTrace: `2026-11-06T11:42:19.412Z a81f2c90-4e31-502a-bf34-8c1092a40b12 Task timed out after 30.03 seconds
+HTTP/2 504 Gateway Timeout
+x-amzn-errortype: GatewayTimeoutException
+x-amzn-requestid: c4e99f12-0881-42ab-92b1-50e41982b5f0
+Endpoint request timed out while awaiting serverless upstream response.`,
+      timeline: [
+        { time: '11:41:49 UTC', desc: 'Nagły skok ruchu z kampanii marketingowej wyzwala 120 równoległych zimnych startów mikro-kontenerów', isFatal: false },
+        { time: '11:42:10 UTC', desc: 'Równoległe nawiązywanie połączeń TLS z bazą paraliżuje procesory workerów; opóźnienie p99 przekracza 25s', isFatal: false },
+        { time: '11:42:19 UTC', desc: 'Bramka API osiąga sztywny limit 29s i odcina połączenia; 100% zapytań kończy się błędem 504 Gateway Timeout', isFatal: true }
+      ],
+      postMortemReport: {
+        summary: 'Kaskada zimnych startów w architekturze serverless wywołała powszechne przekroczenie limitu czasu bramki API.',
+        impact: '38 000 żądań zakończonych błędem 504 Gateway Timeout. Całkowity paraliż procesu checkoutu przez 14 minut.',
+        actionItems: [
+          'Przeniesienie inicjalizacji puli połączeń bazy poza handler do globalnego zakresu wykonawczego.',
+          'Wdrożenie buforowania bazy danych za pośrednictwem AWS RDS Proxy z multiplexingiem połączeń.',
+          'Konfiguracja Provisioned Concurrency na poziomie minimum 20 instancji dla krytycznych tras API.'
         ]
       }
     }
