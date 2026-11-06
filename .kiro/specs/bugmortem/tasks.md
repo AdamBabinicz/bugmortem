@@ -20,3 +20,10 @@
 - [x] 13. Automated Kiro agent test runner hook in `.kiro/hooks/` triggered on file modification.
 - [x] 14. Dedicated SRE Autopsy Agent specification in `.kiro/agents/` for incident analysis.
 - [x] 15. Cyber-Gothic "Death Certificate" PDF generator with hospital seal, vital stats, and code diff.
+
+## Phase 4: Enterprise SRE Architecture & Resilience Extensions
+- [x] 16. Architecture Blast Radius Heatmap visualizing 5-tier microservice topology and Patient Zero isolation.
+- [x] 17. Live Chaos Engineering Sandbox with real-time telemetry gauges (Throughput, p99 Latency, Error Rate) and SRE mitigation rollback.
+- [x] 18. Multi-Platform On-Call Incident Dispatcher generating structured payloads for Slack War Rooms, PagerDuty CEF v2, and GitHub Issues.
+- [x] 19. SRE Forensic Coroner Voice Verdict using browser-native speech synthesis (localized in EN and PL).
+- [x] 20. Expansion to 6 Canonical SRE Nightmares: Serverless Cold Start Cascade & Gateway 504 Timeout.
