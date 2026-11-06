@@ -9,7 +9,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useI18n } from '@/i18n/context';
 import { LegalModal, LegalDocType } from '@/components/legal/LegalModal';
 import { Volume2, VolumeX, Sun, Moon, Mic, Square } from 'lucide-react';
-import { useAudioEngine } from '@/hooks/useAudioEngine';
+import { useAudioEngine, SeverityMode } from '@/hooks/useAudioEngine';
 import { EcgMonitor, WaveformState } from '@/components/EcgMonitor';
 import { BlastRadiusMap } from '@/components/BlastRadiusMap';
 import { ChaosSandbox } from '@/components/ChaosSandbox';
@@ -148,7 +148,16 @@ export default function Home() {
     defaultFallback;
 
   const activeSeverity = activeIncident?.severity ?? 'P1';
-  const { audioEnabled, toggleAudio, playResurrectionChime } = useAudioEngine(activeSeverity);
+
+  // Dynamiczne mapowanie dźwięku: pełna synchronizacja z wykresem EKG
+  const dynamicAudioSeverity: SeverityMode =
+    waveformState === 'flatline'
+      ? 'P0'
+      : waveformState === 'resurrected'
+      ? 'P2'
+      : 'P1';
+
+  const { audioEnabled, toggleAudio, playResurrectionChime } = useAudioEngine(dynamicAudioSeverity);
 
   // Reset mowy i synchronizacja fali EKG przy zmianie incydentu
   useEffect(() => {
@@ -172,7 +181,7 @@ export default function Home() {
     ? activeIncident.postMortemReport.actionItems
     : [];
 
-  // Obsługa zmiany kroków z poziomu Replayera
+  // Obsługa zmiany kroków z poziomu Replayera (pełna synchronizacja z EKG i Audio)
   const handleReplayerStepChange = (_stepIndex: number, isFatal: boolean) => {
     if (isFatal) {
       setWaveformState('flatline');
