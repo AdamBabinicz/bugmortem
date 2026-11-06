@@ -1,6 +1,6 @@
 # 💀 BugMortem
 
-### *Digital Incident Morgue & Automated Post-Mortem Report Generator*
+### *Digital Incident Morgue & Automated Post-Mortem Studio*
 
 **Official Submission — Devpost Hackathon: KIROWEEN 2026**  
 *Track: Costume Contest · Spooky & Distinctive Developer Tools*
@@ -19,7 +19,7 @@
 
 Every SRE engineer knows the nightmare: production is dead, the monitor is **flatlined at 0 BPM**, and the terminal is screaming an incomprehensible stack trace at 3 AM.
 
-**BugMortem** is an interactive, cyber-gothic digital morgue and automated post-mortem studio for software incidents. Instead of panic in the console, it conducts a forensic autopsy of catastrophic production bugs — complete with a reactive ECG heart monitor, procedural audio telemetry, architectural blast radius heatmap, live chaos engineering sandbox, SRE forensic voice verdict, on-call dispatcher, and one-click post-mortem exports (Markdown & printable PDF Death Certificate).
+**BugMortem** is an interactive, cyber-gothic digital morgue and automated post-mortem studio for software incidents. Instead of panic in the console, it conducts a forensic autopsy of catastrophic production bugs — complete with a reactive ECG heart monitor, procedural audio telemetry, architectural blast radius heatmap, live chaos engineering sandbox, time-to-death incident replayer, blameless 5-whys root-cause tree, SRE forensic voice verdict, on-call dispatcher, downloadable IaC remediation prescriptions, and one-click post-mortem exports (Markdown & printable PDF Death Certificate).
 
 > *"Where dead services come for their autopsy."*
 
@@ -32,6 +32,26 @@ Every SRE engineer knows the nightmare: production is dead, the monitor is **fla
 - **Chronological Incident Timeline** — Forensic reconstruction of the fatal seconds preceding each catastrophe.
 - **Raw Stack Trace Viewer** — Monospace crash log display with adaptive light/dark theme contrast.
 - **Custom Incident Ingestion** — Live autopsy form: paste any real-world stack trace, choose severity & category, and instantly generate a full post-mortem case study persisted in `localStorage`.
+
+### ⏱️ Time-to-Death Incident Replayer
+- **Step-by-Step Outage Simulation** — Interactive timeline stepper tracking the exact moment-by-moment degradation from initial anomaly to fatal collapse.
+- **Synchronized Telemetry Degrade** — Real-time indicators for P99 Latency, Error Rate (%), and Throughput (RPS) updating dynamically at every step.
+- **ECG & Audio Lockstep** — Audio engine and visual ECG waveform transition in lockstep with the active timeline step (warning pulse → fatal flatline).
+
+### 🔍 Blameless 5-Whys Root-Cause Tree
+- **Systemic Investigation Hierarchy** — Guided 5-step root-cause analysis tracing from surface symptom down to systemic architectural flaw.
+- **Cyber-Gothic Visual Connector** — Vertically aligned gradient timeline connector linking all investigation nodes with visual status indicators.
+- **1-Click Markdown Chain Export** — Export formatted 5-Whys investigation chain to clipboard for direct inclusion in Jira, Confluence, or GitHub post-mortems.
+
+### 🩺 SRE Remediation Prescription & IaC Generator
+- **Official Doctor’s Orders (Rx)** — Formatted medical-style prescription detailing systemic diagnosis, SLA dosage, and mandatory prevention rules.
+- **Production-Ready IaC & Config Downloads** — Instant in-browser download and clipboard copy of tailored infrastructure files for each incident:
+  - *React Hydration*: `eslint.config.mjs` (SSR guard) & `playwright-ssr.config.ts` (CI console smoke test).
+  - *Connection Pool*: `pgbouncer.ini` (transaction pooling) & `001_sre_pool_guard.sql` (statement timeouts).
+  - *OOM Reaper*: `k8s-pod-resilience.yaml` (memory limits) & `stream-export-pipeline.ts` (backpressure streams).
+  - *Retry Storm*: `envoy-circuit-breaker.yaml` (Envoy circuit breaker) & `resilience-retry.ts` (full jitter).
+  - *CORS Nightmare*: `api-gateway-cors.tf` (Terraform preflight) & `nginx-cors.conf` (NGINX preflight cache).
+  - *Serverless Timeout*: `serverless-template.yaml` (AWS SAM + RDS Proxy) & `rds-proxy.tf` (Terraform).
 
 ### 🗺️ Architecture Blast Radius Heatmap
 - **Interactive Microservice Topology** — Real-time visualization of 5 critical architectural tiers: `Client SPA`, `Edge Gateway`, `Auth Service`, `Database`, and `Worker Pool`.
@@ -95,7 +115,7 @@ Zero external files. Zero dependencies. 100% browser-native Web Audio API:
 - Fully localized `aria-label` in EN and PL.
 
 ### 🌍 Full Bilingual i18n (EN / PL)
-- Complete EN and PL translations for every UI string, status label, legal document, dispatcher template, and chaos scenario.
+- Complete EN and PL translations for every UI string, status label, legal document, dispatcher template, chaos scenario, and 5-whys tree.
 - Zero hardcoded strings across all components.
 - Language switcher in the top navigation bar.
 - Locale preference persisted in `localStorage`.
@@ -105,10 +125,6 @@ Zero external files. Zero dependencies. 100% browser-native Web Audio API:
 - **Terms of Service** — Scope disclaimer, AS-IS engineering disclaimer for Resurrection Code Patches, MIT license reference.
 - **Cookie Policy** — Transparent disclosure of zero HTTP tracking cookies, with Google Consent Mode v2 support for optional analytics.
 - Localized LegalModal with scrollable sections, structured headers, and bullet lists.
-
-### 🍪 Cookie & Privacy Consent
-- GDPR-compliant banner on first visit with granular analytics/marketing preference drawer.
-- Consent state persisted in `localStorage` under `bm_cookie_consent`.
 
 ---
 
@@ -125,7 +141,7 @@ BugMortem ships with six production-authentic, hand-crafted autopsy presets cove
 | 5 | **The CORS Preflight Nightmare** | P1 | Network / Security |
 | 6 | **Serverless Cold Start Cascade & Gateway 504 Timeout** | P0 | Cloud / Serverless |
 
-Each preset includes: incident description, cursed crash code, resurrected SRE safe pattern, raw stack trace, chronological timeline with fatal event markers, and a full post-mortem report with Executive Summary, Blast Radius, and Preventative Action Items.
+Each preset includes: incident description, cursed crash code, resurrected SRE safe pattern, raw stack trace, chronological timeline with fatal event markers, 3-step replayer simulation, 5-whys root-cause tree, downloadable IaC prescription files, and a full post-mortem report.
 
 ---
 
@@ -146,7 +162,7 @@ pnpm test:pbt:watch # watch mode for development
 ```
  Test Files  1 passed (1)
       Tests  33 passed (33)
-   Duration  ~900ms
+   Duration  ~460ms
 ```
 
 ### The 4 Invariants (150 random runs each)
@@ -159,18 +175,6 @@ pnpm test:pbt:watch # watch mode for development
 | **4 — Export Fidelity** | `generateMarkdownReport()` always contains all 3 required SRE headers: *Executive Summary*, *Blast Radius*, *Preventative Action Items* | 150 × 8 props |
 
 Plus a **Regression suite** (5 tests) covering 14 known edge-case inputs including empty incidents, null bytes, and very long strings.
-
-### Tested modules
-
-The pure autopsy engine (`src/utils/autopsyEngine.ts`) exports all testable functions:
-
-- `classifySeverity(raw)` — severity string → `'P0' | 'P1'`
-- `parseStackTrace(raw)` — raw string → `StackFrame[]` (V8 + Firefox formats)
-- `buildTimeline(frames, category, anchor)` — structured `TimelineEvent[]`
-- `buildPostMortem(title, badge, sev)` → `PostMortemReport`
-- `generateMarkdownReport(incident, labels)` → full SRE markdown string
-- `createAutopsyIncident(input)` → complete `IncidentPreset`
-- `fixOrphans(text)` → typographic utility
 
 ---
 
@@ -192,8 +196,6 @@ BugMortem is architected on a **zero-data-leakage, local-first model**:
 | `bugmortem_locale` | Your selected UI language (`"en"` or `"pl"`) |
 | `bm_theme` | Your selected color theme (`"dark"` or `"light"`) |
 
-To purge all data: DevTools → Application → Local Storage → delete all keys prefixed `bm_` or `bugmortem_`.
-
 ---
 
 ## 🏗️ Repository Structure
@@ -210,8 +212,14 @@ bugmortem/
 │   ├── app/
 │   │   ├── globals.css          # Tailwind CSS v4 + typography utilities
 │   │   ├── layout.tsx           # Metadata, font setup, provider wiring
-│   │   └── page.tsx             # Main morgue dashboard — state, handlers, JSX
+│   │   └── page.tsx             # Clean orchestrator dashboard (~260 lines)
 │   ├── components/
+│   │   ├── TopNavbar.tsx        # Brand header, language switcher, dark/light toggle
+│   │   ├── CustomAutopsyModal.tsx # Custom incident submission & validation modal
+│   │   ├── PostMortemSection.tsx # Post-mortem protocol, coroner voice, PDF/MD exports
+│   │   ├── SrePrescriptionModal.tsx # SRE Prescription (Rx) & downloadable IaC configs
+│   │   ├── FiveWhysTree.tsx     # Blameless 5-whys root-cause tree with 1-click copy
+│   │   ├── IncidentReplayer.tsx # Time-to-death timeline replayer & telemetry stepper
 │   │   ├── BlastRadiusMap.tsx   # Interactive microservice blast radius heatmap
 │   │   ├── ChaosSandbox.tsx     # Live chaos engineering sandbox & telemetry
 │   │   ├── CookieBanner.tsx     # GDPR cookie consent banner (Consent Mode v2)
