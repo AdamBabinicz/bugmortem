@@ -707,6 +707,8 @@ HTTP/1.1 504 Gateway Timeout
     listenCoroner: 'Odsłuchaj Werdykt Koronera',
     exportMarkdown: 'Eksportuj Raport do Markdown',
     downloadCertificate: 'Pobierz Kartę Zgonu (PDF)',
+    broadcastSlack: 'Nadaj na Slack',
+    slackCopiedNotice: '📋 Broadcast Slack skopiowany do schowka.',
   },
   dispatcher: {
     openBtn: 'Eskalacja On-Call',

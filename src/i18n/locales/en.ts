@@ -707,6 +707,8 @@ HTTP/1.1 504 Gateway Timeout
     listenCoroner: 'Play Coroner Verdict',
     exportMarkdown: 'Export Report to Markdown',
     downloadCertificate: 'Download Death Certificate (PDF)',
+    broadcastSlack: 'Broadcast to Slack',
+    slackCopiedNotice: '📋 Slack broadcast copied to clipboard.',
   },
   dispatcher: {
     openBtn: 'Escalate On-Call',

@@ -257,6 +257,8 @@ export interface TranslationDictionary {
     listenCoroner: string;
     exportMarkdown: string;
     downloadCertificate: string;
+    broadcastSlack: string;
+    slackCopiedNotice: string;
     [key: string]: any;
   };
   dispatcher?: any;
