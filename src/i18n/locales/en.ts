@@ -616,6 +616,176 @@ HTTP/1.1 504 Gateway Timeout
           ],
         },
       },
+      's3-lambda-loop': {
+        id: 's3-lambda-loop',
+        title: 'AWS S3 ⇄ Lambda Recursive Loop Death Spiral',
+        badge: 'AWS / SERVERLESS',
+        severity: 'P0',
+        description:
+          'An S3 event trigger without a prefix filter caused a Lambda image processor to write thumbnails back into the same source bucket, recursively invoking itself 142,000 times in under 4 minutes and exhausting the entire AWS account concurrency limit (1,000/1,000), paralysing all other production services.',
+        codeSnippet: `// ❌ CURSED CODE: Lambda writing output to the same S3 bucket that triggers it
+export const handler = async (event: S3Event) => {
+  for (const record of event.Records) {
+    const srcKey = record.s3.object.key;
+    const srcBucket = record.s3.bucket.name; // "media-assets"
+
+    // BUG 1: No prefix guard — fires on EVERY object in the bucket,
+    //        including the thumbnails this function is about to write.
+    // BUG 2: Writing the thumbnail back into srcBucket triggers
+    //        another s3:ObjectCreated event → infinite recursive loop.
+    const thumbnail = await resizeImage(srcKey, srcBucket);
+    await s3.putObject({
+      Bucket: srcBucket,          // ← same bucket as trigger!
+      Key: \`thumb_\${srcKey}\`,
+      Body: thumbnail,
+    }).promise();
+  }
+};`,
+        revivedCode: `// ✅ RESURRECTED SRE CODE: Separate output bucket + prefix filter + recursion guard
+import { S3Event } from 'aws-lambda';
+import { S3 } from 'aws-sdk';
+
+const s3 = new S3();
+const INPUT_PREFIX  = 'uploads/';   // only process originals
+const OUTPUT_BUCKET = process.env.THUMBNAIL_BUCKET!; // isolated output bucket
+
+export const handler = async (event: S3Event): Promise<void> => {
+  // Recursion guard: reject invocations triggered by our own output bucket
+  if (process.env.AWS_LAMBDA_FUNCTION_NAME &&
+      event.Records[0]?.s3.bucket.name === OUTPUT_BUCKET) {
+    console.warn('SRE GUARD: recursive invocation blocked — output bucket event rejected.');
+    return;
+  }
+
+  for (const record of event.Records) {
+    const srcKey    = record.s3.object.key;
+    const srcBucket = record.s3.bucket.name;
+
+    // Guard: only process objects under the uploads/ prefix
+    if (!srcKey.startsWith(INPUT_PREFIX)) {
+      console.info(\`SRE GUARD: skipping \${srcKey} — outside uploads/ prefix.\`);
+      continue;
+    }
+
+    const thumbnail = await resizeImage(srcKey, srcBucket);
+
+    // Write to ISOLATED output bucket — cannot trigger this Lambda again
+    await s3.putObject({
+      Bucket: OUTPUT_BUCKET,
+      Key: \`thumbs/\${srcKey.replace(INPUT_PREFIX, '')}\`,
+      Body: thumbnail,
+      ContentType: 'image/webp',
+    }).promise();
+  }
+};`,
+        stackTrace: `START RequestId: d3f2a1b4-8e9c-4f0a Duration: 312.45 ms Billed Duration: 313 ms
+REPORT RequestId: d3f2a1b4-8e9c-4f0a  Init Duration: 183.12 ms
+
+[ERROR] 14:01:02 TooManyRequestsException: Rate exceeded
+  at Request.extractError (node_modules/aws-sdk/lib/protocol/json.js:52:27)
+  at Request.callListeners (node_modules/aws-sdk/lib/sequential_executor.js:106:20)
+  Status Code: 429, RequestId: a1b2c3d4-0000-ffff-9999-deadbeef0001
+
+[CRITICAL] 14:02:47 AWS Lambda: Account-level concurrency limit reached (1000/1000).
+  All Lambda invocations for account 123456789012 are being throttled.
+  Throttled functions: image-processor, auth-token-refresher, order-processor, payment-webhook
+
+[ALERT] CloudWatch Alarm: LambdaThrottles > 10000 in 60s — ALARM STATE
+  Namespace: AWS/Lambda | MetricName: Throttles
+  Dimensions: FunctionName=image-processor
+  EvaluationPeriods: 1 | Threshold: 10000 | ComparisonOperator: GreaterThanThreshold`,
+        timeline: [
+          {
+            time: '14:00:00 UTC',
+            label: 'S3 Ingress Event',
+            description: 'User uploads first image to media-assets/uploads/ — Lambda invoked normally.',
+          },
+          {
+            time: '14:00:08 UTC',
+            label: 'Exponential Fanout',
+            description:
+              'Lambda writes thumb_ back into the same bucket, triggering a new S3 event. Invocation count doubles every ~4 seconds.',
+          },
+          {
+            time: '14:03:51 UTC',
+            label: 'Concurrency Exhaustion (P0)',
+            description:
+              '142,000 invocations consumed all 1,000 concurrent Lambda slots. auth-token-refresher, order-processor and payment-webhook are throttled.',
+            isFatal: true,
+          },
+        ],
+        replayerSteps: [
+          {
+            step: 1,
+            timeOffset: '+0.0s [14:00:00 UTC]',
+            title: 'First S3 ObjectCreated Event',
+            description: 'Single user upload triggers image-processor Lambda — first loop iteration begins silently.',
+            telemetry: { latencyMs: 312, errorRate: '0.00%', rps: '1.2k' },
+            severity: 'P1',
+          },
+          {
+            step: 2,
+            timeOffset: '+15s [14:00:15 UTC]',
+            title: 'Recursive Fanout — Exponential Growth',
+            description:
+              'Each Lambda write triggers another S3 event. Concurrency spikes from 1 to 512 in under 15 seconds.',
+            telemetry: { latencyMs: 890, errorRate: '8.4%', rps: '14.2k' },
+            severity: 'P1',
+          },
+          {
+            step: 3,
+            timeOffset: '+231s [14:03:51 UTC]',
+            title: 'Account Concurrency Limit Reached (1000/1000) — P0',
+            description:
+              '142,000 total invocations consumed all reserved concurrency slots. Every Lambda in the account is throttled with 429 TooManyRequestsException.',
+            telemetry: { latencyMs: 0, errorRate: '100%', rps: '142k' },
+            severity: 'P0',
+          },
+        ],
+        fiveWhys: [
+          'All AWS Lambda functions across the account return TooManyRequestsException (429) and auth, payment, and order services are unresponsive.',
+          'The image-processor Lambda consumed all 1,000 concurrent execution slots of the AWS account within 4 minutes.',
+          'The Lambda wrote thumbnail output objects back into the same S3 bucket that triggers it, creating an infinite recursive invocation loop.',
+          'The S3 event notification was configured without a key prefix filter, so every object write — including thumbnails — fired the trigger.',
+          'No S3 prefix filter, no separate output bucket, no AWS Recursive Loop Detection, and no reserved-concurrency ceiling on the image-processor function.',
+        ],
+        blastRadius: {
+          nodes: [
+            { id: 'n1', name: 'S3 Ingest Bucket', role: 'Event Source / Epicenter', status: 'epicenter', statusCode: 'LOOP' },
+            { id: 'n2', name: 'Lambda Worker Fleet', role: 'Compute Concurrency', status: 'degraded', statusCode: '429' },
+            { id: 'n3', name: 'Auth Token Refresher', role: 'Identity Service', status: 'degraded', statusCode: 'THROTTLED' },
+            { id: 'n4', name: 'Order & Payment Service', role: 'Core Revenue Path', status: 'degraded', statusCode: 'THROTTLED' },
+          ],
+          summary: { epicenterCount: 1, degradedCount: 3, healthyCount: 0 },
+        },
+        chaosMetrics: [
+          {
+            id: 'm1',
+            name: 'Lambda Recursive Invocations',
+            severity: 'P0',
+            description: '142,000 self-triggered invocations in 231 seconds — exponential fanout',
+            status: 'injecting',
+          },
+          {
+            id: 'm2',
+            name: 'Account Concurrency Exhaustion',
+            severity: 'P0',
+            description: '1,000/1,000 concurrent slots consumed — entire account throttled',
+            status: 'injecting',
+          },
+        ],
+        postMortem: {
+          summary:
+            'Missing S3 prefix filter on the Lambda trigger combined with writing output to the source bucket created an infinite recursive invocation loop, exhausting the full AWS account concurrency limit.',
+          impact:
+            '142,000 Lambda invocations in 4 minutes paralysed auth, order, and payment services account-wide. Estimated revenue impact: $28,000 in blocked transactions.',
+          actionItems: [
+            'Isolate Lambda input and output to separate S3 buckets — never write trigger output back into the event-source bucket.',
+            'Configure S3 event notifications with explicit key prefix filters (e.g. uploads/) to prevent thumbnail re-triggering.',
+            'Enable AWS Recursive Loop Detection (available since Nov 2023) and set a reserved-concurrency ceiling on image-processor.',
+          ],
+        },
+      },
     },
   },
   codeSection: {

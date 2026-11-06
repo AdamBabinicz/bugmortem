@@ -308,6 +308,199 @@ resource "aws_api_gateway_integration" "cors_mock" {
         ]
       };
 
+    case 's3-lambda-loop':
+      return {
+        doctorOrder:
+          locale === 'pl'
+            ? 'Natychmiastowa izolacja bucketów S3 wejścia i wyjścia Lambdy oraz wdrożenie filtra prefiksu klucza i pułapu zarezerwowanej współbieżności w celu przerwania pętli rekurencyjnej.'
+            : 'Immediately isolate S3 input and output buckets, enforce a key prefix filter on the event notification, and set a reserved-concurrency ceiling to break the recursive invocation loop.',
+        dosage:
+          locale === 'pl'
+            ? 'Zarezerwowana współbieżność image-processor: max 50 instancji. Filtr prefiksu S3: uploads/*. Oddzielny bucket wyjściowy: media-thumbnails.'
+            : 'Reserved concurrency for image-processor: max 50 instances. S3 prefix filter: uploads/*. Separate output bucket: media-thumbnails.',
+        preventionRule:
+          locale === 'pl'
+            ? 'Bezwzględny zakaz konfigurowania wyzwalaczy S3 bez filtra prefiksu oraz zapisu wyników Lambdy do bucketa źródłowego zdarzenia. Włączyć AWS Recursive Loop Detection.'
+            : 'Strict prohibition of S3 triggers without prefix filters and writing Lambda output to the event-source bucket. Enable AWS Recursive Loop Detection on all event-driven functions.',
+        files: [
+          {
+            filename: 's3-lambda-circuit-breaker.tf',
+            language: 'hcl',
+            description:
+              locale === 'pl'
+                ? 'Terraform: osobne buckety wejścia/wyjścia, filtr prefiksu S3, pułap współbieżności i SQS DLQ'
+                : 'Terraform: separate input/output buckets, S3 prefix filter, concurrency ceiling, and SQS DLQ',
+            content: `# s3-lambda-circuit-breaker.tf
+# SRE Resilience: S3 ⇄ Lambda Recursive Loop Prevention
+
+# ── Isolated input bucket (originals) ──────────────────────────────────────
+resource "aws_s3_bucket" "media_input" {
+  bucket = "media-assets-input"
+}
+
+# ── Isolated output bucket (thumbnails) ────────────────────────────────────
+resource "aws_s3_bucket" "media_output" {
+  bucket = "media-thumbnails-output"
+}
+
+# ── S3 event notification with mandatory prefix filter ─────────────────────
+resource "aws_s3_bucket_notification" "media_input_trigger" {
+  bucket = aws_s3_bucket.media_input.id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.image_processor.arn
+    events              = ["s3:ObjectCreated:*"]
+
+    # SRE GUARD: only fire on original uploads — never on thumbnails
+    filter_prefix = "uploads/"
+    filter_suffix = ""
+  }
+
+  depends_on = [aws_lambda_permission.allow_s3]
+}
+
+# ── Reserved concurrency ceiling — blast-radius limiter ─────────────────────
+resource "aws_lambda_function_event_invoke_config" "image_processor_guard" {
+  function_name = aws_lambda_function.image_processor.function_name
+
+  maximum_retry_attempts = 0   # no retries on recursive failures
+}
+
+resource "aws_lambda_provisioned_concurrency_config" "image_processor_cap" {
+  function_name                  = aws_lambda_function.image_processor.function_name
+  qualifier                      = aws_lambda_alias.image_processor_live.name
+  provisioned_concurrent_executions = 10
+}
+
+# Reserve concurrency to cap account-wide blast radius
+resource "aws_lambda_function" "image_processor" {
+  function_name = "image-processor"
+  runtime       = "nodejs20.x"
+  handler       = "index.handler"
+  role          = aws_iam_role.lambda_exec.arn
+  timeout       = 30
+  memory_size   = 512
+
+  reserved_concurrent_executions = 50   # ← hard ceiling; protects rest of account
+
+  environment {
+    variables = {
+      THUMBNAIL_BUCKET = aws_s3_bucket.media_output.bucket
+    }
+  }
+}
+
+# ── SQS Dead Letter Queue for failed invocations ────────────────────────────
+resource "aws_sqs_queue" "image_processor_dlq" {
+  name                       = "image-processor-dlq"
+  message_retention_seconds  = 1209600  # 14 days
+  visibility_timeout_seconds = 60
+}
+
+resource "aws_lambda_event_source_mapping" "image_processor_dlq_mapping" {
+  event_source_arn = aws_sqs_queue.image_processor_dlq.arn
+  function_name    = aws_lambda_function.image_processor.function_name
+  batch_size       = 1
+  enabled          = false   # manual drain — activated only during incident review
+}`,
+          },
+          {
+            filename: 'aws-lambda-resilience.yaml',
+            language: 'yaml',
+            description:
+              locale === 'pl'
+                ? 'AWS SAM: konfiguracja ochrony przed pętlą rekurencyjną, DLQ i CloudWatch Alarm'
+                : 'AWS SAM: recursive loop protection, DLQ configuration, and CloudWatch throttle alarm',
+            content: `# aws-lambda-resilience.yaml
+# AWS SAM template — S3⇄Lambda Recursive Loop Prevention
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  BugMortem SRE — S3⇄Lambda Recursive Loop Circuit Breaker
+  Ref: https://docs.aws.amazon.com/lambda/latest/dg/invocation-recursion.html
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 30
+    MemorySize: 512
+    Environment:
+      Variables:
+        THUMBNAIL_BUCKET: !Ref ThumbnailOutputBucket
+
+Resources:
+
+  # ── Isolated input bucket (originals only) ────────────────────────────────
+  MediaInputBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: media-assets-input
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: uploads/    # SRE GUARD: only fire on originals
+            Function: !GetAtt ImageProcessorFunction.Arn
+
+  # ── Isolated output bucket (thumbnails only) ─────────────────────────────
+  ThumbnailOutputBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: media-thumbnails-output
+
+  # ── Dead Letter Queue for failed Lambda invocations ───────────────────────
+  ImageProcessorDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: image-processor-dlq
+      MessageRetentionPeriod: 1209600   # 14 days
+      VisibilityTimeout: 60
+
+  # ── Image Processor Lambda with reserved concurrency ceiling ─────────────
+  ImageProcessorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: image-processor
+      CodeUri: dist/
+      Handler: index.handler
+      ReservedConcurrentExecutions: 50    # hard ceiling — account blast-radius limiter
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt ImageProcessorDLQ.Arn
+      RecursiveLoop: Terminate              # AWS Recursive Loop Detection (Nov 2023+)
+      Events:
+        # S3 trigger defined on MediaInputBucket above — no additional event here
+        # to avoid duplicate notification configuration
+
+  # ── CloudWatch Alarm: throttle spike detector ─────────────────────────────
+  LambdaThrottleAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ImageProcessorThrottleSpike
+      AlarmDescription: >
+        SRE GUARD: image-processor throttle count exceeded 100 in 60s.
+        Possible recursive loop — investigate S3 event notification config.
+      Namespace: AWS/Lambda
+      MetricName: Throttles
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ImageProcessorFunction
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 100
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Sub arn:aws:sns:\${AWS::Region}:\${AWS::AccountId}:sre-oncall-alerts`,
+          },
+        ],
+      };
+
     case 'serverless-timeout':
     default:
       return {

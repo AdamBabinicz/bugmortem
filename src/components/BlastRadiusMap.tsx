@@ -102,6 +102,11 @@ export function BlastRadiusMap({
         if (nodeId === 'client-spa') return 'degraded';
         return 'healthy';
 
+      case 's3-lambda-loop':
+        if (nodeId === 'worker-pool') return 'patient-zero';
+        if (nodeId === 'edge-gateway' || nodeId === 'database' || nodeId === 'auth-service') return 'degraded';
+        return 'healthy';
+
       default:
         // Własne incydenty dopasowane do kategorii
         if (category === 'frontend') {

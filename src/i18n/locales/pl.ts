@@ -616,6 +616,176 @@ HTTP/1.1 504 Gateway Timeout
           ],
         },
       },
+      's3-lambda-loop': {
+        id: 's3-lambda-loop',
+        title: 'Spirala Śmierci: Rekurencyjna Pętla S3 ⇄ Lambda',
+        badge: 'AWS / SERVERLESS',
+        severity: 'P0',
+        description:
+          'Wyzwalacz S3 bez filtra prefiksu spowodował, że Lambda przetwarzająca obrazy zapisywała miniatury z powrotem do tego samego bucketa źródłowego, rekurencyjnie wywołując się 142 000 razy w ciągu 4 minut i wyczerpując cały limit współbieżności konta AWS (1 000/1 000), paraliżując pozostałe serwisy produkcyjne.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Lambda zapisuje wynik do tego samego bucketa S3, który ją wywołuje
+export const handler = async (event: S3Event) => {
+  for (const record of event.Records) {
+    const srcKey    = record.s3.object.key;
+    const srcBucket = record.s3.bucket.name; // "media-assets"
+
+    // BŁĄD 1: Brak filtra prefiksu — funkcja odpala się na KAŻDYM obiekcie,
+    //          łącznie z miniaturami, które sama za chwilę zapisze.
+    // BŁĄD 2: Zapis miniatury z powrotem do srcBucket wyzwala kolejne zdarzenie
+    //          s3:ObjectCreated → nieskończona rekurencyjna pętla wywołań.
+    const thumbnail = await resizeImage(srcKey, srcBucket);
+    await s3.putObject({
+      Bucket: srcBucket,          // ← ten sam bucket co trigger!
+      Key: \`thumb_\${srcKey}\`,
+      Body: thumbnail,
+    }).promise();
+  }
+};`,
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Osobny bucket wyjściowy + filtr prefiksu + strażnik rekurencji
+import { S3Event } from 'aws-lambda';
+import { S3 } from 'aws-sdk';
+
+const s3 = new S3();
+const INPUT_PREFIX  = 'uploads/';              // tylko oryginały
+const OUTPUT_BUCKET = process.env.THUMBNAIL_BUCKET!; // izolowany bucket wyjściowy
+
+export const handler = async (event: S3Event): Promise<void> => {
+  // Strażnik rekurencji: blokuj wywołania wyzwolone przez własny bucket wyjściowy
+  if (process.env.AWS_LAMBDA_FUNCTION_NAME &&
+      event.Records[0]?.s3.bucket.name === OUTPUT_BUCKET) {
+    console.warn('SRE GUARD: wywołanie rekurencyjne zablokowane — zdarzenie z bucketa wyjściowego odrzucone.');
+    return;
+  }
+
+  for (const record of event.Records) {
+    const srcKey    = record.s3.object.key;
+    const srcBucket = record.s3.bucket.name;
+
+    // Strażnik: przetwarzaj tylko obiekty z prefiksem uploads/
+    if (!srcKey.startsWith(INPUT_PREFIX)) {
+      console.info(\`SRE GUARD: pomijam \${srcKey} — poza prefiksem uploads/.\`);
+      continue;
+    }
+
+    const thumbnail = await resizeImage(srcKey, srcBucket);
+
+    // Zapis do IZOLOWANEGO bucketa wyjściowego — nie może ponownie wyzwolić tej Lambdy
+    await s3.putObject({
+      Bucket: OUTPUT_BUCKET,
+      Key: \`thumbs/\${srcKey.replace(INPUT_PREFIX, '')}\`,
+      Body: thumbnail,
+      ContentType: 'image/webp',
+    }).promise();
+  }
+};`,
+        stackTrace: `START RequestId: d3f2a1b4-8e9c-4f0a Duration: 312.45 ms Billed Duration: 313 ms
+REPORT RequestId: d3f2a1b4-8e9c-4f0a  Init Duration: 183.12 ms
+
+[ERROR] 14:01:02 TooManyRequestsException: Rate exceeded
+  at Request.extractError (node_modules/aws-sdk/lib/protocol/json.js:52:27)
+  at Request.callListeners (node_modules/aws-sdk/lib/sequential_executor.js:106:20)
+  Status Code: 429, RequestId: a1b2c3d4-0000-ffff-9999-deadbeef0001
+
+[CRITICAL] 14:02:47 AWS Lambda: Account-level concurrency limit reached (1000/1000).
+  All Lambda invocations for account 123456789012 are being throttled.
+  Throttled functions: image-processor, auth-token-refresher, order-processor, payment-webhook
+
+[ALERT] CloudWatch Alarm: LambdaThrottles > 10000 in 60s — ALARM STATE
+  Namespace: AWS/Lambda | MetricName: Throttles
+  Dimensions: FunctionName=image-processor
+  EvaluationPeriods: 1 | Threshold: 10000 | ComparisonOperator: GreaterThanThreshold`,
+        timeline: [
+          {
+            time: '14:00:00 UTC',
+            label: 'S3 Ingress Event',
+            description: 'Użytkownik wgrywa pierwszy obraz do media-assets/uploads/ — Lambda wywołana normalnie.',
+          },
+          {
+            time: '14:00:08 UTC',
+            label: 'Exponential Fanout',
+            description:
+              'Lambda zapisuje miniaturę z powrotem do tego samego bucketa, wyzwalając kolejne zdarzenie S3. Liczba wywołań podwaja się co ~4 sekundy.',
+          },
+          {
+            time: '14:03:51 UTC',
+            label: 'Wyczerpanie Współbieżności (P0)',
+            description:
+              '142 000 wywołań wyczerpało 1 000/1 000 slotów współbieżności Lambda. auth-token-refresher, order-processor i payment-webhook są dławione.',
+            isFatal: true,
+          },
+        ],
+        replayerSteps: [
+          {
+            step: 1,
+            timeOffset: '+0.0s [14:00:00 UTC]',
+            title: 'Pierwsze zdarzenie S3 ObjectCreated',
+            description: 'Pojedyncze wgranie pliku wyzwala image-processor Lambda — pierwsza iteracja pętli startuje cicho.',
+            telemetry: { latencyMs: 312, errorRate: '0.00%', rps: '1.2k' },
+            severity: 'P1',
+          },
+          {
+            step: 2,
+            timeOffset: '+15s [14:00:15 UTC]',
+            title: 'Rekurencyjny Fanout — Wzrost Wykładniczy',
+            description:
+              'Każdy zapis Lambdy wyzwala kolejne zdarzenie S3. Współbieżność skacze z 1 do 512 w ciągu 15 sekund.',
+            telemetry: { latencyMs: 890, errorRate: '8.4%', rps: '14.2k' },
+            severity: 'P1',
+          },
+          {
+            step: 3,
+            timeOffset: '+231s [14:03:51 UTC]',
+            title: 'Wyczerpanie Limitu Współbieżności Konta (1000/1000) — P0',
+            description:
+              '142 000 wywołań pochłonęło wszystkie zarezerwowane sloty współbieżności. Każda Lambda na koncie jest dławiona błędem 429 TooManyRequestsException.',
+            telemetry: { latencyMs: 0, errorRate: '100%', rps: '142k' },
+            severity: 'P0',
+          },
+        ],
+        fiveWhys: [
+          'Wszystkie funkcje AWS Lambda na koncie zwracają TooManyRequestsException (429); usługi uwierzytelniania, zamówień i płatności są nieosiągalne.',
+          'Funkcja image-processor pochłonęła wszystkie 1 000 slotów współbieżności konta AWS w ciągu 4 minut.',
+          'Lambda zapisywała miniatury z powrotem do tego samego bucketa S3, który ją wyzwalał, tworząc nieskończoną rekurencyjną pętlę wywołań.',
+          'Powiadomienie o zdarzeniu S3 zostało skonfigurowane bez filtra prefiksu klucza, więc każdy zapis obiektu — w tym miniatury — wyzwalał trigger.',
+          'Brak filtra prefiksu S3, brak osobnego bucketa wyjściowego, brak AWS Recursive Loop Detection i brak pułapu zarezerwowanej współbieżności dla funkcji image-processor.',
+        ],
+        blastRadius: {
+          nodes: [
+            { id: 'n1', name: 'Bucket S3 Wejściowy', role: 'Źródło Zdarzenia / Epicenter', status: 'epicenter', statusCode: 'LOOP' },
+            { id: 'n2', name: 'Flota Lambda Workerów', role: 'Współbieżność Obliczeniowa', status: 'degraded', statusCode: '429' },
+            { id: 'n3', name: 'Serwis Tokenów Auth', role: 'Serwis Tożsamości', status: 'degraded', statusCode: 'THROTTLED' },
+            { id: 'n4', name: 'Serwis Zamówień i Płatności', role: 'Krytyczna Ścieżka Przychodów', status: 'degraded', statusCode: 'THROTTLED' },
+          ],
+          summary: { epicenterCount: 1, degradedCount: 3, healthyCount: 0 },
+        },
+        chaosMetrics: [
+          {
+            id: 'm1',
+            name: 'Rekurencyjne Wywołania Lambda',
+            severity: 'P0',
+            description: '142 000 samowyzwalających się wywołań w 231 sekundach — wzrost wykładniczy',
+            status: 'injecting',
+          },
+          {
+            id: 'm2',
+            name: 'Wyczerpanie Współbieżności Konta',
+            severity: 'P0',
+            description: '1 000/1 000 slotów współbieżności zajętych — całe konto zdławione',
+            status: 'injecting',
+          },
+        ],
+        postMortem: {
+          summary:
+            'Brak filtra prefiksu S3 na wyzwalaczu Lambdy w połączeniu z zapisem miniatur do bucketa źródłowego stworzył nieskończoną pętlę rekurencyjnych wywołań, wyczerpując całkowity limit współbieżności konta AWS.',
+          impact:
+            '142 000 wywołań Lambda w 4 minuty sparaliżowało usługi uwierzytelniania, zamówień i płatności na poziomie konta. Szacowany wpływ na przychody: 120 000 PLN w zablokowanych transakcjach.',
+          actionItems: [
+            'Izolować wejście i wyjście Lambdy do osobnych bucketów S3 — nigdy nie zapisywać wyniku triggera z powrotem do bucketa źródłowego.',
+            'Konfigurować powiadomienia zdarzeń S3 z jawnym filtrem prefiksu klucza (np. uploads/) zapobiegającym ponownemu wyzwalaniu.',
+            'Włączyć AWS Recursive Loop Detection (dostępne od listopada 2023) i ustawić pułap zarezerwowanej współbieżności dla image-processor.',
+          ],
+        },
+      },
     },
   },
   codeSection: {
