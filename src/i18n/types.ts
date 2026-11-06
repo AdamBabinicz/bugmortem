@@ -112,7 +112,55 @@ export interface ChaosDictionary {
   scenarioAuthStormDesc: string;
 }
 
+export interface LegalDictionary {
+  privacyTitle: string;
+  termsTitle: string;
+  cookiesTitle: string;
+  lastUpdated: string;
+
+  // Privacy Policy
+  privacyArchHeader: string;
+  privacyArchText: string;
+  privacyArchBullets: string[];
+  privacyAdminHeader: string;
+  privacyAdminText: string;
+  privacyScopeHeader: string;
+  privacyScopeText: string;
+  privacyLocalStorageHeader: string;
+  privacyLocalStorageIntro: string;
+  privacyLocalStorageKeys: Array<{ key: string; desc: string }>;
+  privacyNoTrackingHeader: string;
+  privacyNoTrackingText: string;
+  privacyNoTrackingBullets: string[];
+  privacyUserRightsHeader: string;
+  privacyUserRightsText: string;
+  privacyUserRightsBullets: string[];
+  privacyPurgeHeader: string;
+  privacyPurgeText: string;
+
+  // Terms of Service
+  termsScopeHeader: string;
+  termsScopeText: string;
+  termsGeneralHeader: string;
+  termsGeneralText: string;
+  termsDisclaimerHeader: string;
+  termsDisclaimerIntro: string;
+  termsDisclaimerPoints: string[];
+  termsLiabilityHeader: string;
+  termsLiabilityText: string;
+  termsLicenseHeader: string;
+  termsLicenseText: string;
+  termsLicenseBullets: string[];
+
+  // Cookie Policy
+  cookiesUsageHeader: string;
+  cookiesUsageText: string;
+}
+
 export interface TranslationDictionary {
+  common: {
+    close: string;
+  };
   hero: {
     badge: string;
     title: string;
@@ -197,6 +245,7 @@ export interface TranslationDictionary {
     pagingTriggered: string;
     closeCta: string;
   };
+  legal: LegalDictionary;
   footer: {
     disclaimer: string;
     privacy: string;

@@ -1,6 +1,9 @@
 import { TranslationDictionary } from '../types';
 
 export const pl: TranslationDictionary = {
+  common: {
+    close: 'Zamknij',
+  },
   hero: {
     badge: 'PROJEKT NA HACKATHON KIROWEEN 2026',
     title: 'BugMortem – AI Studio Sekcji Zwłok Awarii i Post-Mortem',
@@ -666,7 +669,6 @@ HTTP/1.1 504 Gateway Timeout
     badgeDegraded: 'DEGRADACJA P1',
     badgeHealthy: 'ZDROWE WĘZŁY',
   },
-  // Pełny słownik chaos dla komponentu ChaosSandbox.tsx (100% polskich znaków):
   chaos: {
     sectionTitle: 'PIASKOWNICA INŻYNIERII CHAOSU (LIVE CHAOS SANDBOX)',
     sectionSubtitle: 'Wstrzykuj awarie w czasie rzeczywistym i obserwuj kaskadową reakcję telemetrii',
@@ -685,7 +687,6 @@ HTTP/1.1 504 Gateway Timeout
     scenarioAuthStormTitle: 'Burza unieważnienia sesji (Auth Storm)',
     scenarioAuthStormDesc: 'Zmasowane odrzucenia tokenów JWT i lawina żądań ponownego logowania',
   },
-  // Wsteczna kompatybilność:
   chaosSandbox: {
     title: 'PIASKOWNICA INŻYNIERII CHAOSU (LIVE CHAOS SANDBOX)',
     subtitle: 'Wstrzykuj awarie w czasie rzeczywistym i obserwuj kaskadową reakcję telemetrii',
@@ -725,6 +726,67 @@ HTTP/1.1 504 Gateway Timeout
     dispatchPagingCta: 'Wyślij PagerDuty Alarm (P0)',
     pagingTriggered: 'Syrena PagerDuty wysłana!',
     closeCta: 'Zamknij Konsolę',
+  },
+  legal: {
+    privacyTitle: 'Polityka Prywatności & Suwerenność Danych',
+    termsTitle: 'Regulamin Świadczenia Usług (Terms of Service)',
+    cookiesTitle: 'Polityka Ciasteczek & Pamięci Lokalnej',
+    lastUpdated: 'Ostatnia aktualizacja: Listopad 2026 | Oficjalne Zgłoszenie Kiroween 2026',
+    privacyArchHeader: '1. Architektura Zero-Data Leakage (Przetwarzanie Lokalne)',
+    privacyArchText: 'BugMortem został zaprojektowany z myślą o bezwzględnej poufności danych telemetrycznych oraz kodu źródłowego. Wszelkie analizy sekcji zwłok awarii, parsowanie śladów stosu (stack trace), generowanie raportów post-mortem oraz synteza dźwięku telemetrycznego odbywają się w 100% po stronie Twojej przeglądarki.',
+    privacyArchBullets: [
+      'Żadne wrażliwe logi produkcyjne, hasła ani fragmenty kodu nie opuszczają Twojego urządzenia.',
+      'Aplikacja nie posiada backendu bazodanowego zapisującego Twoje zgłoszenia.',
+      'Generowanie certyfikatów zgonu w formacie PDF oraz eksport Markdown zachodzi lokalnie w silniku przeglądarki.',
+    ],
+    privacyAdminHeader: '2. Administrator Danych i Projekt',
+    privacyAdminText: 'Aplikacja stanowi niezależny projekt inżynieryjny stworzony przez Adama Gierczaka (@AdamBabinicz) na hackathon Kiroween 2026 (organizowany przez AWS & Devpost).',
+    privacyScopeHeader: '3. Zakres Przetwarzanych Informacji',
+    privacyScopeText: 'BugMortem nie gromadzi danych osobowych, adresów e-mail ani numerów IP. Jedyne informacje, które są zapisywane, to parametry sesji przechowywane w pamięci podręcznej Twojej przeglądarki (localStorage).',
+    privacyLocalStorageHeader: '4. Wykorzystanie Pamięci Przeglądarki (LocalStorage)',
+    privacyLocalStorageIntro: 'Poniższa tabela przedstawia wszystkie klucze wykorzystywane przez aplikację:',
+    privacyLocalStorageKeys: [
+      { key: 'bugmortem_custom_incidents', desc: 'Zapisane przez Ciebie własne awarie i sekcje zwłok wprowadzone przez formularz.' },
+      { key: 'bugmortem_theme', desc: 'Wybrany motyw kolorystyczny (Dracula Morgue lub Clinical Daylight).' },
+      { key: 'bugmortem_locale', desc: 'Preferowany język interfejsu (Polski / English).' },
+      { key: 'bugmortem_audio_muted', desc: 'Ustawienie wyciszenia proceduralnej aparatury telemetrycznej EKG.' },
+    ],
+    privacyNoTrackingHeader: '5. Brak Ciasteczek Śledzących i Analityki',
+    privacyNoTrackingText: 'Aplikacja nie korzysta z żadnych zewnętrznych skryptów śledzących (brak Google Analytics 4, Hotjar, Facebook Pixel ani telemetrii marketingowej).',
+    privacyNoTrackingBullets: [
+      'Brak fingerprintingu przeglądarki.',
+      'Brak profilowania użytkowników.',
+      'Zgodność ze standardem Consent Mode v2 (domyślnie zablokowane wszystkie tagi śledzące).',
+    ],
+    privacyUserRightsHeader: '6. Prawa Użytkownika',
+    privacyUserRightsText: 'Posiadasz pełną suwerenność nad swoimi danymi. Możesz w każdej chwili usunąć własne incydenty bezpośrednio z poziomu kafelków archiwum lub całkowicie wyczyścić pamięć podręczną aplikacji.',
+    privacyUserRightsBullets: [
+      'Prawo do natychmiastowego usunięcia wpisów przyciskiem kosza w archiwum.',
+      'Prawo do pobrania wygenerowanych raportów w otwartym formacie Markdown.',
+    ],
+    privacyPurgeHeader: '7. Całkowite Czyszczenie Danych',
+    privacyPurgeText: 'Wyczyszczenie pamięci podręcznej przeglądarki lub kliknięcie przycisku „Wyczyść własne awarie” bezpowrotnie i trwale usuwa wszelkie zapisane incydenty z Twojego urządzenia.',
+    termsScopeHeader: '1. Postanowienia Ogólne i Przeznaczenie',
+    termsScopeText: 'BugMortem jest interaktywnym narzędziem edukacyjno-diagnostycznym SRE, stworzonym w celu demonstracji zaawansowanych wzorców odporności systemów rozproszonych, analizy przyczyn źródłowych metodą 5-Whys oraz automatyzacji raportów post-mortem.',
+    termsGeneralHeader: '2. Warunki Korzystania',
+    termsGeneralText: 'Korzystanie z aplikacji jest całkowicie bezpłatne. Użytkownik ma prawo do wprowadzania własnych śladów stosu, symulowania scenariuszy chaosu oraz pobierania wygenerowanych skryptów infrastruktury jako kodu (IaC).',
+    termsDisclaimerHeader: '3. Klauzula Wyłączenia Odpowiedzialności SRE',
+    termsDisclaimerIntro: 'Mimo że generowane recepty SRE i szablony IaC (Terraform, Kubernetes, AWS SAM, PgBouncer, ESLint) bazują na sprawdzonych wzorcach produkcyjnych:',
+    termsDisclaimerPoints: [
+      'Wszelkie wygenerowane skrypty i recepty należy zweryfikować w środowisku testowym (staging) przed wdrożeniem na produkcję.',
+      'Autor aplikacji nie ponosi odpowiedzialności za ewentualne przerwy w działaniu zewnętrznych systemów wynikające z bezpośredniego wdrożenia generowanych szablonów.',
+      'Narzędzie służy celom szkoleniowym, symulacyjnym i forensicznym.',
+    ],
+    liabilityHeader: '4. Dostępność Usługi',
+    liabilityText: 'Aplikacja jest hostowana statycznie na platformie Vercel Edge. Autor dokłada starań, aby narzędzie było dostępne nieprzerwanie, jednak nie udziela gwarancji SLA na dostępność interfejsu.',
+    licenseHeader: '5. Licencja i Prawa Autorskie',
+    licenseText: 'Kod źródłowy projektu BugMortem udostępniony jest na warunkach licencji open-source MIT.',
+    licenseBullets: [
+      'Możesz swobodnie analizować, forkowywać i adaptować wzorce SRE zawarte w repozytorium.',
+      'Wszelkie prawa autorskie do projektu należą do Adama Gierczaka (@AdamBabinicz).',
+    ],
+    cookiesUsageHeader: '1. Brak Ciasteczek Śledzących (Zero Tracking Cookies)',
+    cookiesUsageText: 'BugMortem nie zapisuje ani nie odczytuje żadnych ciasteczek (cookies) stron trzecich o charakterze marketingowym, reklamowym lub śledzącym. Jedynym mechanizmem zapisu danych sesyjnych jest lokalna pamięć przeglądarki (localStorage), która nigdy nie jest przesyłana przez sieć.',
   },
   footer: {
     disclaimer: '© 2026 BugMortem. Wszelkie prawa zastrzeżone. Stworzone przez Adama Gierczaka (@AdamBabinicz) na hackathon Kiroween 2026 (AWS & Devpost).',
