@@ -777,8 +777,8 @@ HTTP/1.1 504 Gateway Timeout
       'Autor aplikacji nie ponosi odpowiedzialności za ewentualne przerwy w działaniu zewnętrznych systemów wynikające z bezpośredniego wdrożenia generowanych szablonów.',
       'Narzędzie służy celom szkoleniowym, symulacyjnym i forensicznym.',
     ],
-    liabilityHeader: '4. Dostępność Usługi',
-    liabilityText: 'Aplikacja jest hostowana statycznie na platformie Vercel Edge. Autor dokłada starań, aby narzędzie było dostępne nieprzerwanie, jednak nie udziela gwarancji SLA na dostępność interfejsu.',
+    termsLiabilityHeader: '4. Dostępność Usługi',
+    termsLiabilityText: 'Aplikacja jest hostowana statycznie na platformie Vercel Edge. Autor dokłada starań, aby narzędzie było dostępne nieprzerwanie, jednak nie udziela gwarancji SLA na dostępność interfejsu.',
     licenseHeader: '5. Licencja i Prawa Autorskie',
     licenseText: 'Kod źródłowy projektu BugMortem udostępniony jest na warunkach licencji open-source MIT.',
     licenseBullets: [

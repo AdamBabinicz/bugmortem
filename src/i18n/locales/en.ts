@@ -777,8 +777,8 @@ HTTP/1.1 504 Gateway Timeout
       'The project author assumes no liability for operational disruptions arising from direct application of generated configurations.',
       'The software is provided for forensic, educational, and simulation purposes.',
     ],
-    liabilityHeader: '4. Availability & SLA',
-    liabilityText: 'The application is statically deployed on Vercel Edge. While reasonable efforts are made to ensure uninterrupted availability, no uptime SLA is provided.',
+    termsLiabilityHeader: '4. Availability & SLA',
+    termsLiabilityText: 'The application is statically deployed on Vercel Edge. While reasonable efforts are made to ensure uninterrupted availability, no uptime SLA is provided.',
     licenseHeader: '5. Open-Source License & Attribution',
     licenseText: 'The BugMortem codebase is distributed under the permissive MIT License.',
     licenseBullets: [

@@ -91,7 +91,7 @@ function Divider() {
 
 function PrivacyContent() {
   const { t } = useI18n();
-  const l = t.legal;
+  const l = t?.legal || {};
 
   return (
     <>
@@ -119,9 +119,11 @@ function PrivacyContent() {
 
       <Divider />
 
-      <SectionHeader>{l.privacyNoTrackingHeader}</SectionHeader>
-      <Prose>{l.privacyNoTrackingText}</Prose>
-      {l.privacyNoTrackingBullets && <BulletList items={l.privacyNoTrackingBullets} />}
+      <SectionHeader>{l.privacyNoTrackingHeader || l.noTrackingHeader}</SectionHeader>
+      <Prose>{l.privacyNoTrackingText || l.noTrackingText}</Prose>
+      {(l.privacyNoTrackingBullets || l.noTrackingBullets) && (
+        <BulletList items={l.privacyNoTrackingBullets || l.noTrackingBullets || []} />
+      )}
 
       <Divider />
 
@@ -143,7 +145,7 @@ function PrivacyContent() {
 
 function TermsContent() {
   const { t } = useI18n();
-  const l = t.legal;
+  const l = t?.legal || {};
 
   return (
     <>
@@ -167,14 +169,16 @@ function TermsContent() {
 
       <Divider />
 
-      <SectionHeader>{l.termsLiabilityHeader}</SectionHeader>
-      <Prose>{l.termsLiabilityText}</Prose>
+      <SectionHeader>{l.termsLiabilityHeader || l.liabilityHeader}</SectionHeader>
+      <Prose>{l.termsLiabilityText || l.liabilityText}</Prose>
 
       <Divider />
 
-      <SectionHeader>{l.termsLicenseHeader}</SectionHeader>
-      <Prose>{l.termsLicenseText}</Prose>
-      {l.termsLicenseBullets && <BulletList items={l.termsLicenseBullets} />}
+      <SectionHeader>{l.termsLicenseHeader || l.licenseHeader}</SectionHeader>
+      <Prose>{l.termsLicenseText || l.licenseText}</Prose>
+      {(l.termsLicenseBullets || l.licenseBullets) && (
+        <BulletList items={l.termsLicenseBullets || l.licenseBullets || []} />
+      )}
     </>
   );
 }
@@ -183,7 +187,7 @@ function TermsContent() {
 
 function CookiesContent() {
   const { t } = useI18n();
-  const l = t.legal;
+  const l = t?.legal || {};
 
   return (
     <>
@@ -222,9 +226,9 @@ export function LegalModal({
   if (!docType) return null;
 
   const titles: Record<NonNullable<LegalDocType>, string> = {
-    privacy: t.legal.privacyTitle,
-    terms: t.legal.termsTitle,
-    cookies: t.legal.cookiesTitle,
+    privacy: t?.legal?.privacyTitle || "Privacy Policy",
+    terms: t?.legal?.termsTitle || "Terms of Service",
+    cookies: t?.legal?.cookiesTitle || "Cookie Policy",
   };
 
   const { icon: Icon, iconColor } = DOC_META[docType];
@@ -250,7 +254,7 @@ export function LegalModal({
           <button
             type="button"
             onClick={onClose}
-            aria-label={t.common.close}
+            aria-label={t?.common?.close || "Close"}
             className="p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors ml-3 shrink-0 cursor-pointer"
           >
             <X className="w-4 h-4" />
@@ -260,7 +264,7 @@ export function LegalModal({
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto px-5 sm:px-6 py-5 min-h-0">
           <p className="font-mono text-[10px] text-stone-400 dark:text-stone-500 mb-4 tracking-wide uppercase">
-            {t.legal.lastUpdated}
+            {t?.legal?.lastUpdated || "November 2026"}
           </p>
 
           {docType === "privacy" && <PrivacyContent />}
@@ -275,7 +279,7 @@ export function LegalModal({
             onClick={onClose}
             className="px-4 py-2 rounded-xl text-xs font-semibold bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-white text-white dark:text-stone-900 transition-colors cursor-pointer"
           >
-            {t.common.close}
+            {t?.common?.close || "Close"}
           </button>
         </div>
       </div>
