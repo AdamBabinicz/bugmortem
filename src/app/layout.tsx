@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://bugmortem.vercel.app/og-image.png',
+        url: 'https://bugmortem.vercel.app/1.jpeg',
         width: 1200,
         height: 630,
         alt: SITE_TITLE,
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: ['https://bugmortem.vercel.app/og-image.png'],
+    images: ['https://bugmortem.vercel.app/1.jpeg'],
   },
 };
 
