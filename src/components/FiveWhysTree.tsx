@@ -28,11 +28,11 @@ interface FiveWhysTreeProps {
 }
 
 const STEP_ICONS = [
-  <Flame key="s1" className="w-3.5 h-3.5 text-rose-500" />,
-  <Binary key="s2" className="w-3.5 h-3.5 text-amber-500" />,
-  <Layers key="s3" className="w-3.5 h-3.5 text-indigo-400" />,
-  <ShieldAlert key="s4" className="w-3.5 h-3.5 text-purple-400" />,
-  <Target key="s5" className="w-3.5 h-3.5 text-emerald-400" />,
+  <Flame key="s1" className="w-4 h-4 text-rose-500" />,
+  <Binary key="s2" className="w-4 h-4 text-amber-500" />,
+  <Layers key="s3" className="w-4 h-4 text-indigo-400" />,
+  <ShieldAlert key="s4" className="w-4 h-4 text-purple-400" />,
+  <Target key="s5" className="w-4 h-4 text-emerald-400" />,
 ];
 
 export const FiveWhysTree: React.FC<FiveWhysTreeProps> = ({ incident, t }) => {
@@ -56,7 +56,6 @@ export const FiveWhysTree: React.FC<FiveWhysTreeProps> = ({ incident, t }) => {
         '5. Przyczyna Źródłowa',
       ];
 
-  // Pobranie 5-Whys ze zdefiniowanego presetu lub inteligentny fallback
   const steps: string[] = Array.isArray(incident?.fiveWhys) && incident.fiveWhys.length === 5
     ? incident.fiveWhys
     : [
@@ -98,7 +97,7 @@ ${steps
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
-      // Ignore clipboard failure
+      // Ignore
     }
   };
 
@@ -146,9 +145,9 @@ ${steps
       </div>
 
       {/* 5-Whys Stepper Hierarchy Tree */}
-      <div className="relative pl-3 sm:pl-6 space-y-4">
-        {/* Wertykalna linia łącząca etapy śledztwa */}
-        <div className="absolute left-[17px] sm:left-[29px] top-4 bottom-5 w-0.5 bg-gradient-to-b from-rose-500 via-purple-500 to-emerald-500" />
+      <div className="relative space-y-4">
+        {/* Wertykalna linia łącząca — matematycznie wycentrowana (18px = połowa z w-9/36px) */}
+        <div className="absolute left-[18px] -translate-x-1/2 top-4 bottom-5 w-0.5 bg-gradient-to-b from-rose-500 via-purple-500 to-emerald-500 z-0" />
 
         {steps.map((answer, index) => {
           const isRootCause = index === 4;
@@ -157,11 +156,11 @@ ${steps
           return (
             <div
               key={`five-why-step-${index}`}
-              className="relative flex items-start gap-3 sm:gap-4 group"
+              className="relative flex items-start gap-3 sm:gap-4 group z-10"
             >
-              {/* Węzeł punktowy z ikoną */}
+              {/* Okrągły węzeł o stałej szerokości 36px (w-9 h-9) */}
               <div
-                className={`relative z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border transition-all shrink-0 ${
+                className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all shrink-0 ${
                   isRootCause
                     ? 'bg-emerald-950 border-emerald-500 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.5)] ring-2 ring-emerald-500/30'
                     : index === 0
@@ -169,10 +168,10 @@ ${steps
                     : 'bg-stone-100 dark:bg-stone-900 border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300'
                 }`}
               >
-                {STEP_ICONS[index] || <HelpCircle className="w-3.5 h-3.5" />}
+                {STEP_ICONS[index] || <HelpCircle className="w-4 h-4" />}
               </div>
 
-              {/* Karta etapu pytania i odpowiedzi */}
+              {/* Karta z treścią */}
               <div
                 className={`flex-1 rounded-xl border p-3.5 sm:p-4 transition-all ${
                   isRootCause

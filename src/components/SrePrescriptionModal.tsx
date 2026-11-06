@@ -8,9 +8,6 @@ import {
   Check,
   X,
   Stethoscope,
-  ShieldCheck,
-  Sparkles,
-  Terminal,
   FileCheck2
 } from 'lucide-react';
 import { IncidentPreset, TranslationDictionary } from '@/i18n/types';
@@ -29,7 +26,6 @@ interface SrePrescriptionModalProps {
   t: TranslationDictionary | any;
 }
 
-// Baza gotowych recept i plików IaC dla każdego z 6 kanonicznych koszmarów produkcyjnych
 function getPrescriptionData(incidentId: string, locale: string): {
   doctorOrder: string;
   dosage: string;
@@ -132,11 +128,9 @@ query_timeout = 2`
             language: 'sql',
             description: locale === 'pl' ? 'Migracja SQL wymuszająca twarde timeouty' : 'SQL migration enforcing hard statement timeouts',
             content: `-- 001_sre_pool_guard.sql
--- Enforce hard ceiling on statement duration for web application user
 ALTER ROLE app_checkout_user SET statement_timeout = '2000ms';
 ALTER ROLE app_checkout_user SET idle_in_transaction_session_timeout = '3000ms';
 
--- Read-only role for analytics cron jobs
 CREATE ROLE analytics_ro WITH LOGIN PASSWORD 'vault_secret_placeholder';
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO analytics_ro;
 ALTER ROLE analytics_ro SET statement_timeout = '15000ms';`
@@ -192,7 +186,6 @@ spec:
             content: `// stream-export-pipeline.ts
 import { pipeline } from 'stream/promises';
 import { Transform } from 'stream';
-import { createWriteStream } from 'fs';
 
 export async function exportToCsvStream(cursorStream: any, destinationStream: any) {
   const csvFormat = new Transform({
@@ -202,7 +195,6 @@ export async function exportToCsvStream(cursorStream: any, destinationStream: an
     }
   });
 
-  // Memory usage stays under 25MB regardless of 10M rows
   await pipeline(cursorStream, csvFormat, destinationStream);
 }`
           }
@@ -232,26 +224,22 @@ export async function exportToCsvStream(cursorStream: any, destinationStream: an
   clusters:
   - name: profile_service
     connect_timeout: 0.25s
-    type: STRICT_DNS
     circuit_breakers:
       thresholds:
       - priority: DEFAULT
         max_connections: 1024
         max_pending_requests: 100
-        max_requests: 1024
         max_retries: 3
     outlier_detection:
       consecutive_5xx: 5
       interval: 10s
-      base_ejection_time: 30s
-      max_ejection_percent: 50`
+      base_ejection_time: 30s`
           },
           {
             filename: 'resilience-retry.ts',
             language: 'typescript',
             description: locale === 'pl' ? 'Klient z wykładniczym wycofywaniem i jitterem' : 'HTTP client with Exponential Backoff & Jitter',
-            content: `// resilience-retry.ts - SRE Full Jitter Implementation
-export async function resilientFetch(url: string, retries = 3, baseDelayMs = 100): Promise<Response> {
+            content: `export async function resilientFetch(url: string, retries = 3, baseDelayMs = 100): Promise<Response> {
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
       const res = await fetch(url);
@@ -289,8 +277,7 @@ export async function resilientFetch(url: string, retries = 3, baseDelayMs = 100
             filename: 'api-gateway-cors.tf',
             language: 'hcl',
             description: locale === 'pl' ? 'Moduł Terraform dla preflight CORS' : 'Terraform module for API Gateway CORS preflight',
-            content: `// api-gateway-cors.tf - SRE Terraform Infrastructure as Code
-resource "aws_api_gateway_method" "cors_options" {
+            content: `resource "aws_api_gateway_method" "cors_options" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.resource.id
   http_method   = "OPTIONS"
@@ -305,33 +292,16 @@ resource "aws_api_gateway_integration" "cors_mock" {
   request_templates = {
     "application/json" = "{\\"statusCode\\": 204}"
   }
-}
-
-resource "aws_api_gateway_integration_response" "cors_headers" {
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.resource.id
-  http_method = aws_api_gateway_method.cors_options.http_method
-  status_code = "204"
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin"  = "'https://bugmortem.vercel.app'"
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,PUT,DELETE,OPTIONS'"
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,Authorization,X-Requested-With'"
-    "method.response.header.Access-Control-Max-Age"       = "'86400'"
-  }
 }`
           },
           {
             filename: 'nginx-cors.conf',
             language: 'nginx',
             description: locale === 'pl' ? 'Wzorzec konfiguracyjny NGINX' : 'Hardened NGINX CORS pattern',
-            content: `# nginx-cors.conf
-if ($request_method = 'OPTIONS') {
+            content: `if ($request_method = 'OPTIONS') {
     add_header 'Access-Control-Allow-Origin' 'https://bugmortem.vercel.app' always;
     add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
-    add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization' always;
     add_header 'Access-Control-Max-Age' 86400;
-    add_header 'Content-Type' 'text/plain; charset=utf-8';
-    add_header 'Content-Length' 0;
     return 204;
 }`
           }
@@ -373,33 +343,20 @@ Resources:
       MemorySize: 512
       AutoPublishAlias: live
       ProvisionedConcurrencyConfig:
-        ProvisionedConcurrentExecutions: 20
-      Environment:
-        Variables:
-          RDS_PROXY_ENDPOINT: !GetAtt DatabaseProxy.Endpoint
-          PGCONNECT_TIMEOUT: "2"`
+        ProvisionedConcurrentExecutions: 20`
           },
           {
             filename: 'rds-proxy.tf',
             language: 'hcl',
             description: locale === 'pl' ? 'Infrastruktura Terraform dla RDS Proxy' : 'Terraform IaC for Amazon RDS Proxy',
-            content: `// rds-proxy.tf - SRE Connection Multiplexing
-resource "aws_db_proxy" "db_proxy" {
+            content: `resource "aws_db_proxy" "db_proxy" {
   name                   = "inventory-rds-proxy"
-  debug_logging          = false
   engine_family          = "POSTGRESQL"
   idle_client_timeout    = 120
   require_tls            = true
   role_arn               = aws_iam_role.proxy_role.arn
   vpc_security_group_ids = [aws_security_group.proxy_sg.id]
   vpc_subnet_ids         = aws_subnet.private[*].id
-
-  auth {
-    auth_scheme = "SECRETS"
-    description = "Application user secret"
-    iam_auth    = "DISABLED"
-    secret_arn  = aws_secretsmanager_secret.db_secret.arn
-  }
 }`
           }
         ]
@@ -418,8 +375,8 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
 
   if (!isOpen) return null;
 
-  const locale = (t?.navigation?.langPl === 'Polski (PL)' ? 'pl' : 'en');
-  const prescription = getPrescriptionData(incident?.id || 'serverless-timeout', locale);
+  const locale = t?.navigation?.langPl === 'Polski (PL)' ? 'pl' : 'en';
+  const prescription = getPrescriptionData(incident?.id || 'react-hydration', locale);
   const activeFile = prescription.files[activeFileIndex] || prescription.files[0];
 
   const handleCopyFile = async () => {
@@ -440,7 +397,7 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
       setCopiedFile(true);
       setTimeout(() => setCopiedFile(false), 2000);
     } catch {
-      // Ignore clipboard error
+      // Ignore
     }
   };
 
@@ -458,133 +415,134 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-4xl w-full p-5 sm:p-7 space-y-6 shadow-2xl relative my-6 text-stone-900 dark:text-stone-100">
-        {/* Header */}
-        <div className="flex items-start justify-between border-b border-stone-200 dark:border-stone-800 pb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-6 overflow-hidden">
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-4xl w-full max-h-[88vh] flex flex-col shadow-2xl relative text-stone-900 dark:text-stone-100 overflow-hidden">
+        {/* Sztywny, zawsze widoczny Nagłówek */}
+        <div className="p-4 sm:p-5 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between shrink-0 bg-white/95 dark:bg-stone-900/95 backdrop-blur-sm">
           <div className="flex items-center gap-3">
-            <span className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xl font-serif">
+            <span className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xl font-serif leading-none">
               ℞
             </span>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-base sm:text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2">
-                  <span>{locale === 'pl' ? 'Oficjalna Recepta SRE & Generator IaC' : 'Official SRE Prescription & IaC Generator'}</span>
+                <h3 className="text-sm sm:text-base font-bold text-stone-900 dark:text-white">
+                  {locale === 'pl' ? 'Oficjalna Recepta SRE & Generator IaC' : 'Official SRE Prescription & IaC Generator'}
                 </h3>
                 <span className="text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                   {locale === 'pl' ? 'TERAPIA ANTY-AWARIJNA' : 'RESILIENCE THERAPY'}
                 </span>
               </div>
-              <p className="text-xs text-stone-600 dark:text-stone-400 mt-0.5">
-                {locale === 'pl'
-                  ? `Zalecenia i pliki infrastruktury dla incydentu: ${incident?.title || ''}`
-                  : `Remediation prescriptions & infrastructure configs for: ${incident?.title || ''}`}
+              <p className="text-[11px] text-stone-600 dark:text-stone-400 mt-0.5 truncate max-w-xl">
+                {incident?.title || ''}
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white p-1 text-lg cursor-pointer"
+            aria-label="Close"
+            className="text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Prescription Card (Styl Recepty Lekarskiej) */}
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/40 dark:bg-emerald-950/20 p-4 sm:p-5 space-y-3 font-sans shadow-sm">
-          <div className="flex items-center justify-between text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400 border-b border-emerald-200/60 dark:border-emerald-900/60 pb-2">
-            <span className="flex items-center gap-1.5">
-              <Stethoscope className="w-4 h-4" />
-              {locale === 'pl' ? 'ZALECENIE LEKARZA SRE (DOCTOR’S ORDERS)' : 'SRE DOCTOR’S ORDERS'}
-            </span>
-            <span className="text-[10px] uppercase tracking-wider bg-emerald-200 text-emerald-900 dark:bg-emerald-900/60 dark:text-emerald-200 px-2 py-0.5 rounded">
-              Rx #{incident?.id?.toUpperCase() || 'SRE-RX'}
-            </span>
+        {/* Płynnie przewijana treść wewnątrz modala */}
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1">
+          {/* Stylizowana Karta Recepty */}
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 dark:border-emerald-900/40 dark:bg-emerald-950/20 p-4 space-y-3 font-sans shadow-sm">
+            <div className="flex items-center justify-between text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400 border-b border-emerald-200/60 dark:border-emerald-900/60 pb-2">
+              <span className="flex items-center gap-1.5">
+                <Stethoscope className="w-4 h-4" />
+                {locale === 'pl' ? 'ZALECENIE LEKARZA SRE (DOCTOR’S ORDERS)' : 'SRE DOCTOR’S ORDERS'}
+              </span>
+              <span className="text-[10px] uppercase tracking-wider bg-emerald-200 text-emerald-900 dark:bg-emerald-900/60 dark:text-emerald-200 px-2 py-0.5 rounded">
+                Rx #{incident?.id?.toUpperCase() || 'SRE-RX'}
+              </span>
+            </div>
+
+            <p className="text-xs sm:text-sm font-medium text-emerald-950 dark:text-emerald-100 leading-relaxed">
+              {prescription.doctorOrder}
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+              <div className="p-2.5 rounded-lg bg-white/90 dark:bg-stone-900/80 border border-emerald-200 dark:border-emerald-900/50">
+                <span className="block text-[10px] font-mono uppercase font-bold text-stone-500 dark:text-stone-400">
+                  {locale === 'pl' ? 'DAWKOWANIE / SLA' : 'DOSAGE / SLA'}
+                </span>
+                <span className="font-semibold text-stone-900 dark:text-stone-100">{prescription.dosage}</span>
+              </div>
+              <div className="p-2.5 rounded-lg bg-white/90 dark:bg-stone-900/80 border border-emerald-200 dark:border-emerald-900/50">
+                <span className="block text-[10px] font-mono uppercase font-bold text-stone-500 dark:text-stone-400">
+                  {locale === 'pl' ? 'REGUŁA ZAPOBIEGAWCZA' : 'PREVENTION RULE'}
+                </span>
+                <span className="font-semibold text-stone-900 dark:text-stone-100">{prescription.preventionRule}</span>
+              </div>
+            </div>
           </div>
 
-          <p className="text-xs sm:text-sm font-medium text-emerald-950 dark:text-emerald-100 leading-relaxed">
-            {prescription.doctorOrder}
-          </p>
+          {/* Zakładki z plikami IaC */}
+          <div className="space-y-2 pt-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-200 dark:border-stone-800 pb-2">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                {prescription.files.map((file, idx) => (
+                  <button
+                    key={file.filename}
+                    type="button"
+                    onClick={() => setActiveFileIndex(idx)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+                      activeFileIndex === idx
+                        ? 'bg-rose-600 text-white shadow-sm'
+                        : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
+                    }`}
+                  >
+                    <FileCode className="w-3.5 h-3.5" />
+                    <span>{file.filename}</span>
+                  </button>
+                ))}
+              </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
-            <div className="p-2.5 rounded-lg bg-white/80 dark:bg-stone-900/60 border border-emerald-200 dark:border-emerald-900/50">
-              <span className="block text-[10px] font-mono uppercase font-bold text-stone-500 dark:text-stone-400">
-                {locale === 'pl' ? 'DAWKOWANIE / SLA' : 'DOSAGE / SLA'}
-              </span>
-              <span className="font-semibold text-stone-900 dark:text-stone-100">{prescription.dosage}</span>
-            </div>
-            <div className="p-2.5 rounded-lg bg-white/80 dark:bg-stone-900/60 border border-emerald-200 dark:border-emerald-900/50">
-              <span className="block text-[10px] font-mono uppercase font-bold text-stone-500 dark:text-stone-400">
-                {locale === 'pl' ? 'REGUŁA ZAPOBIEGAWCZA' : 'PREVENTION RULE'}
-              </span>
-              <span className="font-semibold text-stone-900 dark:text-stone-100">{prescription.preventionRule}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Tab Selector & File Viewer */}
-        <div className="space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-200 dark:border-stone-800 pb-2">
-            {/* Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-              {prescription.files.map((file, idx) => (
+              <div className="flex items-center gap-2 shrink-0">
                 <button
-                  key={file.filename}
                   type="button"
-                  onClick={() => setActiveFileIndex(idx)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
-                    activeFileIndex === idx
-                      ? 'bg-rose-600 text-white shadow-sm'
-                      : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
-                  }`}
+                  onClick={handleCopyFile}
+                  className="px-2.5 py-1.5 rounded-lg text-xs font-mono font-semibold bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border border-stone-300 dark:border-stone-700 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
                 >
-                  <FileCode className="w-3.5 h-3.5" />
-                  <span>{file.filename}</span>
+                  {copiedFile ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedFile ? (locale === 'pl' ? 'Skopiowano!' : 'Copied!') : (locale === 'pl' ? 'Kopiuj Plik' : 'Copy')}</span>
                 </button>
-              ))}
+
+                <button
+                  type="button"
+                  onClick={handleDownloadFile}
+                  className="px-2.5 py-1.5 rounded-lg text-xs font-mono font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>{locale === 'pl' ? 'Pobierz Plik' : 'Download'}</span>
+                </button>
+              </div>
             </div>
 
-            {/* Actions: Copy & Download */}
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={handleCopyFile}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-mono font-semibold bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border border-stone-300 dark:border-stone-700 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
-              >
-                {copiedFile ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedFile ? (locale === 'pl' ? 'Skopiowano!' : 'Copied!') : (locale === 'pl' ? 'Kopiuj Plik' : 'Copy')}</span>
-              </button>
+            <p className="text-[11px] text-stone-600 dark:text-stone-400 italic">
+              ℹ️ {activeFile.description}
+            </p>
 
-              <button
-                type="button"
-                onClick={handleDownloadFile}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-mono font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>{locale === 'pl' ? 'Pobierz Plik' : 'Download'}</span>
-              </button>
+            {/* Blok z kodem źródłowym */}
+            <div className="rounded-xl border border-stone-300 dark:border-stone-800 bg-stone-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto shadow-inner max-h-[260px]">
+              <pre className="whitespace-pre">
+                <code>{activeFile.content}</code>
+              </pre>
             </div>
-          </div>
-
-          {/* Description of active config file */}
-          <p className="text-xs text-stone-600 dark:text-stone-400 italic">
-            ℹ️ {activeFile.description}
-          </p>
-
-          {/* Code block */}
-          <div className="rounded-xl border border-stone-300 bg-stone-950 p-4 font-mono text-xs text-emerald-400 overflow-x-auto shadow-inner max-h-[300px]">
-            <pre className="whitespace-pre">
-              <code>{activeFile.content}</code>
-            </pre>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t border-stone-200 dark:border-stone-800 text-xs text-stone-500">
+        {/* Sztywna, zawsze widoczna Stopka */}
+        <div className="p-3 sm:p-4 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between shrink-0 bg-stone-50 dark:bg-stone-950/80 text-xs text-stone-500">
           <div className="flex items-center gap-1.5">
             <FileCheck2 className="w-4 h-4 text-emerald-500" />
-            <span>{locale === 'pl' ? 'Pliki zweryfikowane przez silnik SRE BugMortem' : 'Configs verified by BugMortem SRE Engine'}</span>
+            <span className="hidden sm:inline">
+              {locale === 'pl' ? 'Pliki zweryfikowane przez silnik SRE BugMortem' : 'Configs verified by BugMortem SRE Engine'}
+            </span>
           </div>
           <button
             type="button"
