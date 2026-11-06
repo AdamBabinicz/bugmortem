@@ -5,6 +5,7 @@
 **Official Submission — Devpost Hackathon: KIROWEEN 2026**  
 *Track: Costume Contest · Spooky & Distinctive Developer Tools*
 
+[![Live Demo](https://img.shields.io/badge/Demo-bugmortem.vercel.app-10b981?style=flat-square&logo=vercel)](https://bugmortem.vercel.app/)
 [![Next.js](https://img.shields.io/badge/Next.js-16.4-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38bdf8?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
@@ -111,9 +112,9 @@ Zero external files. Zero dependencies. 100% browser-native Web Audio API:
 
 ---
 
-## ⚰️ The 5 Canonical Nightmare Presets
+## ⚰️ The 6 Canonical Nightmare Presets
 
-BugMortem ships with five production-authentic, hand-crafted autopsy presets covering the most feared categories of production disasters:
+BugMortem ships with six production-authentic, hand-crafted autopsy presets covering the most feared categories of production disasters:
 
 | # | Preset | Severity | Domain |
 |---|---|---|---|
@@ -122,6 +123,7 @@ BugMortem ships with five production-authentic, hand-crafted autopsy presets cov
 | 3 | **The OOM Reaper Awakening** | P0 | Runtime / Memory |
 | 4 | **The Cascading Retry Storm** | P1 | Concurrency / Network |
 | 5 | **The CORS Preflight Nightmare** | P1 | Network / Security |
+| 6 | **Serverless Cold Start Cascade & Gateway 504 Timeout** | P0 | Cloud / Serverless |
 
 Each preset includes: incident description, cursed crash code, resurrected SRE safe pattern, raw stack trace, chronological timeline with fatal event markers, and a full post-mortem report with Executive Summary, Blast Radius, and Preventative Action Items.
 
