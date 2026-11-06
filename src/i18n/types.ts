@@ -93,6 +93,25 @@ export interface ReplayerDictionary {
   telemetryRps: string;
 }
 
+export interface ChaosDictionary {
+  sectionTitle: string;
+  sectionSubtitle: string;
+  btnMitigate: string;
+  btnInject: string;
+  statusNominal: string;
+  metricRps: string;
+  metricLatency: string;
+  metricErrorRate: string;
+  scenarioLatencyTitle: string;
+  scenarioLatencyDesc: string;
+  scenarioDbPoolTitle: string;
+  scenarioDbPoolDesc: string;
+  scenarioMemoryTitle: string;
+  scenarioMemoryDesc: string;
+  scenarioAuthStormTitle: string;
+  scenarioAuthStormDesc: string;
+}
+
 export interface TranslationDictionary {
   hero: {
     badge: string;
@@ -137,7 +156,8 @@ export interface TranslationDictionary {
     badgeDegraded: string;
     badgeHealthy: string;
   };
-  chaosSandbox: {
+  chaos: ChaosDictionary;
+  chaosSandbox?: {
     title: string;
     subtitle: string;
     nominalStatus: string;
@@ -157,6 +177,9 @@ export interface TranslationDictionary {
     listenCoroner: string;
     exportMarkdown: string;
     downloadCertificate: string;
+  };
+  dispatcher?: {
+    openBtn: string;
   };
   dispatcherModal: {
     title: string;
@@ -181,3 +204,6 @@ export interface TranslationDictionary {
     cookieSettings: string;
   };
 }
+
+// Alias dla zgodności wstecznej z komponentami importującymi Dictionary
+export type Dictionary = TranslationDictionary;
