@@ -1,0 +1,391 @@
+'use client';
+
+import React, { useState } from 'react';
+import { Mic, Square, Radio, Stethoscope, FileText, Download, Check } from 'lucide-react';
+import { IncidentPreset, TimelineEvent, TranslationDictionary } from '@/i18n/types';
+
+// Likwidacja wiszących spójników (sierotek typograficznych w języku polskim)
+function fixOrphans(text?: string | null): string {
+  if (!text || typeof text !== 'string') return text || '';
+  return text.replace(/(^|\s)([aiouwz]|do|na|od|po|ze|we|za|co|że|to)(\s+)/gi, '$1$2\u00A0');
+}
+
+interface PostMortemSectionProps {
+  incident: IncidentPreset;
+  safeTimeline: TimelineEvent[];
+  locale: 'pl' | 'en';
+  t: TranslationDictionary | any;
+  onOpenDispatcher: () => void;
+  onOpenPrescription: () => void;
+}
+
+export const PostMortemSection: React.FC<PostMortemSectionProps> = ({
+  incident,
+  safeTimeline,
+  locale,
+  t,
+  onOpenDispatcher,
+  onOpenPrescription,
+}) => {
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [exportNotice, setExportNotice] = useState<boolean>(false);
+  const [pdfNotice, setPdfNotice] = useState<boolean>(false);
+
+  const postMortemData = incident?.postMortem || (incident as any)?.postMortemReport || {
+    summary: '',
+    impact: '',
+    actionItems: [],
+  };
+
+  const safeActionItems: string[] = Array.isArray(postMortemData?.actionItems)
+    ? postMortemData.actionItems
+    : [];
+
+  const activeCrashedCode = incident?.codeSnippet || (incident as any)?.crashedCode || '';
+  const activeRevivedCode = incident?.revivedCode || (incident as any)?.resurrectedCode || '';
+
+  // 1. Proceduralny syntezator głosu Koronera SRE
+  const handlePlayCoronerVerdict = () => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const prefix = locale === 'pl' ? 'Oficjalny werdykt sekcji zwłok SRE:' : 'Official SRE autopsy verdict:';
+    const incLabel = locale === 'pl' ? 'Incydent:' : 'Incident:';
+    const sevLabel = locale === 'pl' ? 'Priorytet:' : 'Priority:';
+    const timeLabel = locale === 'pl' ? 'Czas zgonu:' : 'Time of failure:';
+    const causeLabel = locale === 'pl' ? 'Przyczyna zgonu:' : 'Cause of failure:';
+    const mitLabel = locale === 'pl' ? 'Działanie naprawcze:' : 'Remediation:';
+
+    const incidentTitle = incident?.title || '';
+    const severity = incident?.severity || 'P0';
+    const fatalEvent = safeTimeline.find((e) => e.isFatal) || safeTimeline[safeTimeline.length - 1];
+    const fatalTime = fatalEvent?.time || '';
+    const cause = postMortemData?.summary || '';
+    const mitigation = safeActionItems[0] || '';
+
+    const speechText = `${prefix} ${incLabel} ${incidentTitle}. ${sevLabel} ${severity}. ${timeLabel} ${fatalTime}. ${causeLabel} ${cause}. ${mitLabel} ${mitigation}`;
+
+    const utterance = new SpeechSynthesisUtterance(speechText);
+    utterance.lang = locale === 'pl' ? 'pl-PL' : 'en-US';
+    utterance.rate = 0.9;
+    utterance.pitch = 0.82;
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // 2. Eksport do pliku Markdown (.md)
+  const handleExportReport = () => {
+    if (!incident) return;
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const mdContent = `# 💀 BugMortem - ${t?.postMortem?.title || 'Incident Protocol'}
+**${locale === 'pl' ? 'Incydent' : 'Incident'}:** ${incident.title || ''}
+**${locale === 'pl' ? 'Kategoria' : 'Category'}:** ${incident.badge || 'N/A'} | **${locale === 'pl' ? 'Priorytet' : 'Severity'}:** ${incident.severity || 'P0'}
+**${locale === 'pl' ? 'Znacznik czasu' : 'Timestamp'}:** ${new Date().toUTCString()}
+
+---
+
+## 1. ${t?.postMortem?.executiveSummary || 'Executive Summary'}
+${postMortemData?.summary || ''}
+
+## 2. ${t?.postMortem?.blastRadiusImpact || 'Blast Radius Impact'}
+${postMortemData?.impact || ''}
+
+## 3. ${t?.postMortem?.actionItems || 'Action Items'}
+${safeActionItems.map((item) => `- ${item}`).join('\n')}
+
+---
+
+## 4. ${t?.timeline?.title || 'Timeline'}
+${safeTimeline.map((evt) => `- [${evt.time}] ${evt.description || (evt as any).desc} ${evt.isFatal ? '⚠️ (FATAL CRASH)' : ''}`).join('\n')}
+
+---
+
+## 5. ${t?.stackTrace?.title || 'Stack Trace'}
+\`\`\`
+${incident.stackTrace || ''}
+\`\`\`
+
+---
+
+## 6. ${t?.codeSection?.cursedTitle || 'Cursed Code'}
+\`\`\`javascript
+${activeCrashedCode}
+\`\`\`
+
+---
+
+## 7. ${t?.codeSection?.resurrectedTitle || 'Resurrected Code'}
+\`\`\`javascript
+${activeRevivedCode}
+\`\`\`
+
+---
+*© 2026 BugMortem. Created for Kiroween 2026 by AWS & Devpost.*
+`;
+
+    const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `BugMortem-${incident.id}-${timestamp}.md`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setExportNotice(true);
+    setTimeout(() => setExportNotice(false), 3000);
+  };
+
+  // 3. Generator urzędowej Karty Zgonu (PDF)
+  const handleExportPdf = () => {
+    if (!incident) return;
+
+    const printDate = new Date().toUTCString();
+    const certNumber = `BM-${Date.now().toString(36).toUpperCase()}-${(incident.id || 'INC').toUpperCase()}`;
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const certTitle = locale === 'pl' ? 'URZĘDOWA KARTA ZGONU KODU ŹRÓDŁOWEGO' : 'OFFICIAL SOURCE CODE DEATH CERTIFICATE';
+    const subTitle = locale === 'pl' ? 'PROTOKÓŁ SRE SEKCJI ZWŁOK INCYDENTU' : 'SRE INCIDENT AUTOPSY PROTOCOL';
+    const labelService = locale === 'pl' ? 'Dotknięta Usługa' : 'Affected Service';
+    const labelDomain = locale === 'pl' ? 'Domena Awarii' : 'Failure Domain';
+    const labelSeverity = locale === 'pl' ? 'Priorytet Awarii' : 'Incident Severity';
+    const labelStatus = locale === 'pl' ? 'Stan Końcowy' : 'Terminal Status';
+    const statusResurrected = locale === 'pl' ? 'WSKRZESZONY (SRE RESILIENCE)' : 'RESURRECTED (SRE RESILIENCE)';
+
+    const htmlContent = `<!DOCTYPE html>
+<html lang="${locale}">
+<head>
+  <meta charset="UTF-8">
+  <title>${certTitle} - ${incident.title || ''}</title>
+  <style>
+    @page { size: A4 portrait; margin: 12mm 15mm; }
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: #fff; color: #0c0a09; margin: 0; padding: 20px; font-size: 11px; line-height: 1.4; }
+    .border-frame { border: 3px double #7f1d1d; padding: 18px; border-radius: 4px; }
+    .header { text-align: center; border-bottom: 2px solid #991b1b; padding-bottom: 12px; margin-bottom: 16px; }
+    .morgue-badge { display: inline-block; background: #450a0a; color: #fecdd3; padding: 3px 8px; font-size: 9px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; border-radius: 2px; }
+    h1 { margin: 8px 0 4px 0; font-size: 18px; letter-spacing: 1.5px; color: #991b1b; text-transform: uppercase; }
+    .meta-sub { font-size: 9px; color: #78716c; letter-spacing: 1px; }
+    .vitals-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #fafaf9; border: 1px solid #e7e5e4; padding: 10px; margin-bottom: 14px; border-radius: 4px; }
+    .vital-item label { display: block; font-size: 8px; text-transform: uppercase; color: #78716c; font-weight: bold; }
+    .vital-item span { font-size: 11px; font-weight: bold; color: #0c0a09; }
+    .vital-sev { color: #dc2626 !important; }
+    .section-title { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #991b1b; border-bottom: 1px solid #fca5a5; padding-bottom: 3px; margin: 12px 0 6px 0; }
+    .findings { background: #fff5f5; border-left: 3px solid #dc2626; padding: 8px 10px; margin-bottom: 10px; font-size: 10px; }
+    pre { background: #1c1917; color: #fecdd3; padding: 8px; border-radius: 3px; font-size: 9px; overflow-x: auto; margin: 4px 0 10px 0; white-space: pre-wrap; word-break: break-all; }
+    pre.resurrected { background: #064e3b; color: #a7f3d0; border-left: 3px solid #10b981; }
+    .timeline-list { margin: 4px 0 10px 0; padding-left: 16px; font-size: 9px; }
+    .timeline-list li { margin-bottom: 3px; }
+    .footer-seal { margin-top: 18px; border-top: 2px dashed #d6d3d1; padding-top: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .seal-box { border: 2px solid #059669; color: #059669; padding: 6px 12px; text-align: center; font-weight: bold; font-size: 9px; letter-spacing: 1px; transform: rotate(-3deg); border-radius: 4px; line-height: 1.3; }
+    .signature-line { border-bottom: 1px solid #0c0a09; width: 220px; text-align: center; font-size: 8px; padding-bottom: 2px; }
+  </style>
+</head>
+<body>
+  <div class="border-frame">
+    <div class="header">
+      <div class="morgue-badge">${subTitle}</div>
+      <h1>💀 ${certTitle}</h1>
+      <div class="meta-sub">REF: ${certNumber} • TIME: ${printDate}</div>
+    </div>
+
+    <div class="vitals-grid">
+      <div class="vital-item">
+        <label>${labelService}</label>
+        <span>${incident?.title || ''}</span>
+      </div>
+      <div class="vital-item">
+        <label>${labelDomain}</label>
+        <span>${incident?.badge || 'N/A'}</span>
+      </div>
+      <div class="vital-item">
+        <label>${labelSeverity}</label>
+        <span class="vital-sev">${incident?.severity || 'P0'}</span>
+      </div>
+      <div class="vital-item">
+        <label>${labelStatus}</label>
+        <span style="color:#059669;">${statusResurrected}</span>
+      </div>
+    </div>
+
+    <div class="section-title">${t?.postMortem?.executiveSummary || '1. EXECUTIVE SUMMARY'}</div>
+    <div class="findings">
+      <strong>${locale === 'pl' ? 'Podsumowanie' : 'Summary'}:</strong> ${postMortemData?.summary || ''}<br/>
+      <strong>${locale === 'pl' ? 'Wpływ' : 'Impact'}:</strong> ${postMortemData?.impact || ''}
+    </div>
+
+    <div class="section-title">${t?.timeline?.title || '2. TIMELINE'}</div>
+    <ul class="timeline-list">
+      ${safeTimeline.map((e) => `<li><strong>[${e.time}]</strong> ${e.description || (e as any).desc} ${e.isFatal ? '⚠️ <em>(FATAL EVENT)</em>' : ''}</li>`).join('')}
+    </ul>
+
+    <div class="section-title">${t?.stackTrace?.title || '3. STACK TRACE'}</div>
+    <pre>${incident?.stackTrace || 'No stack trace available'}</pre>
+
+    <div class="section-title">${t?.codeSection?.resurrectedTitle || '4. RESURRECTED SRE CODE'}</div>
+    <pre class="resurrected">${activeRevivedCode || '// Safe fallback executed'}</pre>
+
+    <div class="footer-seal">
+      <div>
+        <div class="signature-line">Adam Gierczak (@AdamBabinicz)</div>
+        <div style="font-size:8px;color:#78716c;margin-top:2px;">Lead SRE Incident Commander</div>
+      </div>
+      <div class="seal-box">
+        VERIFIED POST-MORTEM<br/>
+        BUGMORTEM KIROWEEN 2026
+      </div>
+    </div>
+  </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 250);
+    };
+  </script>
+</body>
+</html>`;
+
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+
+    setPdfNotice(true);
+    setTimeout(() => setPdfNotice(false), 3000);
+  };
+
+  return (
+    <section className="rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/50 p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-xl dark:shadow-2xl relative">
+      {/* Action Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
+        <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-stone-800 dark:text-stone-200 flex items-center gap-2">
+          <span>📄</span>
+          {t?.postMortem?.title}
+        </h2>
+
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {/* Apteczka SRE & Recepta IaC */}
+          <button
+            type="button"
+            onClick={onOpenPrescription}
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-emerald-400 dark:border-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 transition-colors shadow-sm cursor-pointer"
+            title={locale === 'pl' ? 'Otwórz Apteczkę SRE i Receptę IaC' : 'Open SRE Prescription & IaC'}
+          >
+            <Stethoscope className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>{locale === 'pl' ? 'Apteczka SRE (Recepta)' : 'SRE Prescription (Rx)'}</span>
+          </button>
+
+          {/* Eskalacja On-Call */}
+          <button
+            type="button"
+            onClick={onOpenDispatcher}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-amber-300 dark:border-amber-800/80 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 text-amber-800 dark:text-amber-300 transition-colors shadow-sm cursor-pointer"
+          >
+            <Radio className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+            <span>{t?.dispatcher?.openBtn || t?.postMortem?.escalateOnCall}</span>
+          </button>
+
+          {/* Syntezator Mowy Koronera SRE */}
+          <button
+            type="button"
+            onClick={handlePlayCoronerVerdict}
+            className={`inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer flex-1 sm:flex-initial shadow-sm ${
+              isSpeaking
+                ? 'bg-amber-500 hover:bg-amber-400 text-stone-950 border border-amber-400 shadow-amber-500/30 animate-pulse'
+                : 'bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700'
+            }`}
+            title={t?.postMortem?.listenCoroner}
+          >
+            {isSpeaking ? (
+              <Square className="w-3.5 h-3.5 fill-current" />
+            ) : (
+              <Mic className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+            )}
+            <span>{isSpeaking ? (locale === 'pl' ? 'Zatrzymaj' : 'Stop') : t?.postMortem?.listenCoroner}</span>
+          </button>
+
+          {/* Eksport Markdown */}
+          <button
+            type="button"
+            onClick={handleExportReport}
+            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-bold uppercase tracking-wider bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 dark:border-stone-700 transition-colors cursor-pointer shadow-sm flex-1 sm:flex-initial"
+          >
+            <span>⬇️</span>
+            <span>{t?.postMortem?.exportMarkdown}</span>
+          </button>
+
+          {/* Eksport Karty Zgonu (PDF) */}
+          <button
+            type="button"
+            onClick={handleExportPdf}
+            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono font-bold uppercase tracking-wider bg-rose-600 hover:bg-rose-500 text-white shadow-md shadow-rose-600/30 border border-rose-400/30 transition-all cursor-pointer flex-1 sm:flex-initial"
+          >
+            <span>📜</span>
+            <span>{t?.postMortem?.downloadCertificate}</span>
+          </button>
+        </div>
+      </div>
+
+      {exportNotice && (
+        <div className="p-3 rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-800 dark:bg-emerald-950/60 dark:border-emerald-800/50 dark:text-emerald-300 text-xs font-mono flex items-center gap-2">
+          <span>✓</span>
+          <span>{locale === 'pl' ? 'Raport Markdown wygenerowany pomyślnie.' : 'Markdown report exported successfully.'}</span>
+        </div>
+      )}
+
+      {pdfNotice && (
+        <div className="p-3 rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-800 dark:bg-emerald-950/60 dark:border-emerald-800/50 dark:text-emerald-300 text-xs font-mono flex items-center gap-2">
+          <span>✓</span>
+          <span>{locale === 'pl' ? 'Karta Zgonu (PDF) przygotowana do druku.' : 'Death Certificate (PDF) prepared for printing.'}</span>
+        </div>
+      )}
+
+      {/* Trzykolumnowy Raport Post-Mortem */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+        <div className="space-y-2">
+          <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300">
+            {t?.postMortem?.executiveSummary}
+          </h3>
+          <p className="text-xs text-stone-800 dark:text-stone-200 leading-relaxed">
+            {fixOrphans(postMortemData?.summary)}
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300">
+            {t?.postMortem?.blastRadiusImpact}
+          </h3>
+          <p className="text-xs text-stone-800 dark:text-stone-200 leading-relaxed">
+            {fixOrphans(postMortemData?.impact)}
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300">
+            {t?.postMortem?.actionItems}
+          </h3>
+          <ul className="space-y-1.5 list-disc list-inside text-xs text-stone-800 dark:text-stone-200 leading-relaxed">
+            {safeActionItems.map((item, idx) => (
+              <li key={`action-${idx}`}>{fixOrphans(item)}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+};
