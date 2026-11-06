@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX, Trash2, CheckCircle2 } from 'lucide-react';
 import { TopNavbar } from '@/components/TopNavbar';
 import { IncidentDispatcherModal } from '@/components/IncidentDispatcherModal';
 import { IncidentReplayer } from '@/components/IncidentReplayer';
@@ -44,6 +44,7 @@ export default function Home() {
   const [customIncidents, setCustomIncidents] = useState<Record<string, IncidentPreset>>({});
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [copyrightYears, setCopyrightYears] = useState<string>('2026');
+  const [successToast, setSuccessToast] = useState<string | null>(null);
 
   // Dynamiczny rok praw autorskich i ładowanie incydentów z localStorage
   useEffect(() => {
@@ -212,7 +213,57 @@ export default function Home() {
     setCustomIncidents(updated);
     localStorage.setItem('bugmortem_custom_incidents', JSON.stringify(updated));
     setSelectedPreset(newIncident.id);
+
+    // Wyświetlenie komunikatu o sukcesie
+    const msg =
+      locale === 'pl'
+        ? `Sekcja zwłok dla „${newIncident.title}” została pomyślnie przeprowadzona!`
+        : `Forensic autopsy for "${newIncident.title}" completed successfully!`;
+    setSuccessToast(msg);
+    setTimeout(() => setSuccessToast(null), 4500);
+
+    // Płynne przewinięcie ekranu do analizy kodu
+    setTimeout(() => {
+      const section = document.getElementById('code-autopsy-section');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 150);
   };
+
+  const handleDeleteCustomIncident = (incidentId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = { ...customIncidents };
+    delete updated[incidentId];
+    setCustomIncidents(updated);
+    localStorage.setItem('bugmortem_custom_incidents', JSON.stringify(updated));
+
+    if (selectedPreset === incidentId) {
+      setSelectedPreset('react-hydration');
+    }
+
+    const msg =
+      locale === 'pl'
+        ? 'Incydent został usunięty z archiwum.'
+        : 'Incident removed from archive.';
+    setSuccessToast(msg);
+    setTimeout(() => setSuccessToast(null), 3000);
+  };
+
+  const handleClearAllCustomIncidents = () => {
+    setCustomIncidents({});
+    localStorage.removeItem('bugmortem_custom_incidents');
+    setSelectedPreset('react-hydration');
+
+    const msg =
+      locale === 'pl'
+        ? 'Wszystkie własne incydenty zostały usunięte.'
+        : 'All custom incidents cleared.';
+    setSuccessToast(msg);
+    setTimeout(() => setSuccessToast(null), 3000);
+  };
+
+  const hasCustomIncidents = Object.keys(customIncidents).length > 0;
 
   return (
     <div className="min-h-screen bg-stone-100 text-stone-900 dark:bg-stone-950 dark:text-stone-100 font-sans">
@@ -227,6 +278,23 @@ export default function Home() {
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
+        {/* Floating Success Toast */}
+        {successToast && (
+          <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-950 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-200 text-xs font-mono flex items-center justify-between gap-3 shadow-xl transition-all">
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span className="font-semibold">{successToast}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSuccessToast(null)}
+              className="text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white cursor-pointer px-1 text-sm font-bold"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
         {/* 2. Hero Section */}
         <div className="bg-white border-stone-200 text-stone-900 dark:bg-stone-900/60 dark:border-stone-800 dark:text-white rounded-2xl border p-5 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden shadow-xl dark:shadow-2xl">
           <div className="space-y-3 z-10">
@@ -313,18 +381,30 @@ export default function Home() {
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300">
               {t?.presets?.sectionTitle}
             </h2>
+            {hasCustomIncidents && (
+              <button
+                type="button"
+                onClick={handleClearAllCustomIncidents}
+                className="text-[11px] font-mono text-stone-500 hover:text-rose-600 dark:text-stone-400 dark:hover:text-rose-400 cursor-pointer flex items-center gap-1.5 transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{locale === 'pl' ? 'Wyczyść własne awarie' : 'Clear custom outages'}</span>
+              </button>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {Object.entries(allIncidents).map(([incidentKey, incident], idx) => {
               const incidentId = incident?.id || incidentKey;
               const isSelected = selectedPreset === incidentId;
+              const isCustom = incidentId.startsWith('custom-') || Boolean(customIncidents[incidentId]);
+
               return (
                 <button
                   key={`incident-${incidentId}-${idx}`}
                   type="button"
                   onClick={() => setSelectedPreset(incidentId)}
-                  className={`text-left p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
+                  className={`text-left p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group ${
                     isSelected
                       ? 'bg-rose-50/80 border-rose-500 shadow-md ring-1 ring-rose-500/50 dark:bg-stone-900 dark:border-rose-500 dark:shadow-lg dark:shadow-rose-950/30'
                       : 'bg-white border-stone-200 hover:border-stone-300 hover:bg-stone-50 dark:bg-stone-900/40 dark:border-stone-800/80 dark:hover:border-stone-700 dark:hover:bg-stone-900/80'
@@ -332,11 +412,29 @@ export default function Home() {
                 >
                   <span className="block space-y-2 w-full">
                     <span className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 truncate">
                         {incident?.badge}
                       </span>
-                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-stone-100 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700">
-                        {incident?.severity}
+                      <span className="flex items-center gap-1.5 shrink-0">
+                        <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-stone-100 text-stone-800 border border-stone-300 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700">
+                          {incident?.severity}
+                        </span>
+                        {isCustom && (
+                          <span
+                            role="button"
+                            tabIndex={0}
+                            onClick={(e) => handleDeleteCustomIncident(incidentId, e)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                handleDeleteCustomIncident(incidentId, e as any);
+                              }
+                            }}
+                            title={locale === 'pl' ? 'Usuń tę własną awarię' : 'Delete custom outage'}
+                            className="p-1 rounded hover:bg-rose-200 text-rose-600 hover:text-rose-800 dark:hover:bg-rose-950 dark:text-rose-400 dark:hover:text-rose-200 transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </span>
+                        )}
                       </span>
                     </span>
                     <strong className="block font-bold text-sm text-stone-900 dark:text-stone-100 line-clamp-1">
@@ -354,8 +452,9 @@ export default function Home() {
 
         {/* 4. Side-by-Side Code Autopsy */}
         <section
+          id="code-autopsy-section"
           style={{ contentVisibility: 'auto', containIntrinsicSize: '450px' }}
-          className="space-y-3 sm:space-y-4"
+          className="space-y-3 sm:space-y-4 pt-2"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
@@ -423,7 +522,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Odtwarzacz Zapaści w Czasie & Oś Czasu Awarii (Zero sztywnych fallbacków) */}
+          {/* Odtwarzacz Zapaści w Czasie & Oś Czasu Awarii */}
           <section className="space-y-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
               <span>⏱</span>
