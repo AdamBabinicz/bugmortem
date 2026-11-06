@@ -727,7 +727,7 @@ HTTP/1.1 504 Gateway Timeout
     closeCta: 'Zamknij Konsolę',
   },
   footer: {
-    disclaimer: '© 2026 BugMortem. Wszelkie prawa zastrzeżone. Stworzone na Kiroween 2026 przez AWS & Devpost.',
+    disclaimer: '© 2026 BugMortem. Wszelkie prawa zastrzeżone. Stworzone przez Adama Gierczaka (@AdamBabinicz) na hackathon Kiroween 2026 (AWS & Devpost).',
     privacy: 'Polityka Prywatności',
     terms: 'Regulamin',
     cookieSettings: 'Ustawienia Cookies',

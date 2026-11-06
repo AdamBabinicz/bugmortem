@@ -704,7 +704,7 @@ HTTP/1.1 504 Gateway Timeout
     closeCta: 'Close Console',
   },
   footer: {
-    disclaimer: '© 2026 BugMortem. All rights reserved. Created for Kiroween 2026 by AWS & Devpost.',
+    disclaimer: '© 2026 BugMortem. All rights reserved. Created by Adam Gierczak (@AdamBabinicz) for Kiroween 2026 (AWS & Devpost).',
     privacy: 'Privacy Policy',
     terms: 'Terms of Service',
     cookieSettings: 'Cookie Settings',
