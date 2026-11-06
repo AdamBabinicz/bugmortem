@@ -171,7 +171,6 @@ export interface CommonDictionary {
   [key: string]: any;
 }
 
-
 export interface DispatcherDictionary {
   openBtn: string;
   modalTitle: string;
@@ -198,7 +197,6 @@ export interface DispatcherDictionary {
   githubLabels: string;
 }
 
-
 export interface ChaosDictionary {
   sectionTitle: string;
   sectionSubtitle: string;
@@ -218,6 +216,20 @@ export interface ChaosDictionary {
   metricRps: string;
   metricLatency: string;
   metricErrorRate: string;
+}
+
+export interface ReplayerDictionary {
+  title: string;
+  subtitle: string;
+  btnPlay: string;
+  btnPause: string;
+  btnReset: string;
+  stepPrefix: string;
+  statusInitial: string;
+  statusDegrading: string;
+  statusTerminus: string;
+  speedLabel: string;
+  liveBadge: string;
 }
 
 export interface Dictionary {
@@ -258,10 +270,11 @@ export interface Dictionary {
   // ── Urzędowa Karta Zgonu (PDF) ────────────────────────────────────────────
   pdf: PdfDictionary;
 
-  // ── Mapa Skażenia Architektury (Blast Radius Heatmap) ─────────────────────
+  // ── Moduły SRE Enterprise ─────────────────────────────────────────────────
   blastRadius: BlastRadiusDictionary;
   dispatcher: DispatcherDictionary;
   chaos: ChaosDictionary;
+  replayer: ReplayerDictionary;
 
   postMortemSummaryHeading: string;
   postMortemImpactHeading: string;

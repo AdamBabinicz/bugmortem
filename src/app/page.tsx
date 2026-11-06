@@ -1,6 +1,7 @@
 'use client';
 
 import { IncidentDispatcherModal } from "@/components/IncidentDispatcherModal";
+import { IncidentReplayer } from "@/components/IncidentReplayer";
 import { Radio } from "lucide-react";
 import { useState, useEffect } from 'react';
 import { IncidentPreset, TimelineEvent } from '../i18n/types';
@@ -50,7 +51,6 @@ export default function Home() {
       }
     }, 4000);
   };
-
 
   // Global Theme Context
   const { theme, toggleTheme } = useTheme();
@@ -171,6 +171,24 @@ export default function Home() {
   const safeActionItems: string[] = Array.isArray(activeIncident?.postMortemReport?.actionItems)
     ? activeIncident.postMortemReport.actionItems
     : [];
+
+  // Obsługa zmiany kroków z poziomu Replayera
+  const handleReplayerStepChange = (_stepIndex: number, isFatal: boolean) => {
+    if (isFatal) {
+      setWaveformState('flatline');
+    } else {
+      setWaveformState('p1-heartbeat');
+    }
+  };
+
+  const handleReplayerReset = () => {
+    const sev = activeIncident?.severity ?? '';
+    if (sev === 'P0') {
+      setWaveformState('flatline');
+    } else {
+      setWaveformState('p1-heartbeat');
+    }
+  };
 
   const handleCopyCode = async () => {
     if (!activeIncident?.resurrectedCode) return;
@@ -657,7 +675,7 @@ try {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {Object.entries(allIncidents).map(([incidentKey, incident], idx) => {
               const incidentId = incident?.id || incidentKey;
               const isSelected = selectedPreset === incidentId;
@@ -749,40 +767,37 @@ try {
           </div>
         </section>
 
-        {/* Stack Trace & Timeline */}
+        {/* Stack Trace & Timeline Replayer */}
         <div
           style={{ contentVisibility: 'auto', containIntrinsicSize: '350px' }}
           className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6"
         >
-          {/* Surowy Ślad Stosu (Stack Trace) - spójny jasny/ciemny motyw */}
+          {/* Surowy Ślad Stosu (Stack Trace) */}
           <section className="space-y-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
               <span>&gt;_</span>
               {t?.stackTraceTitle}
             </h2>
-            <div className="rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950 p-3 sm:p-4 font-mono text-xs text-rose-700 dark:text-rose-400/90 leading-relaxed overflow-x-auto shadow-sm dark:shadow-inner">
+            <div className="rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950 p-3 sm:p-4 font-mono text-xs text-rose-700 dark:text-rose-400/90 leading-relaxed overflow-x-auto shadow-sm dark:shadow-inner h-[280px]">
               <pre className="whitespace-pre-wrap">{activeIncident?.stackTrace}</pre>
             </div>
           </section>
 
-          {/* Chronologiczna Oś Czasu Awarii */}
+          {/* Odtwarzacz Zapaści w Czasie & Oś Czasu Awarii */}
           <section className="space-y-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-widest text-stone-700 dark:text-stone-300 flex items-center gap-2">
               <span>⏱</span>
               {t?.timelineTitle}
             </h2>
-            <div className="rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900/40 p-3 sm:p-4 space-y-3 shadow-sm dark:shadow-inner">
-              {safeTimeline.map((event, idx) => (
-                <div key={`timeline-${idx}-${event.time}`} className="flex items-start gap-2.5 sm:gap-3 text-xs font-mono">
-                  <span className="text-stone-700 dark:text-stone-300 font-medium shrink-0 select-none text-[11px] sm:text-xs">
-                    {event.time}
-                  </span>
-                  <span className={event.isFatal ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-stone-900 dark:text-stone-100'}>
-                    {fixOrphans(event.desc)}
-                  </span>
-                </div>
-              ))}
-            </div>
+
+            {/* Nowy Moduł: Symulator Zapaści w Czasie (Incident Replayer) */}
+            <IncidentReplayer
+              timeline={safeTimeline}
+              activeSeverity={activeSeverity}
+              t={t}
+              onStepChange={handleReplayerStepChange}
+              onReset={handleReplayerReset}
+            />
           </section>
         </div>
 
@@ -802,7 +817,6 @@ try {
           isResurrected={waveformState === 'resurrected'}
         />
 
-
         {/* Official Post-Mortem Report Protocol & Exporters */}
         <section
           style={{ contentVisibility: 'auto', containIntrinsicSize: '300px' }}
@@ -815,15 +829,18 @@ try {
             </h2>
 
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              {/* On-Call Dispatcher Button */}
+              <button
+                type="button"
+                onClick={() => setIsDispatcherOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-amber-300 dark:border-amber-800/80 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 text-amber-800 dark:text-amber-300 transition-colors shadow-sm cursor-pointer"
+              >
+                <Radio className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                {t.dispatcher.openBtn}
+              </button>
+
               {/* SRE Coroner Voice Verdict Audio */}
-                          <button
-              onClick={() => setIsDispatcherOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-amber-300 dark:border-amber-800/80 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 text-amber-800 dark:text-amber-300 transition-colors shadow-sm"
-            >
-              <Radio className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              {t.dispatcher.openBtn}
-            </button>
-<button
+              <button
                 type="button"
                 onClick={handlePlayCoronerVerdict}
                 className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer flex-1 sm:flex-initial shadow-sm ${
@@ -908,18 +925,16 @@ try {
             </div>
           </div>
         </section>
-      
-      {/* On-Call Incident Dispatcher Modal */}
-            {/* On-Call Incident Dispatcher Modal */}
-      <IncidentDispatcherModal
-        isOpen={isDispatcherOpen}
-        onClose={() => setIsDispatcherOpen(false)}
-        incident={activeIncident}
-        postMortem={activeIncident?.postMortemReport || null}
-        isResurrected={waveformState === 'resurrected'}
-        t={t}
-      />
 
+        {/* On-Call Incident Dispatcher Modal */}
+        <IncidentDispatcherModal
+          isOpen={isDispatcherOpen}
+          onClose={() => setIsDispatcherOpen(false)}
+          incident={activeIncident}
+          postMortem={activeIncident?.postMortemReport || null}
+          isResurrected={waveformState === 'resurrected'}
+          t={t}
+        />
       </main>
 
       {/* Legal Modal */}
