@@ -86,52 +86,50 @@ export const en: Dictionary = {
     metricHealthy: 'Healthy Nodes',
   },
   dispatcher: {
-    openBtn: "On-Call Dispatcher",
-    modalTitle: "SRE Incident Dispatcher",
-    modalSubtitle: "Generate standardized escalation alerts and tickets for on-call teams",
-    tabSlack: "Slack / Discord",
-    tabPagerDuty: "PagerDuty (CEF)",
-    tabGithub: "GitHub Issue",
-    copyBtn: "Copy to Clipboard",
-    copiedBtn: "Copied!",
-    openGithubBtn: "Open GitHub Issue",
-    closeBtn: "Close",
-    fieldIncidentId: "Incident ID",
-    fieldSeverity: "Severity Level",
-    fieldService: "Source Component",
-    fieldStatus: "Operational Status",
-    fieldBlastRadius: "Blast Radius",
-    fieldWarRoom: "Incident War Room",
-    fieldRunbook: "Remediation Runbook",
-    fieldChecklist: "Mitigation Checklist",
-    slackHeader: "INCIDENT ALERT - IMMEDIATE SRE ESCALATION",
-    slackActionRequired: "Immediate on-call intervention required.",
-    slackJoinWarRoom: "Join Incident War Room",
+    openBtn: 'On-Call Dispatcher',
+    modalTitle: 'SRE Incident Dispatcher',
+    modalSubtitle: 'Generate standardized escalation alerts and tickets for on-call teams',
+    tabSlack: 'Slack / Discord',
+    tabPagerDuty: 'PagerDuty (CEF)',
+    tabGithub: 'GitHub Issue',
+    copyBtn: 'Copy to Clipboard',
+    copiedBtn: 'Copied!',
+    openGithubBtn: 'Open GitHub Issue',
+    closeBtn: 'Close',
+    fieldIncidentId: 'Incident ID',
+    fieldSeverity: 'Severity Level',
+    fieldService: 'Source Component',
+    fieldStatus: 'Operational Status',
+    fieldBlastRadius: 'Blast Radius',
+    fieldWarRoom: 'Incident War Room',
+    fieldRunbook: 'Remediation Runbook',
+    fieldChecklist: 'Mitigation Checklist',
+    slackHeader: 'INCIDENT ALERT - IMMEDIATE SRE ESCALATION',
+    slackActionRequired: 'Immediate on-call intervention required.',
+    slackJoinWarRoom: 'Join Incident War Room',
     pdRoutingKeyNotice: "Replace 'SERVICE_INTEGRATION_KEY' with your PagerDuty service routing key.",
-    githubLabels: "Labels: incident, sre-triage, production, bugmortem",
+    githubLabels: 'Labels: incident, sre-triage, production, bugmortem',
   },
   chaos: {
-    sectionTitle: "Live Chaos Engineering Sandbox",
-    sectionSubtitle: "Inject real-time failure modes and observe cascading telemetry reactions",
-    btnInject: "Inject Fault",
-    btnMitigate: "SRE Mitigation (Rollback)",
-    statusActive: "FAULT ACTIVE",
-    statusNominal: "SYSTEM NOMINAL",
-    scenarioLatencyTitle: "Edge Latency Spike",
-    scenarioLatencyDesc: "Artificial +2500ms delay on Edge Gateway causing cascading UI timeouts",
-    scenarioDbPoolTitle: "DB Connection Pool Saturation",
-    scenarioDbPoolDesc: "100% PostgreSQL connection exhaustion causing 503 Service Unavailable errors",
-    scenarioMemoryTitle: "Worker Heap Memory Leak (OOM)",
-    scenarioMemoryDesc: "Exponential memory footprint growth in background worker queue",
-    scenarioAuthStormTitle: "Auth Token Invalidation Storm",
-    scenarioAuthStormDesc: "Massive JWT rejection wave triggering a storm of re-authentication requests",
-    liveTelemetryTitle: "Real-Time Telemetry",
-    metricRps: "Throughput",
-    metricLatency: "p99 Latency",
-    metricErrorRate: "Error Rate",
+    sectionTitle: 'Live Chaos Engineering Sandbox',
+    sectionSubtitle: 'Inject real-time failure modes and observe cascading telemetry reactions',
+    btnInject: 'Inject Fault',
+    btnMitigate: 'SRE Mitigation (Rollback)',
+    statusActive: 'FAULT ACTIVE',
+    statusNominal: 'SYSTEM NOMINAL',
+    scenarioLatencyTitle: 'Edge Latency Spike',
+    scenarioLatencyDesc: 'Artificial +2500ms delay on Edge Gateway causing cascading UI timeouts',
+    scenarioDbPoolTitle: 'DB Connection Pool Saturation',
+    scenarioDbPoolDesc: '100% PostgreSQL connection exhaustion causing 503 Service Unavailable errors',
+    scenarioMemoryTitle: 'Worker Heap Memory Leak (OOM)',
+    scenarioMemoryDesc: 'Exponential memory footprint growth in background worker queue',
+    scenarioAuthStormTitle: 'Auth Token Invalidation Storm',
+    scenarioAuthStormDesc: 'Massive JWT rejection wave triggering a storm of re-authentication requests',
+    liveTelemetryTitle: 'Real-Time Telemetry',
+    metricRps: 'Throughput',
+    metricLatency: 'p99 Latency',
+    metricErrorRate: 'Error Rate',
   },
-
-
 
   postMortemSummaryHeading: 'Executive Summary',
   postMortemImpactHeading: 'Blast Radius & Impact',
@@ -542,6 +540,66 @@ No 'Access-Control-Allow-Origin' header is present on the requested resource.
           'Deploy explicit CORS allowlist middleware before any route handler.',
           'Add automated preflight OPTIONS smoke test to CI/CD deployment pipeline.',
           'Audit all API gateway configs for missing CORS headers before subdomain changes.'
+        ]
+      }
+    },
+    'serverless-timeout': {
+      id: 'serverless-timeout',
+      badge: 'Cloud / Serverless',
+      severity: 'P0',
+      title: 'Serverless Cold Start Cascade & Gateway 504 Timeout',
+      desc: 'Heavy database connection bootstrapping inside the function handler triggered a cold start cascade, exceeding the 29-second API gateway timeout.',
+      crashedCode: `// ❌ CURSED CODE: Establishing heavy connections inside the handler
+export async function handler(event: any) {
+  // Re-creating connection pool on every invocation cripples cold starts
+  const db = await createHeavyDatabaseConnection({
+    host: process.env.DB_HOST,
+    ssl: true,
+    timeout: 30000,
+  });
+
+  const user = await db.query('SELECT * FROM users WHERE id = $1', [event.userId]);
+  await db.disconnect(); // Tearing down connection prevents execution reuse
+  return { statusCode: 200, body: JSON.stringify(user) };
+}`,
+      resurrectedCode: `// ✅ RESURRECTED SRE PATTERN: Global Scoped Singleton & Execution Reuse
+import { getDatabaseClient } from './db';
+
+// Bootstrap client once in global execution scope outside handler
+const dbPromise = getDatabaseClient();
+
+export async function handler(event: any, context: any) {
+  // Leverage execution context reuse without freezing event loop
+  context.callbackWaitsForEmptyEventLoop = false;
+
+  // Resilient client acquisition guarded by strict SRE timeout
+  const db = await Promise.race([
+    dbPromise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('SRE: Database connect timeout')), 3000)
+    ),
+  ]);
+
+  const user = await db.query('SELECT * FROM users WHERE id = $1', [event.userId]);
+  return { statusCode: 200, body: JSON.stringify(user) };
+}`,
+      stackTrace: `2026-11-06T11:42:19.412Z a81f2c90-4e31-502a-bf34-8c1092a40b12 Task timed out after 30.03 seconds
+HTTP/2 504 Gateway Timeout
+x-amzn-errortype: GatewayTimeoutException
+x-amzn-requestid: c4e99f12-0881-42ab-92b1-50e41982b5f0
+Endpoint request timed out while awaiting serverless upstream response.`,
+      timeline: [
+        { time: '11:41:49 UTC', desc: 'Viral campaign triggers 120 concurrent micro-container serverless cold starts', isFatal: false },
+        { time: '11:42:10 UTC', desc: 'Concurrent TLS handshakes with database saturate worker CPU; p99 latency exceeds 25s', isFatal: false },
+        { time: '11:42:19 UTC', desc: 'API gateway hits hard 29s upstream timeout; 100% of client requests severed with 504 Gateway Timeout', isFatal: true }
+      ],
+      postMortemReport: {
+        summary: 'Serverless cold start cascade triggered widespread API gateway upstream timeouts.',
+        impact: '38,000 requests failed with 504 Gateway Timeout. Complete checkout funnel outage lasting 14 minutes.',
+        actionItems: [
+          'Hoist database connection initialization outside handler into global execution scope.',
+          'Deploy AWS RDS Proxy connection pooling layer to multiplex serverless database connections.',
+          'Configure Provisioned Concurrency with a minimum baseline of 20 warm instances for critical paths.'
         ]
       }
     }
