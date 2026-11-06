@@ -38,7 +38,7 @@ export function pushGtmConsent(analytics: boolean, marketing: boolean) {
 }
 
 export function CookieBanner() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation() as any;
   const [isVisible, setIsVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [consent, setConsent] = useState<CookieConsentState>({
@@ -47,6 +47,8 @@ export function CookieBanner() {
     marketing: false,
     decided: false,
   });
+
+  const isEn = locale === 'en';
 
   useEffect(() => {
     const saved = localStorage.getItem('bm_cookie_consent');
@@ -106,10 +108,10 @@ export function CookieBanner() {
         </div>
         <div className="flex-1">
           <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
-            {t?.cookies?.title || 'Ustawienia prywatności'}
+            {t?.cookies?.title || (isEn ? 'Privacy & Cookie Settings' : 'Ustawienia prywatności')}
           </h3>
           <p className="mt-1 text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">
-            {t?.cookies?.description || 'Używamy plików cookie i tagów analitycznych do analizy ruchu.'}
+            {t?.cookies?.description || (isEn ? 'We utilize sandboxed telemetry and analytics to evaluate system resilience.' : 'Używamy plików cookie i tagów analitycznych do analizy ruchu.')}
           </p>
 
           {showDetails && (
@@ -117,24 +119,24 @@ export function CookieBanner() {
               <div className="flex items-center justify-between text-xs">
                 <div>
                   <span className="font-semibold text-neutral-800 dark:text-neutral-200">
-                    {t?.cookies?.essential || 'Niezbędne'}
+                    {t?.cookies?.essential || (isEn ? 'Essential' : 'Niezbędne')}
                   </span>
                   <p className="text-[10px] text-neutral-500">
-                    {t?.cookies?.essentialDesc || 'Wymagane do działania serwisu'}
+                    {t?.cookies?.essentialDesc || (isEn ? 'Required for core service execution and state persistence' : 'Wymagane do działania serwisu')}
                   </p>
                 </div>
                 <span className="rounded bg-neutral-100 px-2 py-0.5 font-mono text-[10px] font-bold text-neutral-500 dark:bg-neutral-800">
-                  {t?.cookies?.alwaysActive || 'Zawsze aktywne'}
+                  {t?.cookies?.alwaysActive || (isEn ? 'Always Active' : 'Zawsze aktywne')}
                 </span>
               </div>
 
               <div className="flex items-center justify-between text-xs">
                 <div>
                   <span className="font-semibold text-neutral-800 dark:text-neutral-200">
-                    {t?.cookies?.analytics || 'Analityka'}
+                    {t?.cookies?.analytics || (isEn ? 'Analytics' : 'Analityka')}
                   </span>
                   <p className="text-[10px] text-neutral-500">
-                    {t?.cookies?.analyticsDesc || 'Google Analytics 4 & GTM'}
+                    {t?.cookies?.analyticsDesc || (isEn ? 'Google Analytics 4 & GTM' : 'Google Analytics 4 & GTM')}
                   </p>
                 </div>
                 <input
@@ -148,10 +150,10 @@ export function CookieBanner() {
               <div className="flex items-center justify-between text-xs">
                 <div>
                   <span className="font-semibold text-neutral-800 dark:text-neutral-200">
-                    {t?.cookies?.marketing || 'Marketing'}
+                    {t?.cookies?.marketing || (isEn ? 'Marketing' : 'Marketing')}
                   </span>
                   <p className="text-[10px] text-neutral-500">
-                    {t?.cookies?.marketingDesc || 'Personalizacja i kampanie'}
+                    {t?.cookies?.marketingDesc || (isEn ? 'Personalization & Campaigns' : 'Personalizacja i kampanie')}
                   </p>
                 </div>
                 <input
@@ -167,31 +169,31 @@ export function CookieBanner() {
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <button
               onClick={handleAcceptAll}
-              className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
+              className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors cursor-pointer"
             >
-              {t?.cookies?.acceptAll || 'Akceptuj wszystkie'}
+              {t?.cookies?.acceptAll || (isEn ? 'Accept All' : 'Akceptuj wszystkie')}
             </button>
             <button
               onClick={handleRejectNonEssential}
-              className="rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 transition-colors"
+              className="rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
             >
-              {t?.cookies?.rejectNonEssential || 'Odrzuć opcjonalne'}
+              {t?.cookies?.rejectNonEssential || (isEn ? 'Reject Optional' : 'Odrzuć opcjonalne')}
             </button>
             {showDetails ? (
               <button
                 onClick={handleSaveCustom}
-                className="flex items-center gap-1.5 rounded-lg border border-neutral-300 bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                className="flex items-center gap-1.5 rounded-lg border border-neutral-300 bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
               >
                 <Check className="h-3.5 w-3.5" />
-                {t?.cookies?.savePreferences || 'Zapisz wybrane'}
+                {t?.cookies?.savePreferences || (isEn ? 'Save Preferences' : 'Zapisz wybrane')}
               </button>
             ) : (
               <button
                 onClick={() => setShowDetails(true)}
-                className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors"
+                className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors cursor-pointer"
               >
                 <Sliders className="h-3.5 w-3.5" />
-                {t?.cookies?.details || 'Dostosuj'}
+                {t?.cookies?.details || (isEn ? 'Customize' : 'Dostosuj')}
               </button>
             )}
           </div>
@@ -199,8 +201,8 @@ export function CookieBanner() {
 
         <button
           onClick={handleRejectNonEssential}
-          className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
-          title="Zamknij i odrzuć opcjonalne"
+          className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors cursor-pointer"
+          title={t?.cookies?.closeAndReject || (isEn ? 'Close and reject optional' : 'Zamknij i odrzuć opcjonalne')}
         >
           <X className="h-4 w-4" />
         </button>
