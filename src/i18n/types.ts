@@ -1,329 +1,183 @@
-export type Locale = 'en' | 'pl';
+export type Severity = 'P0' | 'P1';
 
 export interface TimelineEvent {
   time: string;
-  desc: string;
+  label: string;
+  description: string;
   isFatal?: boolean;
-  status?: string;
-  [key: string]: any;
 }
 
-export interface PostMortemReport {
+export interface BlastRadiusNode {
+  id: string;
+  name: string;
+  role: string;
+  status: 'epicenter' | 'degraded' | 'healthy';
+  statusCode: string;
+}
+
+export interface BlastRadiusSummary {
+  epicenterCount: number;
+  degradedCount: number;
+  healthyCount: number;
+}
+
+export interface BlastRadiusData {
+  nodes: BlastRadiusNode[];
+  summary: BlastRadiusSummary;
+}
+
+export interface ChaosMetric {
+  id: string;
+  name: string;
+  severity: Severity;
+  description: string;
+  status: 'nominal' | 'injecting' | 'recovered';
+}
+
+export interface PostMortemData {
   summary: string;
   impact: string;
   actionItems: string[];
 }
 
-export interface IncidentPreset {
-  id: string;
-  badge: string;
-  severity: string;
-  title: string;
-  desc: string;
-  crashedCode: string;
-  resurrectedCode: string;
-  stackTrace: string;
-  timeline: TimelineEvent[];
-  postMortemReport: PostMortemReport;
-  [key: string]: any;
-}
-
-export interface CookiesDictionary {
+export interface ReplayerStep {
+  step: number;
+  timeOffset: string;
   title: string;
   description: string;
-  essential: string;
-  essentialDesc: string;
-  alwaysActive: string;
-  analytics: string;
-  analyticsDesc: string;
-  marketing: string;
-  marketingDesc: string;
-  savePreferences: string;
-  acceptAll: string;
-  rejectAll: string;
-  hideDetails: string;
-  customize: string;
-  [key: string]: any;
+  telemetry: {
+    latencyMs: number;
+    errorRate: string;
+    rps: string;
+  };
+  severity: Severity;
 }
 
-export interface PdfDictionary {
-  certTitle: string;
-  subTitle: string;
-  recordRef: string;
-  timestamp: string;
-  labelService: string;
-  labelDomain: string;
-  labelSeverity: string;
-  labelStatus: string;
-  statusResurrected: string;
-  section1Title: string;
-  section2Title: string;
-  section3Title: string;
-  section4Title: string;
-  summary: string;
-  impact: string;
-  fatalEvent: string;
-  noStackTrace: string;
-  appliedFallback: string;
-  commanderRole: string;
-  sealLine1: string;
-  sealLine2: string;
-  [key: string]: any;
-}
-
-export interface BlastRadiusDictionary {
+export interface IncidentPreset {
+  id: string;
   title: string;
-  subtitle: string;
-  legendPatientZero: string;
-  legendCascading: string;
-  legendHealthy: string;
-  nodeClientSpa: string;
-  nodeClientSpaDesc: string;
-  nodeEdgeGateway: string;
-  nodeEdgeGatewayDesc: string;
-  nodeAuthService: string;
-  nodeAuthServiceDesc: string;
-  nodeDatabase: string;
-  nodeDatabaseDesc: string;
-  nodeWorkerPool: string;
-  nodeWorkerPoolDesc: string;
-  statusPatientZero: string;
-  statusDegraded: string;
-  statusHealthy: string;
-  statusResurrected: string;
-  metricCritical: string;
-  metricDegraded: string;
-  metricHealthy: string;
-  [key: string]: any;
+  badge: string;
+  severity: Severity;
+  description: string;
+  codeSnippet: string;
+  revivedCode: string;
+  stackTrace: string;
+  timeline: TimelineEvent[];
+  blastRadius: BlastRadiusData;
+  chaosMetrics: ChaosMetric[];
+  postMortem: PostMortemData;
+  replayerSteps?: ReplayerStep[];
+  fiveWhys?: string[];
 }
 
-export interface LegalDictionary {
-  modalTitle?: string;
-  title?: string;
-  lastUpdated?: string;
-
-  // ── Terms of Service ──────────────────────────────────────────────────────
-  terms?: string;
-  termsTitle?: string;
-  termsScopeHeader?: string;
-  termsScopeText?: string;
-  termsGeneralHeader?: string;
-  termsGeneralText?: string;
-  termsDisclaimerHeader?: string;
-  termsDisclaimerIntro?: string;
-  termsDisclaimerPoints?: string[];
-  termsLiabilityHeader?: string;
-  termsLiabilityText?: string;
-  termsLicenseHeader?: string;
-  termsLicenseText?: string;
-  termsLicenseBullets?: string[];
-
-  // ── Privacy Policy ────────────────────────────────────────────────────────
-  privacy?: string;
-  privacyTitle?: string;
-  privacyArchHeader?: string;
-  privacyArchText?: string;
-  privacyArchBullets?: string[];
-  privacyAdminHeader?: string;
-  privacyAdminText?: string;
-  privacyScopeHeader?: string;
-  privacyScopeText?: string;
-  privacyLocalStorageHeader?: string;
-  privacyLocalStorageIntro?: string;
-  privacyLocalStorageKeys?: Array<{ key: string; desc: string }>;
-  privacyNoTrackingHeader?: string;
-  privacyNoTrackingText?: string;
-  privacyNoTrackingBullets?: string[];
-  privacyUserRightsHeader?: string;
-  privacyUserRightsText?: string;
-  privacyUserRightsBullets?: string[];
-  privacyPurgeHeader?: string;
-  privacyPurgeText?: string;
-
-  // ── Cookie Policy ─────────────────────────────────────────────────────────
-  cookies?: string;
-  cookiesTitle?: string;
-  cookiesUsageHeader?: string;
-  cookiesUsageText?: string;
-
-  // legacy / kept for backward compat
-  termsContent?: string;
-  privacyContent?: string;
-  cookiesContent?: string;
-  disclaimer?: string;
-  disclaimerTitle?: string;
-  disclaimerContent?: string;
-  gdpr?: string;
-  gdprTitle?: string;
-  gdprContent?: string;
-  [key: string]: any;
-}
-
-export interface CommonDictionary {
-  close?: string;
-  cancel?: string;
-  save?: string;
-  back?: string;
-  loading?: string;
-  status?: string;
-  filter?: string;
-  search?: string;
-  [key: string]: any;
-}
-
-export interface DispatcherDictionary {
-  openBtn: string;
-  modalTitle: string;
-  modalSubtitle: string;
-  tabSlack: string;
-  tabPagerDuty: string;
-  tabGithub: string;
-  copyBtn: string;
-  copiedBtn: string;
-  openGithubBtn: string;
-  closeBtn: string;
-  fieldIncidentId: string;
-  fieldSeverity: string;
-  fieldService: string;
-  fieldStatus: string;
-  fieldBlastRadius: string;
-  fieldWarRoom: string;
-  fieldRunbook: string;
-  fieldChecklist: string;
-  slackHeader: string;
-  slackActionRequired: string;
-  slackJoinWarRoom: string;
-  pdRoutingKeyNotice: string;
-  githubLabels: string;
-}
-
-export interface ChaosDictionary {
+export interface FiveWhysDictionary {
   sectionTitle: string;
   sectionSubtitle: string;
-  btnInject: string;
-  btnMitigate: string;
-  statusActive: string;
-  statusNominal: string;
-  scenarioLatencyTitle: string;
-  scenarioLatencyDesc: string;
-  scenarioDbPoolTitle: string;
-  scenarioDbPoolDesc: string;
-  scenarioMemoryTitle: string;
-  scenarioMemoryDesc: string;
-  scenarioAuthStormTitle: string;
-  scenarioAuthStormDesc: string;
-  liveTelemetryTitle: string;
-  metricRps: string;
-  metricLatency: string;
-  metricErrorRate: string;
+  levels: [string, string, string, string, string];
+  blamelessBadge: string;
+  rootCauseBadge: string;
+  copyChain: string;
+  copied: string;
 }
 
 export interface ReplayerDictionary {
   title: string;
   subtitle: string;
-  btnPlay: string;
-  btnPause: string;
-  btnReset: string;
-  stepPrefix: string;
-  statusInitial: string;
-  statusDegrading: string;
-  statusTerminus: string;
-  speedLabel: string;
-  liveBadge: string;
+  play: string;
+  pause: string;
+  reset: string;
+  speed: string;
+  stepOf: string;
+  telemetryLatency: string;
+  telemetryErrors: string;
+  telemetryRps: string;
 }
 
-export interface Dictionary {
-  title: string;
-  subtitle: string;
-  badgeHackathon: string;
-  statusLabel: string;
-  statusValue: string;
-  customAutopsyBtn: string;
-  presetsSectionTitle: string;
-  autopsyTitle: string;
-  copyCodeBtn: string;
-  copiedCodeBtn: string;
-  crashedCodeTitle: string;
-  crashedBadge: string;
-  resurrectedCodeTitle: string;
-  resurrectedBadge: string;
-  stackTraceTitle: string;
-  timelineTitle: string;
-  postMortemTitle: string;
-  exportReportBtn: string;
-  exportPdfBtn: string;
-  downloadSuccess: string;
-  downloadPdfSuccess: string;
-  mdReportFooter: string;
-
-  // ── Głosowa Diagnoza Lekarza Sądowego SRE (Speech API) ────────────────────
-  coronerVerdictBtn: string;
-  coronerVerdictStopBtn: string;
-  coronerVerdictPlaying: string;
-  coronerSpeechPrefix: string;
-  coronerSpeechIncident: string;
-  coronerSpeechSeverity: string;
-  coronerSpeechTime: string;
-  coronerSpeechCause: string;
-  coronerSpeechMitigation: string;
-
-  // ── Urzędowa Karta Zgonu (PDF) ────────────────────────────────────────────
-  pdf: PdfDictionary;
-
-  // ── Moduły SRE Enterprise ─────────────────────────────────────────────────
-  blastRadius: BlastRadiusDictionary;
-  dispatcher: DispatcherDictionary;
-  chaos: ChaosDictionary;
+export interface TranslationDictionary {
+  hero: {
+    badge: string;
+    title: string;
+    subtitle: string;
+    inputCta: string;
+    statusActive: string;
+    statusStable: string;
+  };
+  navigation: {
+    langPl: string;
+    langEn: string;
+    toggleTheme: string;
+  };
+  presets: {
+    sectionTitle: string;
+    items: Record<string, IncidentPreset>;
+  };
+  codeSection: {
+    cursedTitle: string;
+    resurrectedTitle: string;
+    cursedBadge: string;
+    resurrectedBadge: string;
+    copyCta: string;
+    copied: string;
+  };
+  stackTrace: {
+    title: string;
+  };
+  timeline: {
+    title: string;
+  };
   replayer: ReplayerDictionary;
-
-  postMortemSummaryHeading: string;
-  postMortemImpactHeading: string;
-  postMortemActionsHeading: string;
-  customModalTitle: string;
-  customModalSubtitle: string;
-  fieldIncidentTitle: string;
-  fieldIncidentTitlePlaceholder: string;
-  fieldCategory: string;
-  categoryFrontend: string;
-  categoryBackend: string;
-  categoryDatabase: string;
-  categoryInfra: string;
-  fieldSeverity: string;
-  severityP0: string;
-  severityP1: string;
-  severityP2: string;
-  fieldStackTrace: string;
-  fieldStackTracePlaceholder: string;
-  fieldCrashedCode: string;
-  fieldCrashedCodePlaceholder: string;
-  fieldResurrectedCode: string;
-  fieldResurrectedCodePlaceholder: string;
-  btnCancel: string;
-  btnAnalyzeAndGenerate: string;
-  validationErrorRequired: string;
-  footerRights: string;
-  footerPrivacy: string;
-  footerTerms: string;
-  footerCookieSettings: string;
-  audioToggleEnable: string;
-  audioToggleDisable: string;
-  statusP0: string;
-  statusP1: string;
-  statusResurrected: string;
-  cookieTitle: string;
-  cookieDesc: string;
-  cookieAcceptAll: string;
-  cookieEssentialOnly: string;
-  cookieCustomize: string;
-  cookieDrawerTitle: string;
-  cookieAnalytics: string;
-  cookieAnalyticsDesc: string;
-  cookieMarketing: string;
-  cookieMarketingDesc: string;
-  cookieSavePreferences: string;
-  cookies: CookiesDictionary;
-  presets: Record<string, IncidentPreset>;
-  legal: LegalDictionary;
-  common: CommonDictionary;
-  [key: string]: any;
+  fiveWhys: FiveWhysDictionary;
+  blastRadius: {
+    title: string;
+    subtitle: string;
+    legendEpicenter: string;
+    legendDegraded: string;
+    legendHealthy: string;
+    badgeEpicenter: string;
+    badgeDegraded: string;
+    badgeHealthy: string;
+  };
+  chaosSandbox: {
+    title: string;
+    subtitle: string;
+    nominalStatus: string;
+    activeStatus: string;
+    metricThroughput: string;
+    metricP99: string;
+    metricErrorRate: string;
+    injectCta: string;
+    recoveringCta: string;
+  };
+  postMortem: {
+    title: string;
+    executiveSummary: string;
+    blastRadiusImpact: string;
+    actionItems: string;
+    escalateOnCall: string;
+    listenCoroner: string;
+    exportMarkdown: string;
+    downloadCertificate: string;
+  };
+  dispatcherModal: {
+    title: string;
+    subtitle: string;
+    severityLabel: string;
+    serviceLabel: string;
+    commanderLabel: string;
+    channelLabel: string;
+    zoomLinkLabel: string;
+    jiraTicketLabel: string;
+    statusPageLabel: string;
+    copySummaryCta: string;
+    copiedNotice: string;
+    dispatchPagingCta: string;
+    pagingTriggered: string;
+    closeCta: string;
+  };
+  footer: {
+    disclaimer: string;
+    privacy: string;
+    terms: string;
+    cookieSettings: string;
+  };
 }

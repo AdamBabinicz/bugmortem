@@ -1,463 +1,328 @@
-import { Dictionary } from '../types';
+import { TranslationDictionary } from '../types';
 
-export const pl: Dictionary = {
-  title: 'BugMortem – AI Studio Sekcji Zwłok Awarii i Post-Mortem',
-  subtitle: 'Inżynieryjne śledztwo post-mortem i zautomatyzowane bezpieczne wzorce SRE dla awarii produkcyjnych.',
-  badgeHackathon: 'Projekt na Hackathon Kiroween 2026',
-  statusLabel: 'Status Kostnicy',
-  statusValue: 'Aktywny Incydent (P0)',
-  customAutopsyBtn: '+ Wprowadź Własną Awarię',
-  presetsSectionTitle: 'Archiwum Sekcji Zwłok Awarii',
-  autopsyTitle: 'Sekcja Kodu: Przeklęty a Wskrzeszony Kod',
-  copyCodeBtn: 'Kopiuj Wskrzeszony Kod',
-  copiedCodeBtn: 'Skopiowano do Schowka!',
-  crashedCodeTitle: 'Przeklęty Kod (Crash na Produkcji)',
-  crashedBadge: 'Błąd Krytyczny',
-  resurrectedCodeTitle: 'Wskrzeszony Kod SRE (Bezpieczny Wzorzec)',
-  resurrectedBadge: 'Wzorzec: Circuit Breaker',
-  stackTraceTitle: 'Surowy Ślad Stosu (Stack Trace)',
-  timelineTitle: 'Chronologiczna Oś Czasu Awarii',
-  postMortemTitle: 'Oficjalny Raport Sekcji Zwłok Incydentu',
-  exportReportBtn: 'Eksportuj Raport do Markdown',
-  exportPdfBtn: 'Pobierz Kartę Zgonu (PDF)',
-  downloadSuccess: 'Raport Markdown został pomyślnie pobrany!',
-  downloadPdfSuccess: 'Karta zgonu (PDF) została pomyślnie wygenerowana!',
-  mdReportFooter: '*Raport wygenerowany przez BugMortem (Zgłoszenie na Hackathon Kiroween 2026).*',
-
-  // ── Głosowa Diagnoza Lekarza Sądowego SRE (Speech API) ────────────────────
-  coronerVerdictBtn: 'Odsłuchaj Werdykt Koronera',
-  coronerVerdictStopBtn: 'Zatrzymaj Werdykt',
-  coronerVerdictPlaying: 'Koroner odczytuje diagnozę...',
-  coronerSpeechPrefix: 'Oficjalne orzeczenie sekcji zwłok SRE.',
-  coronerSpeechIncident: 'Incydent:',
-  coronerSpeechSeverity: 'Stopień krytyczności:',
-  coronerSpeechTime: 'Czas zgonu usługi:',
-  coronerSpeechCause: 'Bezpośrednia przyczyna zapaści:',
-  coronerSpeechMitigation: 'Główne zalecenie naprawcze:',
-
-  // ── Urzędowa Karta Zgonu (PDF) ────────────────────────────────────────────
-  pdf: {
-    certTitle: 'URZĘDOWA KARTA ZGONU AWARII',
-    subTitle: 'CYFROWE PROSEKTORIUM SRE // HACKATHON KIROWEEN 2026',
-    recordRef: 'NR REJESTRU',
-    timestamp: 'ZNACZNIK CZASU',
-    labelService: 'Nazwa Usługi / Awarii',
-    labelDomain: 'Domena Architektoniczna',
-    labelSeverity: 'Krytyczność Zgonu',
-    labelStatus: 'Status Prosektorium',
-    statusResurrected: 'WSKRZESZONY (SRE 200 OK)',
-    section1Title: '1. Sekcja Zwłok: Przyczyna Zgonu i Promień Rażenia',
-    section2Title: '2. Chronologia Zapadu Systemowego',
-    section3Title: '3. Ślad Stosu w Momencie Zgonu (Biopsja Pamięci)',
-    section4Title: '4. Zastosowany Wzorzec Wskrzeszenia SRE (Lekarstwo)',
-    summary: 'Podsumowanie',
-    impact: 'Wpływ Biznesowy',
-    fatalEvent: 'AWARIA KRYTYCZNA',
-    noStackTrace: 'Brak zarejestrowanego śladu stosu.',
-    appliedFallback: '// Standardowy circuit breaker wdrożony',
-    commanderRole: 'Główny Dowódca Incydentu • Silnik BugMortem',
-    sealLine1: '✓ SRE WSKRZESZONY',
-    sealLine2: 'ZATWIERDZONO PRZEZ BUGMORTEM',
+export const pl: TranslationDictionary = {
+  hero: {
+    badge: 'PROJEKT NA HACKATHON KIROWEEN 2026',
+    title: 'BugMortem – AI Studio Sekcji Zwłok Awarii i Post-Mortem',
+    subtitle: 'Inżynieryjne śledztwo post-mortem i zautomatyzowane bezpieczne wzorce SRE dla awarii produkcyjnych.',
+    inputCta: '+ WPROWADŹ WŁASNĄ AWARIĘ',
+    statusActive: 'Aktywny Incydent (P0 Krytyczny)',
+    statusStable: 'System Nominalny (200 OK)',
   },
-
-  // ── Mapa Skażenia Architektury (Blast Radius Heatmap) ─────────────────────
-  blastRadius: {
-    title: 'Topologia Skażenia Architektury (Blast Radius)',
-    subtitle: 'Wizualizacja kaskadowego wektora awarii mikroserwisów i izolacja Pacjenta Zero.',
-    legendPatientZero: 'Pacjent Zero (Epicentrum P0)',
-    legendCascading: 'Skażenie Kaskadowe (P1)',
-    legendHealthy: 'Węzeł Zdrowy (200 OK)',
-    nodeClientSpa: 'Frontend Client SPA',
-    nodeClientSpaDesc: 'Warstwa prezentacji i interakcji użytkownika (Next.js / SSR)',
-    nodeEdgeGateway: 'Bramka API Edge',
-    nodeEdgeGatewayDesc: 'Ingress Proxy, trasowanie żądań i nagłówki CORS',
-    nodeAuthService: 'Serwis Uwierzytelniania',
-    nodeAuthServiceDesc: 'Zarządzanie sesjami, tokeny JWT i kontrola dostępu',
-    nodeDatabase: 'Transakcyjna Baza Danych',
-    nodeDatabaseDesc: 'Klaster Aurora RDS i transakcyjna pula połączeń',
-    nodeWorkerPool: 'Klaster Workerów Asynchronicznych',
-    nodeWorkerPoolDesc: 'Przetwarzanie zadań w tle, bufor pamięci i kolejki zadań',
-    statusPatientZero: 'PACJENT ZERO (P0)',
-    statusDegraded: 'DEGRADACJA (P1)',
-    statusHealthy: 'ZDROWY (200 OK)',
-    statusResurrected: 'WSKRZESZONY (SRE OK)',
-    metricCritical: 'Epicentrum P0',
-    metricDegraded: 'Degradacja P1',
-    metricHealthy: 'Węzły Stabilne',
+  navigation: {
+    langPl: 'Polski (PL)',
+    langEn: 'English (EN)',
+    toggleTheme: 'Przełącz Motyw',
   },
-  dispatcher: {
-    openBtn: 'Eskalacja On-Call',
-    modalTitle: 'Dyspozytor Incydentu SRE',
-    modalSubtitle: 'Generuj ustandaryzowane alerty i tickety eskalacyjne dla zespolu on-call',
-    tabSlack: 'Slack / Discord',
-    tabPagerDuty: 'PagerDuty (CEF)',
-    tabGithub: 'GitHub Issue',
-    copyBtn: 'Kopiuj do schowka',
-    copiedBtn: 'Skopiowano!',
-    openGithubBtn: 'Otworz GitHub Issue',
-    closeBtn: 'Zamknij',
-    fieldIncidentId: 'Identyfikator incydentu',
-    fieldSeverity: 'Poziom krytycznosci',
-    fieldService: 'Komponent zrodlowy',
-    fieldStatus: 'Status operacyjny',
-    fieldBlastRadius: 'Zasieg awarii (Blast Radius)',
-    fieldWarRoom: 'Mostek incydentu (War Room)',
-    fieldRunbook: 'Procedura naprawcza (Runbook)',
-    fieldChecklist: 'Lista kontrolna mitigacji',
-    slackHeader: 'INCIDENT ALERT - NATYCHMIASTOWA ESKALACJA SRE',
-    slackActionRequired: 'Wymagane natychmiastowe podjecie dyzuru on-call.',
-    slackJoinWarRoom: 'Dolacz do mostka incydentu',
-    pdRoutingKeyNotice: "Zastap 'SERVICE_INTEGRATION_KEY' kluczem routingu serwisu w PagerDuty.",
-    githubLabels: 'Labels: incident, sre-triage, production, bugmortem',
-  },
-  chaos: {
-    sectionTitle: 'Piaskownica Inzynierii Chaosu (Live Chaos Sandbox)',
-    sectionSubtitle: 'Wstrzykuj awarie w czasie rzeczywistym i obserwuj kaskadowa reakcje telemetrii',
-    btnInject: 'Wstrzyknij awarie',
-    btnMitigate: 'Szybka mitigacja (SRE Rollback)',
-    statusActive: 'AWARIA AKTYWNA',
-    statusNominal: 'SYSTEM NOMINALNY',
-    scenarioLatencyTitle: 'Skok opoznien brzegowych (Latency Spike)',
-    scenarioLatencyDesc: 'Sztuczne opoznienie +2500ms na Edge Gateway, powodujace timeouty w UI',
-    scenarioDbPoolTitle: 'Nasycenie puli bazy danych (DB Pool Saturation)',
-    scenarioDbPoolDesc: '100% wykorzystania polaczen PostgreSQL, kaskada bledow 503',
-    scenarioMemoryTitle: 'Wyciek pamieci (Heap OOM Leak)',
-    scenarioMemoryDesc: 'Eksponencjalny wzrost zuzycia RAM w puli workerow asynchronicznych',
-    scenarioAuthStormTitle: 'Burza uniewaznienia sesji (Auth Storm)',
-    scenarioAuthStormDesc: 'Zmasowane odrzucenia tokenow JWT i lawina zadan ponownego logowania',
-    liveTelemetryTitle: 'Telemetria w czasie rzeczywistym',
-    metricRps: 'Przepustowosc',
-    metricLatency: 'Opoznienie p99',
-    metricErrorRate: 'Wskaznik bledow',
-  },
-  replayer: {
-    title: 'Odtwarzacz Zapaści w Czasie (Incident Replayer)',
-    subtitle: 'Symuluj przebieg awarii sekunda po sekundzie i obserwuj degradację telemetrii',
-    btnPlay: 'Odtwórz Zapaść',
-    btnPause: 'Wstrzymaj',
-    btnReset: 'Resetuj',
-    stepPrefix: 'Krok',
-    statusInitial: 'Anomalia początkowa',
-    statusDegrading: 'Kaskadowa degradacja',
-    statusTerminus: 'Zapaść krytyczna (Zgon usługi)',
-    speedLabel: 'Tempo',
-    liveBadge: 'REPLAY NA ŻYWO',
-  },
-
-  postMortemSummaryHeading: 'Podsumowanie Wykonawcze',
-  postMortemImpactHeading: 'Promień Rażenia i Wpływ Biznesowy',
-  postMortemActionsHeading: 'Działania Prewencyjne i Naprawcze',
-  customModalTitle: 'Sekcja Zwłok Własnego Incydentu',
-  customModalSubtitle: 'Wklej logi błędów i zrzut stosu z produkcji, aby wygenerować automatyczną analizę post-mortem.',
-  fieldIncidentTitle: 'Tytuł Awarii',
-  fieldIncidentTitlePlaceholder: 'np. Zagłodzenie blokad rozproszonych w bramce płatności',
-  fieldCategory: 'Domena Architektoniczna',
-  categoryFrontend: 'Frontend',
-  categoryBackend: 'Backend',
-  categoryDatabase: 'Baza Danych',
-  categoryInfra: 'Infrastruktura',
-  fieldSeverity: 'Krytyczność Awarii',
-  severityP0: 'Awaria Całkowita (P0)',
-  severityP1: 'Krytyczna Degradacja (P1)',
-  severityP2: 'Poważna Usterka (P2)',
-  fieldStackTrace: 'Ślad Stosu (Stack Trace) / Logi Błędu',
-  fieldStackTracePlaceholder: 'Wklej tutaj zrzut stosu lub log z awarii...',
-  fieldCrashedCode: 'Przeklęty Kod (Opcjonalnie)',
-  fieldCrashedCodePlaceholder: 'Wklej fragment kodu, który wywołał awarię...',
-  fieldResurrectedCode: 'Wskrzeszony Kod SRE (Opcjonalnie)',
-  fieldResurrectedCodePlaceholder: 'Pozostaw puste, aby wygenerować bezpieczny wzorzec Circuit Breaker...',
-  btnCancel: 'Anuluj',
-  btnAnalyzeAndGenerate: 'Przeprowadź Sekcję Zwłok',
-  validationErrorRequired: 'Proszę podać tytuł awarii oraz ślad stosu.',
-  audioToggleEnable: 'Telemetria Audio: Wyciszona — kliknij, aby włączyć',
-  audioToggleDisable: 'Telemetria Audio: Włączona — kliknij, aby wyciszyć',
-  statusP0: 'Aktywny Incydent (P0 Krytyczny)',
-  statusP1: 'Ostrzeżenie Telemetrii (P1 Poważny)',
-  statusResurrected: 'Usługa Wskrzeszona (Zdrowa · 200 OK)',
-  footerRights: 'Wszelkie prawa zastrzeżone. Stworzone na Kiroween 2026 przez AWS & Devpost.',
-  footerPrivacy: 'Polityka Prywatności',
-  footerTerms: 'Regulamin',
-  footerCookieSettings: 'Ustawienia Cookies',
-  cookieTitle: 'Przejrzystość Danych i Ciasteczek',
-  cookieDesc: 'BugMortem przetwarza analizy awarii lokalnie w przeglądarce. Telemetria Google Analytics 4 jest domyślnie zablokowana i uruchamia się wyłącznie za Twoją zgodą (Google Consent Mode v2).',
-  cookieAcceptAll: 'Akceptuję wszystkie',
-  cookieEssentialOnly: 'Tylko niezbędne',
-  cookieCustomize: 'Dostosuj preferencje',
-  cookieDrawerTitle: 'Preferencje Prywatności i Cookies',
-  cookieAnalytics: 'Pomiary analityczne (GA4 / GTM)',
-  cookieAnalyticsDesc: 'Anonimowe statystyki odsłon i ruchu serwisu pod kontrolą Google Consent Mode v2.',
-  cookieMarketing: 'Pamięć marketingowa',
-  cookieMarketingDesc: 'BugMortem nie wyświetla reklam, nie profiluje użytkowników ani nie korzysta z pikseli marketingowych.',
-  cookieSavePreferences: 'Zapisz preferencje',
-
-  cookies: {
-    title: 'Przejrzystość Danych i Plików Cookies',
-    description: 'BugMortem przetwarza Twoje dane i raporty z awarii lokalnie w przeglądarce. Statystyki odwiedzin (GA4) podlegają ścisłej zgodzie użytkownika.',
-    essential: 'Niezbędna pamięć lokalna',
-    essentialDesc: 'Wymagana do prawidłowego działania aplikacji: zapamiętania motywu ciemnego/jasnego, języka oraz lokalnych sekcji zwłok.',
-    alwaysActive: 'Zawsze aktywne',
-    analytics: 'Pomiary analityczne (Google Analytics 4)',
-    analyticsDesc: 'Anonimowa telemetria ruchu (GA4 / GTM) chroniona przez Google Consent Mode v2 (domyślnie wyłączona; aktywowana wyłącznie po wyrażeniu zgody).',
-    marketing: 'Pliki marketingowe',
-    marketingDesc: 'Całkowity brak reklam, pikseli śledzących i profilowania przez podmioty trzecie.',
-    savePreferences: 'Zapisz preferencje',
-    acceptAll: 'Zaakceptuj wszystkie',
-    rejectAll: 'Tylko niezbędne',
-    hideDetails: 'Ukryj szczegóły',
-    customize: 'Dostosuj',
-  },
-
-  common: {
-    close: 'Zamknij',
-    cancel: 'Anuluj',
-    save: 'Zapisz',
-    back: 'Wstecz',
-    loading: 'Ładowanie...',
-  },
-
-  legal: {
-    modalTitle: 'Informacje Prawne i Zgodność',
-    title: 'Informacje Prawne',
-    lastUpdated: 'Ostatnia aktualizacja: 5 listopada 2026',
-
-    // ── Regulamin ────────────────────────────────────────────────────────────
-    terms: 'Regulamin Serwisu',
-    termsTitle: 'Regulamin Użytkowania BugMortem',
-
-    termsScopeHeader: 'Zakres i Cel Narzędzia',
-    termsScopeText:
-      'BugMortem to diagnostyczne studio śledcze SRE zgłoszone na Hackathon Kiroween 2026, organizowany przez AWS & Devpost. Narzędzie umożliwia porównawczą sekcję zwłok incydentów, automatyczne generowanie raportów post-mortem oraz przeglądanie wyselekcjonowanych „Wzorców Wskrzeszenia Kodu" — algorytmicznych wzorców odtwarzania systemów zaczerpniętych z rzeczywistych podręczników SRE.',
-
-    termsGeneralHeader: 'Warunki Ogólne',
-    termsGeneralText:
-      'BugMortem jest udostępniany w stanie „takim, jaki jest" i „w miarę dostępności", wyłącznie do celów edukacyjnych i prewencji SRE. Nie udziela się żadnych wyraźnych ani dorozumianych gwarancji — w tym gwarancji przydatności handlowej, przydatności do określonego celu ani nienaruszania praw. Korzystanie z narzędzia w jakimkolwiek kontekście podejmowania decyzji produkcyjnych odbywa się wyłącznie na ryzyko użytkownika.',
-
-    termsDisclaimerHeader: '⚠ Zastrzeżenie Inżynieryjne — Wzorce Wskrzeszenia Kodu',
-    termsDisclaimerIntro:
-      'Wszystkie „Wzorce Wskrzeszenia Kodu" generowane przez BugMortem są algorytmicznymi rekomendacjami naprawczymi produkowanymi przez silnik wspomagany modelem językowym. NIE są to certyfikowane poprawki produkcyjne. Przed wdrożeniem jakiegokolwiek sugerowanego wzorca na środowisko produkcyjne należy:',
-    termsDisclaimerPoints: [
-      'Zwalidować wszystkie wygenerowane łatki w izolowanym środowisku stagingowym lub canary.',
-      'Uzyskać recenzję łatki od kwalifikowanego starszego inżyniera lub SRE przed scaleniem.',
-      'Uruchomić pełny zestaw testów integracyjnych i regresyjnych na usłudze z zastosowaną łatką.',
-      'Traktować kod wygenerowany przez AI tak samo jak niezaufany kod zewnętrzny — przeprowadzić audyt przed uruchomieniem.',
-      'Nigdy nie pomijać bramek CI/CD, bramek wdrożeniowych ani przepływów zatwierdzania wyłącznie na podstawie rekomendacji BugMortem.',
-    ],
-
-    termsLiabilityHeader: 'Ograniczenie Odpowiedzialności',
-    termsLiabilityText:
-      'W maksymalnym zakresie dozwolonym przez obowiązujące prawo autorzy, współtwórcy i sponsorzy BugMortem nie ponoszą odpowiedzialności za jakiekolwiek bezpośrednie, pośrednie, przypadkowe, następcze ani karne szkody wynikające z polegania na wygenerowanych raportach post-mortem, analizach śladów stosu lub bezpiecznych wzorcach SRE — w tym szkody wynikające z utraty danych, zakłócenia przychodów lub incydentów produkcyjnych.',
-
-    termsLicenseHeader: 'Licencja Open Source i Własność Intelektualna',
-    termsLicenseText:
-      'BugMortem jest wydany na licencji MIT. Możesz swobodnie używać, kopiować, modyfikować, łączyć, publikować, dystrybuować, sublicencjonować i/lub sprzedawać kopie oprogramowania, pod warunkiem spełnienia następujących wymogów:',
-    termsLicenseBullets: [
-      'Informacja o licencji MIT i informacja o prawach autorskich muszą być zawarte we wszystkich kopiach lub istotnych częściach oprogramowania.',
-      'Wszystkie presety incydentów, opisy wzorców SRE i szablony raportów post-mortem zawarte w tym projekcie są oryginalnymi dziełami współtwórców BugMortem.',
-      '„Kiroween" i „AWS" są znakami towarowymi ich odpowiednich właścicieli. BugMortem jest niezależnym zgłoszeniem i nie jest popierany ani powiązany z Amazon Web Services, Inc.',
-    ],
-
-    // ── Polityka Prywatności ─────────────────────────────────────────────────
-    privacy: 'Polityka Prywatności',
-    privacyTitle: 'Polityka Prywatności i Suwerenność Danych',
-
-    privacyArchHeader: 'Zero Wycieku Kodu Incydentów — Architektura Local-First',
-    privacyArchText:
-      'BugMortem jest zbudowany w oparciu o model local-first dla wszelkich danych wrażliwych. Całe przetwarzanie awarii — parsowanie śladów stosu, generowanie sekcji zwłok, analiza kodu oraz renderowanie raportów i kart zgonu PDF — odbywa się wyłącznie w pamięci Twojej przeglądarki. Twój kod produkcyjny i zrzuty błędów nigdy nie opuszczają Twojego urządzenia.',
-    privacyArchBullets: [
-      'Surowe logi incydentów, fragmenty kodu i ślady stosu istnieją wyłącznie w pamięci operacyjnej JavaScript i nigdy nie są wysyłane do zdalnych serwerów ani systemów AI podmiotów trzecich.',
-      'Własne sekcje zwłok incydentów, które zapisujesz, trafiają wyłącznie do pamięci localStorage Twojej przeglądarki.',
-      'Eksporty Markdown oraz karty zgonu PDF są generowane w 100% po stronie klienta za pomocą lokalnych silników przeglądarki.',
-      'Żadne dane o awariach nie są przekazywane do skryptów analitycznych ani logowania błędów.',
-    ],
-
-    privacyAdminHeader: 'Administrator Danych',
-    privacyAdminText:
-      'Ponieważ BugMortem przetwarza dane incydentów wyłącznie w lokalnym środowisku Twojej przeglądarki, jesteś jedynym administratorem i dysponentem tych informacji. Zespół projektu BugMortem nie gromadzi, nie przechowuje ani nie ma wglądu w żadne logi ani kody wprowadzane do aplikacji.',
-
-    privacyScopeHeader: 'Zakres Przetwarzania Danych',
-    privacyScopeText:
-      'Aplikacja przetwarza dane podane przez użytkownika (tytuły incydentów, logi błędów, fragmenty kodu) wyłącznie w celu wygenerowania interaktywnej sekcji zwłok i plików do pobrania. Dane te nigdy nie są synchronizowane z zewnętrznymi bazami danych ani odsprzedawane.',
-
-    privacyLocalStorageHeader: 'Pamięć Lokalna (localStorage) i Ciasteczka',
-    privacyLocalStorageIntro:
-      'BugMortem zapisuje konfigurację sesji w pamięci lokalnej oraz — wyłącznie po wyrażeniu dobrowolnej zgody — w plikach cookies:',
-    privacyLocalStorageKeys: [
-      { key: 'bm_cookie_consent',           desc: 'Przechowuje Twoją decyzję dotyczącą zgody na telemetrię i cookies (Google Consent Mode v2).' },
-      { key: 'bugmortem_custom_incidents',   desc: 'Lokalna baza JSON własnych sekcji zwłok incydentów wprowadzonych przez użytkownika.' },
-      { key: 'bugmortem_locale',             desc: 'Wybrany język interfejsu ("pl" lub "en").' },
-      { key: 'bm_theme',                     desc: 'Preferencja motywu wizualnego ("dark" lub "light").' },
-      { key: '_ga / _ga_* (opcjonalne)',     desc: 'Ciasteczka analityczne Google Analytics 4 zapisywane WYŁĄCZNIE po kliknięciu „Akceptuję wszystkie” w banerze cookies.' },
-    ],
-
-    privacyNoTrackingHeader: 'Przejrzystość Telemetrii i Ochrona Prywatności',
-    privacyNoTrackingText:
-      'Aplikacja korzysta z Google Tag Manager (GTM-K77D4NHB) oraz Google Analytics 4 (G-KVMM511ZWD) wyłącznie do anonimowych statystyk odwiedzin, pod ścisłym nadzorem Google Consent Mode v2. Poniższe zasady gwarantują pełną ochronę prywatności:',
-    privacyNoTrackingBullets: [
-      'Domyślny brak śledzenia (Consent Mode v2): Przed kliknięciem zgody w banerze cookies wszelkie identyfikatory analityczne i reklamowe posiadają status „denied”.',
-      'Zero profilowania kodu: Dane o awariach, ślady stosu i kod źródłowy są całkowicie wyłączone ze zdarzeń telemetrycznych.',
-      'Brak sieci reklamowych i retargetingu: Brak pikseli reklamowych Meta (Facebook), LinkedIn, TikTok czy platform DSP/SSP.',
-      'Brak inwazyjnego nagrywania sesji: Brak narzędzi typu Hotjar, FullStory, Smartlook czy Microsoft Clarity.',
-      'Brak zewnętrznych agregatorów błędów: Brak beacona Sentry lub Datadog RUM wysyłającego ślady awarii na zewnątrz.',
-      'Brak zewnętrznych czcionek CDN: Wszystkie czcionki i ikony są wbudowane lub serwowane bezpośrednio z domeny aplikacji.',
-    ],
-
-    privacyUserRightsHeader: 'Twoje Prawa — RODO i CCPA',
-    privacyUserRightsText:
-      'Masz pełną kontrolę nad wszelkimi danymi zapisanymi w Twojej przeglądarce oraz nad statusem zgód telemetrycznych:',
-    privacyUserRightsBullets: [
-      'Prawo dostępu — Otwórz DevTools → Aplikacja → Lokalne Przechowywanie / Pliki cookie, aby w każdej chwili sprawdzić zapisane wartości.',
-      'Prawo do usunięcia — Możesz natychmiast wyczyścić dane za pomocą poniższej instrukcji lub wyczyszczenia pamięci witryny w przeglądarce.',
-      'Prawo do wycofania zgody — W każdej chwili możesz zmienić lub wycofać zgodę analityczną, klikając „Ustawienia Cookies” w stopce serwisu.',
-      'Suwerenność danych — Żadne dane osobowe ani logi produkcyjne nie są i nigdy nie będą sprzedawane podmiotom trzecim.',
-    ],
-
-    privacyPurgeHeader: 'Jednorazowe Czyszczenie Danych Lokalnych',
-    privacyPurgeText:
-      'Aby trwale usunąć wszystkie dane BugMortem oraz ciasteczka analityczne z przeglądarki, otwórz DevTools (F12) → Aplikacja → Wyczyść dane witryny (Clear site data), lub usuń klucze z prefiksem „bm_" oraz „bugmortem_".',
-
-    // ── Polityka Cookies ─────────────────────────────────────────────────────
-    cookies: 'Polityka Cookies',
-    cookiesTitle: 'Polityka Cookies i Pamięci Lokalnej',
-    cookiesUsageHeader: 'Użycie Ciasteczek i Pamięci Lokalnej',
-    cookiesUsageText:
-      'BugMortem w warstwie podstawowej opiera się na pamięci lokalnej (localStorage). Pliki cookie HTTP (Google Analytics 4: _ga, _ga_*) są tworzone wyłącznie wtedy, gdy użytkownik wyrazi dobrowolną zgodę w banerze cookies. W przypadku braku zgody lub wyboru trybu „Tylko niezbędne”, Google Consent Mode v2 blokuje zapis ciasteczek analitycznych, a serwis funkcjonuje w trybie całkowicie suwerennym.',
-  },
-
   presets: {
-    'react-hydration': {
-      id: 'react-hydration',
-      badge: 'Frontend / SSR',
-      severity: 'P0',
-      title: 'Niezgodność Hydratacji Reacta i Zapaść Drzewa DOM',
-      desc: 'Niestabilne new Date() lub dostęp do obiektu window podczas SSR wywołuje błąd React Error #418, niszcząc interaktywny stan klienta.',
-      crashedCode: `// ❌ PRZEKLĘTY KOD: Rozbieżność HTML między serwerem a klientem
-export default function Header() {
-  // Bezpośrednie renderowanie daty powoduje natychmiastowy crash hydratacji
-  return (
-    <div>Aktualny czas: {new Date().toLocaleTimeString()}</div>
-  );
+    sectionTitle: 'ARCHIWUM SEKCJI ZWŁOK AWARII',
+    items: {
+      'react-hydration': {
+        id: 'react-hydration',
+        title: 'Niezgodność Hydratacji Reacta i Zapaść Drzewa DOM',
+        badge: 'FRONTEND / SSR',
+        severity: 'P0',
+        description: 'Niestabilne new Date() lub dostęp do obiektu window podczas SSR wywołuje błąd React Error #418, niszcząc interaktywny stan klienta.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Niestabilny znacznik czasu podczas SSR
+export default function ClockBanner() {
+  // BŁĄD: new Date() generuje inny czas na serwerze i u klienta
+  const time = new Date().toLocaleTimeString();
+  return <div className="banner">Ostatnia synchronizacja: {time}</div>;
 }`,
-      resurrectedCode: `// ✅ WSKRZESZONY WZORZEC SRE: Bezpieczny Montaż Stanu w Hydratacji
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Hydratacja dwufazowa z flagą montowania
+'use client';
 import { useState, useEffect } from 'react';
 
-export default function Header() {
+export default function ClockBanner() {
   const [mounted, setMounted] = useState(false);
-  const [time, setTime] = useState('');
+  const [time, setTime] = useState<string>('');
 
   useEffect(() => {
     setMounted(true);
     setTime(new Date().toLocaleTimeString());
+    const interval = setInterval(() => {
+      setTime(new Date().toLocaleTimeString());
+    }, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  if (!mounted) return <div className="animate-pulse">Ładowanie zegara...</div>;
-  return <div>Aktualny czas: {time}</div>;
-}`,
-      stackTrace: `Error: Hydration failed because the initial UI does not match what was rendered on the server.
-    at throwOnHydrationMismatch (react-dom-client.development.js:12508)
-    at tryToClaimNextHydratableInstance (react-dom-client.development.js:12534)
-    at completeWork (react-dom-client.development.js:22170)`,
-      timeline: [
-        { time: '12:00:01 UTC', desc: 'Serwer brzegowy generuje wstępny kod HTML w trybie SSR', isFatal: false },
-        { time: '12:00:02 UTC', desc: 'Przeglądarka uruchamia paczkę klienta z rozbieżnością milisekundową', isFatal: false },
-        { time: '12:00:03 UTC', desc: 'React rzuca błąd #418; odmontowanie interaktywnego drzewa komponentów', isFatal: true }
-      ],
-      postMortemReport: {
-        summary: 'Krytyczna niezgodność hydratacji Reacta wywołana niedeterministycznym wykonaniem po stronie serwera.',
-        impact: 'Użytkownicy doświadczyli mignięcia niestylizowanej treści oraz zablokowania przycisków formularzy na stronach docelowych.',
-        actionItems: [
-          'Wymuszenie strażników useEffect dla wszystkich atrybutów specyficznych dla przeglądarki.',
-          'Dodanie reguły ESLint blokującej new Date() wewnątrz JSX komponentów serwerowych.',
-          'Wdrożenie testów regresji wizualnej dla 50 najważniejszych stron serwisu.'
-        ]
-      }
-    },
-    'connection-pool': {
-      id: 'connection-pool',
-      badge: 'Baza Danych / Aurora',
-      severity: 'P0',
-      title: 'Spirala Śmierci Puli Połączeń',
-      desc: 'Nieindeksowane zapytania analityczne wyczerpały limit 200 połączeń bazy RDS Aurora, paraliżując wątki transakcyjne w koszyku zakupowym.',
-      crashedCode: `// ❌ PRZEKLĘTY KOD: Wyciek połączeń z puli bazy danych
-export async function getOrderReport() {
-  const client = await pool.connect();
-  // Brak bloku try/finally powoduje trwały wyciek slotu przy jakimkolwiek błędzie
-  const res = await client.query('SELECT * FROM orders WHERE heavy_calc = true');
-  return res.rows;
-}`,
-      resurrectedCode: `// ✅ WSKRZESZONY WZORZEC SRE: Odporne Pobieranie Połączenia ze Zwolnieniem
-export async function getOrderReport() {
-  const client = await pool.connect();
-  try {
-    const res = await client.query('SELECT * FROM orders WHERE heavy_calc = true');
-    return res.rows;
-  } finally {
-    client.release(); // Połączenie ZAWSZE wraca do puli
+  if (!mounted) {
+    return <div className="banner skeleton">Synchronizacja...</div>;
   }
-}`,
-      stackTrace: `error: remaining connection slots are reserved for non-replication superuser connections
-    at Parser.parseErrorMessage (pg-protocol/dist/parser.js:287:98)
-    at Connection.handlePacket (pg/lib/connection.js:114:12)`,
-      timeline: [
-        { time: '14:02 UTC', desc: 'Ciężki cron analityczny rozpoczyna sekwencyjny skan tabeli zamówień', isFatal: false },
-        { time: '14:05 UTC', desc: 'Aktywna pula połączeń osiąga maksymalny limit 200/200 slotów', isFatal: false },
-        { time: '14:08 UTC', desc: 'Wątki serwisu zamówień blokują się; sondy health check zwracają 503', isFatal: true }
-      ],
-      postMortemReport: {
-        summary: 'Zagłodzenie puli połączeń bazy danych zablokowało ruch transakcyjny w szczycie zakupowym.',
-        impact: '14 200 przerwanych zamówień. Szacowane straty przychodowe na poziomie $320 000 w rejonach EU i US East.',
-        actionItems: [
-          'Przekierowanie wszystkich zapytań analitycznych do puli replik tylko do odczytu (read-replica).',
-          'Ustawienie twardego limitu statement_timeout = 3000ms na poziomie roli aplikacji.',
-          'Konfiguracja alertu przy nasyceniu puli połączeń powyżej 75% przez 60 sekund.'
-        ]
-      }
-    },
-    'oom-reaper': {
-      id: 'oom-reaper',
-      badge: 'Runtime / Pamięć',
-      severity: 'P0',
-      title: 'Przebudzenie Żniwiarza OOM',
-      desc: 'Masowy eksport 2,5 mln zamówień do pliku CSV załadował cały zbiór do bufora RAM Node.js, aktywując mechanizm Linux OOM killer.',
-      crashedCode: `// ❌ PRZEKLĘTY KOD: Ładowanie nieograniczonych zbiorów danych wprost do RAM
-app.get('/export-orders', async (req, res) => {
-  const allOrders = await db.query('SELECT * FROM orders');
-  const csvBuffer = Buffer.from(generateCsv(allOrders));
-  res.send(csvBuffer);
-});`,
-      resurrectedCode: `// ✅ WSKRZESZONY WZORZEC SRE: Potok Strumieniowania z Backpressure
-import { pipeline } from 'stream/promises';
-import QueryStream from 'pg-query-stream';
 
-app.get('/export-orders', async (req, res) => {
-  const stream = client.query(new QueryStream('SELECT * FROM orders'));
-  res.setHeader('Content-Type', 'text/csv');
-  await pipeline(stream, csvTransformStream(), res);
+  return <div className="banner">Ostatnia synchronizacja: {time}</div>;
+}`,
+        stackTrace: `Error: Hydration failed because the initial UI does not match what was rendered on the server.
+    at throwOnHydrationMismatch (react-dom-client.development.js:1003)
+    at tryToClaimNextHydratableInstance (react-dom-client.development.js:1120)
+    at updateHostComponent (react-dom-client.development.js:9840)
+    at beginWork (react-dom-client.development.js:10820)`,
+        timeline: [
+          { time: '14:02:11 UTC', label: 'SSR Render', description: 'Serwer wygenerował HTML z czasem 14:02:11' },
+          { time: '14:02:13 UTC', label: 'Client Hydration', description: 'Klient próbuje hydratacji z czasem 14:02:13 — rozbieżność sumy kontrolnej' },
+          { time: '14:02:14 UTC', label: 'DOM Crash', description: 'React porzuca drzewo DOM i wymusza pełny kosztowny re-render klienta', isFatal: true },
+        ],
+        replayerSteps: [
+          {
+            step: 1,
+            timeOffset: '+0.0s [14:02:11 UTC]',
+            title: 'Renderowanie SSR w środowisku Node.js',
+            description: 'Serwer generuje statyczny HTML z dynamicznym stemplem new Date().',
+            telemetry: { latencyMs: 24, errorRate: '0.00%', rps: '1.2k' },
+            severity: 'P1',
+          },
+          {
+            step: 2,
+            timeOffset: '+1.8s [14:02:13 UTC]',
+            title: 'Parsowanie w przeglądarce i wywołanie hydrateRoot',
+            description: 'Przeglądarka próbuje dopasować drzewo DOM; wykryto niezgodność tekstu węzła.',
+            telemetry: { latencyMs: 140, errorRate: '12.4%', rps: '1.2k' },
+            severity: 'P1',
+          },
+          {
+            step: 3,
+            timeOffset: '+2.4s [14:02:14 UTC]',
+            title: 'Zapaść Hydratacji (React Error #418)',
+            description: 'Drzewo DOM zostaje zniszczone i odtworzone od zera; utrata stanu formularzy.',
+            telemetry: { latencyMs: 680, errorRate: '100%', rps: '950' },
+            severity: 'P0',
+          },
+        ],
+        fiveWhys: [
+          'Aplikacja wyrzuca błąd "Minified React error #418" i powoduje zapaść renderowania u klienta.',
+          'Komponent renderuje bieżący czas za pomocą new Date().toLocaleTimeString() bezpośrednio w ciele JSX.',
+          'Suma kontrolna HTML wygenerowana na serwerze różni się od drzewa zrenderowanego w przeglądarce klienta.',
+          'Brak izolacji renderowania po stronie klienta (brak hooka useEffect lub flagi mounted).',
+          'Brak reguły ESLint wymuszającej kontrolę hydratacji SSR oraz brak testów regresji renderowania w pipeline CI/CD.',
+        ],
+        blastRadius: {
+          nodes: [
+            { id: 'n1', name: 'Frontend SSR (Next.js)', role: 'Warstwa Prezentacji', status: 'epicenter', statusCode: 'FAIL' },
+            { id: 'n2', name: 'Przeglądarka Klienta', role: 'Renderowanie DOM', status: 'degraded', statusCode: 'WARN' },
+            { id: 'n3', name: 'Bramka API Edge', role: 'Ruch Sieciowy', status: 'healthy', statusCode: '200 OK' },
+            { id: 'n4', name: 'Serwis Koszyka', role: 'Backend API', status: 'healthy', statusCode: '200 OK' },
+          ],
+          summary: { epicenterCount: 1, degradedCount: 1, healthyCount: 2 },
+        },
+        chaosMetrics: [
+          { id: 'm1', name: 'Opóźnienie Hydratacji P99', severity: 'P0', description: 'Wzrost opóźnienia do 680ms z powodu odrzucenia cache DOM', status: 'injecting' },
+          { id: 'm2', name: 'Wskaźnik Błędów Klienta', severity: 'P0', description: 'Skok do 12.4% zgłoszeń błędu React Error #418 w Sentry', status: 'injecting' },
+        ],
+        postMortem: {
+          summary: 'Niestabilne stemplowanie czasu w komponencie SSR wywołało kaskadę błędów hydratacji React Error #418.',
+          impact: '12% użytkowników doświadczyło zamrożenia interfejsu i utraty wprowadzonych danych w formularzach.',
+          actionItems: [
+            'Wdrożyć dwufazową hydratację z flagą mounted we wszystkich dynamicznych komponentach.',
+            'Dodać regułę ESLint react-hooks/exhaustive-deps oraz zakaz new Date() w ciele komponentów SSR.',
+            'Wdrożyć automatyczne testy E2E Playwright sprawdzające czystość konsoli przeglądarki.',
+          ],
+        },
+      },
+      'connection-pool': {
+        id: 'connection-pool',
+        title: 'Spirala Śmierci Puli Połączeń',
+        badge: 'BAZA DANYCH / AURORA',
+        severity: 'P0',
+        description: 'Nieindeksowane zapytania analityczne wyczerpały limit 200 połączeń bazy RDS Aurora, paraliżując wątki transakcyjne w koszyku zakupowym.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Nieszczelna pula bez zwrotu połączenia
+app.get('/api/analytics', async (req, res) => {
+  const client = await pool.connect();
+  // BŁĄD: Brak bloku try/finally — błąd powoduje trwały wyciek połączenia
+  const data = await client.query('SELECT * FROM orders WHERE status = $1', ['completed']);
+  res.json(data.rows);
+  client.release(); // Nigdy nieosiągalne przy timeoutcie bazy
 });`,
-      stackTrace: `<--- Last few GCs --->
-[1:0x55d28a0] 45120 ms: Mark-sweep (reduce) 2045.2 (2055.0) -> 2044.1 (2056.0) MB
-FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory`,
-      timeline: [
-        { time: '09:15 UTC', desc: 'Klient korporacyjny zleca masowy eksport historii zamówień', isFatal: false },
-        { time: '09:18 UTC', desc: 'Pamięć kontenera rośnie z 420 MB do 1,95 GB w 180 sekund', isFatal: false },
-        { time: '09:20 UTC', desc: 'Kernel uruchamia oom-killer: "Killed process 1 (node)". Pod wpada w CrashLoop', isFatal: true }
-      ],
-      postMortemReport: {
-        summary: 'Niekontrolowana alokacja pamięci wywołała kaskadowe eksmisje podów w klastrze Kubernetes.',
-        impact: 'Kluczowe API rozliczeń restartowało się w pętli przez 65 minut na 8 węzłach klastra.',
-        actionItems: [
-          'Przepisanie wszystkich ścieżek eksportu na strumienie kursorowe z obsługą przeciwciśnienia.',
-          'Ustawienie limitu pamięci równego żądaniu i wdrożenie metryk cgroup v2.',
-          'Przeniesienie ciężkich zadań generowania raportów do asynchronicznych workerów AWS SQS.'
-        ]
-      }
-    },
-    'retry-storm': {
-      id: 'retry-storm',
-      badge: 'Współbieżność / Sieć',
-      severity: 'P1',
-      title: 'Kaskadowa Burza Ponowień',
-      desc: 'Natychmiastowe ponowienia bez losowego rozproszenia (jitter) przy 500ms opóźnieniu spotęgowały ruch o 500%, obalając bazy danych.',
-      crashedCode: `// ❌ PRZEKLĘTY KOD: Synchroniczna burza ponowień bez opóźnienia
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Zabezpieczony uchwyt z PgBouncer i timeoutem
+app.get('/api/analytics', async (req, res) => {
+  let client;
+  try {
+    client = await pool.connect();
+    // Bezpieczny timeout zapytania zapobiegający blokowaniu puli
+    await client.query('SET statement_timeout = 2000');
+    const data = await client.query(
+      'SELECT id, total FROM orders WHERE status = $1 LIMIT 100',
+      ['completed']
+    );
+    res.json(data.rows);
+  } catch (err) {
+    res.status(503).json({ error: 'Usługa tymczasowo niedostępna' });
+  } finally {
+    if (client) client.release(); // Gwarantowany zwrot do puli
+  }
+});`,
+        stackTrace: `error: remaining connection slots are reserved for non-replication superuser connections
+    at Parser.parseErrorMessage (/app/node_modules/pg-protocol/dist/parser.js:287:98)
+    at Pool.connect (/app/node_modules/pg-pool/index.js:56:21)
+    at async /app/dist/server.js:142:18`,
+        timeline: [
+          { time: '09:15:00 UTC', label: 'Cron Trigger', description: 'Uruchomienie porannego raportu analitycznego bez limitu wierszy' },
+          { time: '09:16:30 UTC', label: 'Pool Saturation', description: 'Wszystkie 200 slotów bazy Aurora zajęte; kolejka oczekiwania > 500ms' },
+          { time: '09:17:02 UTC', label: 'Cascading 503', description: 'Serwis transakcyjny odrzuca zamówienia klientów z kodem 503 Service Unavailable', isFatal: true },
+        ],
+        replayerSteps: [
+          {
+            step: 1,
+            timeOffset: '+0.0s [09:15:00 UTC]',
+            title: 'Uruchomienie nieindeksowanego raportu',
+            description: 'Cron analityczny otwiera 30 równoległych zapytań skanujących pełną tabelę orders.',
+            telemetry: { latencyMs: 45, errorRate: '0.00%', rps: '2.4k' },
+            severity: 'P1',
+          },
+          {
+            step: 2,
+            timeOffset: '+90s [09:16:30 UTC]',
+            title: 'Wyczerpanie slotów puli (Pool Exhaustion)',
+            description: 'Liczba dostępnych połączeń spada do 0; żądania transakcyjne zaczynają kolejkowanie.',
+            telemetry: { latencyMs: 1850, errorRate: '14.2%', rps: '1.9k' },
+            severity: 'P1',
+          },
+          {
+            step: 3,
+            timeOffset: '+122s [09:17:02 UTC]',
+            title: 'Całkowity paraliż bazy danych (P0 Outage)',
+            description: 'PgPool rzuca "connection slots reserved"; transakcje koszykowe odrzucane z kodem 503.',
+            telemetry: { latencyMs: 8400, errorRate: '98.6%', rps: '310' },
+            severity: 'P0',
+          },
+        ],
+        fiveWhys: [
+          'Wszystkie żądania do bazy danych kończą się błędem "Connection pool exhausted" i kodem 503 w koszyku.',
+          'Uruchomiono cykliczne zadanie analityczne generujące raport na tabeli transakcyjnej orders.',
+          'Zapytania analityczne nie zwalniały połączeń w bloku try/finally, powodując wyciek uchwytów puli.',
+          'Ruch analityczny współdzielił tę samą instancję bazy i pulę połączeń co krytyczny ruch koszykowy.',
+          'Brak podziału na repliki do odczytu (read-replicas) oraz brak wymuszonego globalnego limitu statement_timeout.',
+        ],
+        blastRadius: {
+          nodes: [
+            { id: 'n1', name: 'Klaster Bazy Aurora RDS', role: 'Magazyn Danych', status: 'epicenter', statusCode: 'FAIL' },
+            { id: 'n2', name: 'Serwis Koszyka', role: 'Wątki Transakcyjne', status: 'degraded', statusCode: '503' },
+            { id: 'n3', name: 'Bramka Płatności', role: 'Obsługa Kart', status: 'degraded', statusCode: 'WARN' },
+            { id: 'n4', name: 'Statyczny Frontend CDN', role: 'Dystrybucja Assetów', status: 'healthy', statusCode: '200 OK' },
+          ],
+          summary: { epicenterCount: 1, degradedCount: 2, healthyCount: 1 },
+        },
+        chaosMetrics: [
+          { id: 'm1', name: 'Nasycenie Puli Połączeń', severity: 'P0', description: '100% wykorzystania slotów (200/200 połączeń zajętych)', status: 'injecting' },
+          { id: 'm2', name: 'Wzrost Opóźnień Bazy P99', severity: 'P0', description: 'Skok opóźnienia do 8400ms w zapytaniach transakcyjnych', status: 'injecting' },
+        ],
+        postMortem: {
+          summary: 'Wyciek połączeń w endpointcie analitycznym doprowadził do wysycenia puli połączeń bazy Aurora i paraliżu transakcji.',
+          impact: 'Całkowity przestój kasy fiskalnej i koszyka przez 18 minut; utrata szacunkowo 42 000 PLN przychodu.',
+          actionItems: [
+            'Wdrożyć PgBouncer przed klastrem RDS w trybie transaction pooling.',
+            'Odseparować zapytania analityczne na dedykowaną replikę tylko do odczytu (Read-Only Replica).',
+            'Wymusić statement_timeout = 2000ms na poziomie roli aplikacji w PostgreSQL.',
+          ],
+        },
+      },
+      'oom-reaper': {
+        id: 'oom-reaper',
+        title: 'Przebudzenie Żniwiarza OOM',
+        badge: 'RUNTIME / PAMIĘĆ',
+        severity: 'P0',
+        description: 'Masowy eksport 2,5 mln zamówień do pliku CSV załadował cały zbiór do bufora RAM Node.js, aktywując mechanizm Linux OOM killer.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Ładowanie 2.5GB danych do pamięci podręcznej
+app.get('/export/orders.csv', async (req, res) => {
+  // BŁĄD: findAll ładuje miliony rekordów do pamięci sterty V8
+  const orders = await Order.findAll();
+  let csv = 'id,amount,date\\n';
+  for (const o of orders) {
+    csv += \`\${o.id},\${o.amount},\${o.date}\\n\`;
+  }
+  res.send(csv);
+});`,
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Strumieniowanie potokowe z przeciwciśnieniem
+import { pipeline } from 'stream/promises';
+import { Transform } from 'stream';
+
+app.get('/export/orders.csv', async (req, res) => {
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename="orders.csv"');
+
+  const dbStream = Order.getCursorStream(); // Kursor bazodanowy
+  const csvTransformer = new Transform({
+    objectMode: true,
+    transform(chunk, encoding, callback) {
+      callback(null, \`\${chunk.id},\${chunk.amount},\${chunk.date}\\n\`);
+    }
+  });
+
+  // Bezpieczny potok strumieniowy — zużycie RAM poniżej 30MB
+  await pipeline(dbStream, csvTransformer, res);
+});`,
+        stackTrace: `FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+ 1: 0xb09c30 node::Abort() [node]
+ 2: 0xa1c2c3 node::FatalError(char const*, char const*) [node]
+ 3: 0xcf824e v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, bool) [node]
+Killed (core dumped)`,
+        timeline: [
+          { time: '11:30:15 UTC', label: 'Export Requested', description: 'Użytkownik klika "Eksportuj całą bazę do CSV"' },
+          { time: '11:30:42 UTC', label: 'Heap Limit Reached', description: 'Zużycie sterty V8 przekracza 1.4 GB; garbage collector zamraża wątek' },
+          { time: '11:30:45 UTC', label: 'SIGKILL Dispatched', description: 'Linux OOM Killer natychmiast ubija proces; kontener restartuje się', isFatal: true },
+        ],
+        replayerSteps: [
+          {
+            step: 1,
+            timeOffset: '+0.0s [11:30:15 UTC]',
+            title: 'Żądanie masowego eksportu CSV',
+            description: 'Inicjalizacja zapytania SELECT * bez klauzuli LIMIT ani stronicowania.',
+            telemetry: { latencyMs: 50, errorRate: '0.00%', rps: '850' },
+            severity: 'P1',
+          },
+          {
+            step: 2,
+            timeOffset: '+27s [11:30:42 UTC]',
+            title: 'Wyczerpanie sterty V8 (Heap Exhaustion)',
+            description: 'Garbage collector V8 pochłania 100% czasu procesora (GC thrashing); RAM > 1.4 GB.',
+            telemetry: { latencyMs: 3200, errorRate: '5.1%', rps: '410' },
+            severity: 'P1',
+          },
+          {
+            step: 3,
+            timeOffset: '+30s [11:30:45 UTC]',
+            title: 'Interwencja Linux OOM Killer (Exit Code 137)',
+            description: 'System operacyjny przesyła sygnał SIGKILL; zgon procesu roboczego kontenera.',
+            telemetry: { latencyMs: 0, errorRate: '100%', rps: '0' },
+            severity: 'P0',
+          },
+        ],
+        fiveWhys: [
+          'Kontener Node.js zostaje nagle ubity z kodem 137 (SIGKILL) i wpada w pętlę CrashLoopBackOff.',
+          'Użytkownik zażądał eksportu 2,5 miliona wierszy historii transakcji do pliku CSV.',
+          'Cały zestaw danych został zbuforowany synchronicznie w pamięci RAM w jednym obiekcie Buffer.',
+          'Brak mechanizmu strumieniowania danych (Node.js Streams) i brak bufora z przeciwciśnieniem (backpressure).',
+          'Wykonywanie ciężkich zadań analitycznych w synchronicznym procesie webowym zamiast w asynchronicznym workerze kolejkowym.',
+        ],
+        blastRadius: {
+          nodes: [
+            { id: 'n1', name: 'Pod Workerów Raportów', role: 'Przetwarzanie Danych', status: 'epicenter', statusCode: 'OOM' },
+            { id: 'n2', name: 'Klaster Kubernetes', role: 'Orkiestracja', status: 'degraded', statusCode: 'RESTART' },
+            { id: 'n3', name: 'Kolejka Zadań Redis', role: 'Broker Wiadomości', status: 'healthy', statusCode: '200 OK' },
+            { id: 'n4', name: 'Magazyn Obiektowy S3', role: 'Archiwizacja', status: 'healthy', statusCode: '200 OK' },
+          ],
+          summary: { epicenterCount: 1, degradedCount: 1, healthyCount: 2 },
+        },
+        chaosMetrics: [
+          { id: 'm1', name: 'Zużycie Pamięci Sterty V8', severity: 'P0', description: 'Przekroczenie limitu 1400MB i alokacja 100% przydziału RAM', status: 'injecting' },
+          { id: 'm2', name: 'Wskaźnik Restartów Kontenerów', severity: 'P0', description: 'Trzykrotny restart poda z kodem wyjścia 137 (SIGKILL)', status: 'injecting' },
+        ],
+        postMortem: {
+          summary: 'Nieograniczona alokacja bufora CSV w pamięci RAM wywołała interwencję jądra Linux OOM Killer i zgon poda.',
+          impact: 'Restart 4 kluczowych procesów roboczych w klastrze; 5-minutowa niedostępność panelu administracyjnego.',
+          actionItems: [
+            'Przepisać wszystkie operacje eksportu danych na strumienie Node.js Stream Pipeline.',
+            'Wdrożyć asynchroniczny eksport plików z przesyłaniem linku S3 przez kolejkę zadań BullMQ.',
+            'Zdefiniować twarde limity zasobów memory requests/limits w manifestach Kubernetes.',
+          ],
+        },
+      },
+      'retry-storm': {
+        id: 'retry-storm',
+        title: 'Kaskadowa Burza Ponowień',
+        badge: 'WSPÓŁBIEŻNOŚĆ / SIEĆ',
+        severity: 'P1',
+        description: 'Natychmiastowe ponowienia bez losowego rozproszenia (jitter) przy 500ms opóźnieniu spotęgowały ruch o 500%, obalając bazy danych.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Synchroniczna burza ponowień bez opóźnienia
 async function fetchWithRetry(url, retries = 5) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -467,7 +332,7 @@ async function fetchWithRetry(url, retries = 5) {
     }
   }
 }`,
-      resurrectedCode: `// ✅ WSKRZESZONY WZORZEC SRE: Wykładnicze Wycofywanie z Pełnym Jitterem
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Wykładnicze Wycofywanie z Pełnym Jitterem
 async function fetchWithRetry(url, retries = 3, baseDelay = 100) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -480,143 +345,391 @@ async function fetchWithRetry(url, retries = 3, baseDelay = 100) {
     }
   }
 }`,
-      stackTrace: `FetchError: request to http://profile-service/user failed, reason: connect ECONNREFUSED 10.0.12.44:80
+        stackTrace: `FetchError: request to http://profile-service/user failed, reason: connect ECONNREFUSED 10.0.12.44:80
     at ClientRequest.<anonymous> (node_modules/node-fetch/lib/index.js:1491:11)`,
-      timeline: [
-        { time: '18:30 UTC', desc: 'Chwilowa pauza GC na bazie wywołuje 450 ms opóźnienia zapytań', isFatal: false },
-        { time: '18:31 UTC', desc: 'Serwisy klienckie wysyłają 5 natychmiastowych ponowień w oknie 50 ms', isFatal: false },
-        { time: '18:35 UTC', desc: 'Pamięć kolejki bramki wyczerpuje się; masowo zwracane błędy 504 Gateway Timeout', isFatal: true }
-      ],
-      postMortemReport: {
-        summary: 'Liniowa amplifikacja ponowień wywołała samobójczy rozproszony atak odmowy usługi (DoS).',
-        impact: 'Serwisy uwierzytelniania i profili odrzuciły 45 000 żądań w oknie 18 minut.',
-        actionItems: [
-          'Wymuszenie algorytmu Full Jitter z wykładniczym wycofywaniem we wszystkich klientach RPC.',
-          'Wdrożenie circuit breakerów odcinających ruch przed nasyceniem bazy.',
-          'Konfiguracja adaptacyjnego ograniczania przepustowości na bramce Envoy.'
-        ]
-      }
-    },
-    'cors-nightmare': {
-      id: 'cors-nightmare',
-      badge: 'Sieć / Bezpieczeństwo',
-      severity: 'P1',
-      title: 'Koszmar Preflight CORS',
-      desc: 'Brakujące nagłówki CORS na bramce API spowodowały, że wszystkie żądania OPTIONS z innej domeny zakończyły się błędem 403, blokując całe SPA.',
-      crashedCode: `// ❌ PRZEKLĘTY KOD: Brak nagłówków CORS w Express API
-const express = require('express');
-const app = express();
-
-// Brak middleware CORS — przeglądarka blokuje preflight OPTIONS z 403
-app.get('/api/data', (req, res) => {
-  res.json({ data: 'wrażliwe dane' });
+        timeline: [
+          { time: '18:32:00 UTC', label: 'Spike Inicjalny', description: 'Krótkotrwały wzrost opóźnienia bazy danych do 450ms' },
+          { time: '18:33:15 UTC', label: 'Burst Ponowień', description: '5-krotne ponowienia klientów powodują 500% wzrost zapytań RPS' },
+          { time: '18:35:00 UTC', label: 'Zapaść Bramki', description: 'Bramka API Edge odrzuca ruch kodem 504 Gateway Timeout', isFatal: true },
+        ],
+        replayerSteps: [
+          {
+            step: 1,
+            timeOffset: '+0.0s [18:32:00 UTC]',
+            title: 'Chwilowa czkawka bazy danych',
+            description: 'Pojedyncza blokada tabeli podbija opóźnienie mikroserwisu do 450ms.',
+            telemetry: { latencyMs: 450, errorRate: '1.20%', rps: '3.1k' },
+            severity: 'P1',
+          },
+          {
+            step: 2,
+            timeOffset: '+75s [18:33:15 UTC]',
+            title: 'Kaskadowe zwielokrotnienie zapytań (5x Retry)',
+            description: 'Brak backoffu powoduje, że 10 000 klientów ponawia żądania jednocześnie.',
+            telemetry: { latencyMs: 2400, errorRate: '41.5%', rps: '15.5k' },
+            severity: 'P1',
+          },
+          {
+            step: 3,
+            timeOffset: '+180s [18:35:00 UTC]',
+            title: 'Zapaść Bramki API Edge (504 Storm)',
+            description: 'Pamięć kolejki bramki wyczerpuje się; masowo zwracane błędy 504 Gateway Timeout.',
+            telemetry: { latencyMs: 9200, errorRate: '94.8%', rps: '1.1k' },
+            severity: 'P0',
+          },
+        ],
+        fiveWhys: [
+          'Bramka API Edge odrzuca żądania z kodem 504 Gateway Timeout i 100% użyciem procesora.',
+          'Krótkotrwały wzrost opóźnienia bazy danych (450ms) wywołał pierwsze przekroczenia limitu czasu.',
+          'Klienci HTTP natychmiast powtarzali nieudane zapytania w pętli bez żadnego opóźnienia ani losowości.',
+          'Brak algorytmu wykładniczego wycofywania z losowym rozproszeniem (Exponential Backoff with Full Jitter).',
+          'Brak adaptacyjnego ogranicznika przepustowości (Rate Limiting) oraz brak globalnego wzorca Circuit Breaker na bramce ingress.',
+        ],
+        blastRadius: {
+          nodes: [
+            { id: 'n1', name: 'Bramka API Edge', role: 'Ingress Proxy', status: 'epicenter', statusCode: 'FAIL' },
+            { id: 'n2', name: 'Serwis Uwierzytelniania', role: 'Zarządzanie Sesjami', status: 'degraded', statusCode: 'WARN' },
+            { id: 'n3', name: 'Transakcyjna Baza Danych', role: 'Baza Główna', status: 'degraded', statusCode: 'WARN' },
+            { id: 'n4', name: 'Frontend Client SPA', role: 'Interfejs Klienta', status: 'healthy', statusCode: '200 OK' },
+          ],
+          summary: { epicenterCount: 1, degradedCount: 2, healthyCount: 1 },
+        },
+        chaosMetrics: [
+          { id: 'm1', name: 'Sztuczne Opóźnienie Brzegowe', severity: 'P1', description: 'Wstrzyknięcie +2500ms opóźnienia na bramce API Gateway', status: 'injecting' },
+          { id: 'm2', name: 'Wskaźnik Kaskadowych Błędów 504', severity: 'P1', description: 'Skok wskaźnika odrzuceń do 94.8% żądań ingress', status: 'injecting' },
+        ],
+        postMortem: {
+          summary: 'Liniowa amplifikacja ponowień wywołała samobójczy rozproszony atak odmowy usługi (DoS).',
+          impact: 'Serwisy uwierzytelniania i profili odrzuciły 45 000 żądań w oknie 18 minut.',
+          actionItems: [
+            'Wymuszenie algorytmu Full Jitter z wykładniczym wycofywaniem we wszystkich klientach RPC.',
+            'Wdrożenie circuit breakerów odcinających ruch przed nasyceniem bazy.',
+            'Konfiguracja adaptacyjnego ograniczania przepustowości na bramce Envoy.',
+          ],
+        },
+      },
+      'cors-nightmare': {
+        id: 'cors-nightmare',
+        title: 'Koszmar Preflight CORS',
+        badge: 'SIEĆ / BEZPIECZEŃSTWO',
+        severity: 'P1',
+        description: 'Brakujące nagłówki CORS na bramce API spowodowały, że wszystkie żądania OPTIONS z innej domeny zakończyły się błędem 403, blokując całe SPA.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Sztywne i niekompletne nagłówki CORS
+app.use((req, res, next) => {
+  // BŁĄD: Brak obsługi metody OPTIONS i brak nagłówka credentials
+  res.header('Access-Control-Allow-Origin', 'https://bugmortem.com');
+  next();
 });`,
-      resurrectedCode: `// ✅ WSKRZESZONY WZORZEC SRE: Jawne Utwardzenie CORS
-const express = require('express');
-const cors = require('cors');
-const app = express();
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Pełny pakiet CORS z bezpieczną białą listą
+import cors from 'cors';
 
-const DOZWOLONE_DOMENY = [
-  'https://app.example.com',
-  'https://staging.example.com',
-];
+const allowedOrigins = new Set([
+  'https://bugmortem.vercel.app',
+  'https://bugmortem.com'
+]);
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || DOZWOLONE_DOMENY.includes(origin)) {
+    if (!origin || allowedOrigins.has(origin)) {
       callback(null, true);
     } else {
-      callback(new Error(\`CORS: Domena \${origin} jest niedozwolona\`));
+      callback(new Error('Niedozwolone przez politykę CORS SRE'));
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   credentials: true,
-  maxAge: 86400, // Buforuj preflight przez 24h
-}));
-
-app.options('*', cors()); // Jawna obsługa OPTIONS preflight`,
-      stackTrace: `Access to fetch at 'https://api.example.com/data' from origin 'https://app.example.com'
-has been blocked by CORS policy: Response to preflight request doesn't pass access control check:
-No 'Access-Control-Allow-Origin' header is present on the requested resource.
-    at fetch (<anonymous>)
-    at loadUserData (app.bundle.js:1:4821)`,
-      timeline: [
-        { time: '10:00 UTC', desc: 'Frontend SPA wdrożono na nową subdomenę app.example.com', isFatal: false },
-        { time: '10:01 UTC', desc: 'Wszystkie żądania API kończą się błędem — preflight OPTIONS zwraca 403 Forbidden', isFatal: false },
-        { time: '10:02 UTC', desc: 'Cała aplikacja frontendowa przestaje działać; polityka CORS blokuje każde żądanie cross-origin', isFatal: true }
-      ],
-      postMortemReport: {
-        summary: 'Brak middleware CORS na bramce Express API spowodował 100% niepowodzeń żądań preflight z błędem 403.',
-        impact: 'Frontend SPA całkowicie niedostępny dla wszystkich użytkowników po migracji do subdomeny. Pełna awaria serwisu przez 22 minuty.',
-        actionItems: [
-          'Wdrożenie jawnej listy dozwolonych domen CORS przed każdym handlerem tras.',
-          'Dodanie automatycznego testu dymnego OPTIONS preflight do pipeline CI/CD.',
-          'Audyt konfiguracji bramek API pod kątem brakujących nagłówków CORS przed zmianami subdomen.'
-        ]
-      }
-    },
-    'serverless-timeout': {
-      id: 'serverless-timeout',
-      badge: 'Chmura / Serverless',
-      severity: 'P0',
-      title: 'Zapaść Zimnego Startu Serverless i Timeout Bramki 504',
-      desc: 'Inicjalizacja ciężkich połączeń bazy wewnątrz handlera funkcji wywołała kaskadę zimnych startów, przekraczając 29-sekundowy limit bramki API.',
-      crashedCode: `// ❌ PRZEKLĘTY KOD: Inicjalizacja zasobów wewnątrz handlera bez buforowania
-export async function handler(event: any) {
-  // Ciężkie nawiązywanie połączenia przy każdym wywołaniu paraliżuje zimny start
-  const db = await createHeavyDatabaseConnection({
-    host: process.env.DB_HOST,
-    ssl: true,
-    timeout: 30000,
+  maxAge: 86400 // Cache preflight na 24h
+}));`,
+        stackTrace: `Access to fetch at 'https://api.bugmortem.io/v1/auth' from origin 'https://app.bugmortem.io' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.`,
+        timeline: [
+          { time: '08:00:00 UTC', label: 'Domain Cutover', description: 'Przełączenie aplikacji frontendowej na nową subdomenę app.bugmortem.io' },
+          { time: '08:01:20 UTC', label: 'OPTIONS 403', description: 'Przeglądarki wysyłają żądania preflight OPTIONS, które odbijają się od bramki' },
+          { time: '08:02:00 UTC', label: 'Full App Lockout', description: '100% użytkowników nie może zalogować się do aplikacji SPA', isFatal: true },
+        ],
+        replayerSteps: [
+          {
+            step: 1,
+            timeOffset: '+0.0s [08:00:00 UTC]',
+            title: 'Wdrożenie frontendu pod nową subdomeną',
+            description: 'Ruch przekierowany na domenę app.bugmortem.io; bramka API nie ma zaktualizowanej reguły.',
+            telemetry: { latencyMs: 18, errorRate: '0.00%', rps: '4.2k' },
+            severity: 'P1',
+          },
+          {
+            step: 2,
+            timeOffset: '+80s [08:01:20 UTC]',
+            title: 'Odrzucenie zapytań preflight OPTIONS',
+            description: 'Przeglądarki wysyłają żądania weryfikacyjne OPTIONS i otrzymują kod 403 Forbidden.',
+            telemetry: { latencyMs: 65, errorRate: '58.3%', rps: '4.1k' },
+            severity: 'P1',
+          },
+          {
+            step: 3,
+            timeOffset: '+120s [08:02:00 UTC]',
+            title: 'Całkowita blokada sesji (Full App Lockout)',
+            description: 'Brak nagłówka Access-Control-Allow-Origin blokuje wykonanie skryptów w przeglądarkach.',
+            telemetry: { latencyMs: 70, errorRate: '100%', rps: '3.8k' },
+            severity: 'P0',
+          },
+        ],
+        fiveWhys: [
+          'Przeglądarki użytkowników blokują wszystkie żądania API z błędem "CORS policy: No Access-Control-Allow-Origin".',
+          'Frontend SPA został zmigrowany na nową subdomenę app.bugmortem.io bez aktualizacji bramki API.',
+          'Bramka API odrzucała zapytania preflight HTTP OPTIONS kodem 403 Forbidden zamiast 204 No Content.',
+          'Niejawna konfiguracja nagłówków CORS w kodzie aplikacji zamiast scentralizowanej polityki na bramce API.',
+          'Brak automatycznych testów dymnych (smoke tests) sprawdzających żądania OPTIONS w procesie Continuous Deployment.',
+        ],
+        blastRadius: {
+          nodes: [
+            { id: 'n1', name: 'Bramka API Gateway', role: 'Zarządzanie Ruchem', status: 'epicenter', statusCode: '403' },
+            { id: 'n2', name: 'Aplikacja SPA Klienta', role: 'Warstwa Użytkownika', status: 'degraded', statusCode: 'BLOCKED' },
+            { id: 'n3', name: 'Mikroserwis Kont', role: 'Logika Biznesowa', status: 'healthy', statusCode: '200 OK' },
+            { id: 'n4', name: 'Baza Danych Użytkowników', role: 'Magazyn Danych', status: 'healthy', statusCode: '200 OK' },
+          ],
+          summary: { epicenterCount: 1, degradedCount: 1, healthyCount: 2 },
+        },
+        chaosMetrics: [
+          { id: 'm1', name: 'Burza Unieważnienia Sesji', severity: 'P1', description: 'Masowe odrzucenie tokenów JWT w zapytaniach cross-origin', status: 'injecting' },
+          { id: 'm2', name: 'Wskaźnik Zablokowanych OPTIONS', severity: 'P1', description: '100% żądań preflight zakończonych błędem przeglądarki', status: 'injecting' },
+        ],
+        postMortem: {
+          summary: 'Brak obsługi preflight OPTIONS na bramce po migracji domeny zablokował komunikację SPA z API.',
+          impact: 'Całkowity brak możliwości logowania i wykonywania operacji przez 22 minuty.',
+          actionItems: [
+            'Wdrożyć scentralizowaną konfigurację CORS z buforowaniem preflight (max-age: 86400).',
+            'Dodać automatyczne testy dymne preflight CORS w pipeline CI/CD przed przełączeniem DNS.',
+            'Zsynchronizować białą listę dozwolonych domen z konfiguracją infrastruktury Terraform.',
+          ],
+        },
+      },
+      'serverless-timeout': {
+        id: 'serverless-timeout',
+        title: 'Zapaść Zimnego Startu Serverless i Timeout Bramki 504',
+        badge: 'CHMURA / SERVERLESS',
+        severity: 'P0',
+        description: 'Inicjalizacja ciężkich połączeń bazy wewnątrz handlera funkcji wywołała kaskadę zimnych startów, przekraczając 29-sekundowy limit bramki API.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Ciężka inicjalizacja bazy wewnątrz handlera Lambda
+export const handler = async (event: any) => {
+  // BŁĄD: Nowe połączenie SSL/TLS nawiązywane przy KAŻDYM wywołaniu funkcji
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: true }
   });
+  await client.connect(); // 800ms opóźnienia przy zimnym starcie
+  const result = await client.query('SELECT * FROM inventory WHERE id = $1', [event.pathParameters.id]);
+  await client.end();
+  return { statusCode: 200, body: JSON.stringify(result.rows) };
+};`,
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Ponowne użycie połączenia poza handlerem z RDS Proxy
+import { Pool } from 'pg';
 
-  const user = await db.query('SELECT * FROM users WHERE id = $1', [event.userId]);
-  await db.disconnect(); // Niszczenie połączenia uniemożliwia reuse
-  return { statusCode: 200, body: JSON.stringify(user) };
-}`,
-      resurrectedCode: `// ✅ WSKRZESZONY WZORZEC SRE: Singleton poza Handlerem i Execution Reuse
-import { getDatabaseClient } from './db';
+// Połączenie zainicjalizowane RAZ poza handlerem — ponowne użycie w ciepłych kontenerach
+const pool = new Pool({
+  host: process.env.RDS_PROXY_ENDPOINT, // Połączenie przez Amazon RDS Proxy
+  max: 1, // Jedno połączenie na kontener serverless
+  idleTimeoutMillis: 120000,
+  connectionTimeoutMillis: 2000,
+});
 
-// Połączenie inicjowane raz w globalnym scope środowiska wykonawczego
-const dbPromise = getDatabaseClient();
-
-export async function handler(event: any, context: any) {
-  // Wykorzystaj zamrożony kontekst wykonania (execution context reuse)
-  context.callbackWaitsForEmptyEventLoop = false;
-
-  // Odporne pobranie zainicjowanego klienta z limitem timeoutu SRE
-  const db = await Promise.race([
-    dbPromise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('SRE: Database connect timeout')), 3000)
-    ),
-  ]);
-
-  const user = await db.query('SELECT * FROM users WHERE id = $1', [event.userId]);
-  return { statusCode: 200, body: JSON.stringify(user) };
-}`,
-      stackTrace: `2026-11-06T11:42:19.412Z a81f2c90-4e31-502a-bf34-8c1092a40b12 Task timed out after 30.03 seconds
-HTTP/2 504 Gateway Timeout
-x-amzn-errortype: GatewayTimeoutException
-x-amzn-requestid: c4e99f12-0881-42ab-92b1-50e41982b5f0
-Endpoint request timed out while awaiting serverless upstream response.`,
-      timeline: [
-        { time: '11:41:49 UTC', desc: 'Nagły skok ruchu z kampanii marketingowej wyzwala 120 równoległych zimnych startów mikro-kontenerów', isFatal: false },
-        { time: '11:42:10 UTC', desc: 'Równoległe nawiązywanie połączeń TLS z bazą paraliżuje procesory workerów; opóźnienie p99 przekracza 25s', isFatal: false },
-        { time: '11:42:19 UTC', desc: 'Bramka API osiąga sztywny limit 29s i odcina połączenia; 100% zapytań kończy się błędem 504 Gateway Timeout', isFatal: true }
-      ],
-      postMortemReport: {
-        summary: 'Kaskada zimnych startów w architekturze serverless wywołała powszechne przekroczenie limitu czasu bramki API.',
-        impact: '38 000 żądań zakończonych błędem 504 Gateway Timeout. Całkowity paraliż procesu checkoutu przez 14 minut.',
-        actionItems: [
-          'Przeniesienie inicjalizacji puli połączeń bazy poza handler do globalnego zakresu wykonawczego.',
-          'Wdrożenie buforowania bazy danych za pośrednictwem AWS RDS Proxy z multiplexingiem połączeń.',
-          'Konfiguracja Provisioned Concurrency na poziomie minimum 20 instancji dla krytycznych tras API.'
-        ]
-      }
-    }
+export const handler = async (event: any) => {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      'SELECT id, quantity FROM inventory WHERE id = $1',
+      [event.pathParameters.id]
+    );
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(result.rows[0] || {})
+    };
+  } finally {
+    client.release();
   }
+};`,
+        stackTrace: `2026-11-06T12:00:29.001Z d8e4a1b2-9c3f-4e8a Task timed out after 29.03 seconds
+Endpoint request timed out
+HTTP/1.1 504 Gateway Timeout
+{"message": "Endpoint request timed out"}`,
+        timeline: [
+          { time: '12:00:00 UTC', label: 'Flash Sale Traffic', description: 'Kampania marketingowa wywołuje nagły skok do 5 000 RPS' },
+          { time: '12:00:15 UTC', label: '120 Cold Starts', description: 'Dostawca chmury uruchamia równolegle 120 zimnych instancji mikro-kontenerów' },
+          { time: '12:00:29 UTC', label: 'Gateway 504 Timeout', description: 'Inicjalizacja puli przekracza 29s; bramka API odcina połączenia z kodem 504', isFatal: true },
+        ],
+        replayerSteps: [
+          {
+            step: 1,
+            timeOffset: '+0.0s [12:00:00 UTC]',
+            title: 'Start kampanii błyskawicznej (Traffic Surge)',
+            description: 'Nagły wzrost zapytań o stany magazynowe wymusza skalowanie w górę.',
+            telemetry: { latencyMs: 120, errorRate: '0.00%', rps: '4.8k' },
+            severity: 'P1',
+          },
+          {
+            step: 2,
+            timeOffset: '+15s [12:00:15 UTC]',
+            title: 'Kaskada zimnych startów (120 Cold Starts)',
+            description: 'Instancje Lambda równolegle bombardują serwer bazy żądaniami handshaku TLS.',
+            telemetry: { latencyMs: 4800, errorRate: '22.4%', rps: '3.6k' },
+            severity: 'P1',
+          },
+          {
+            step: 3,
+            timeOffset: '+29s [12:00:29 UTC]',
+            title: 'Przekroczenie limitu bramki API (504 Timeout)',
+            description: 'Twardy limit 29s API Gateway uderza w zapytania; 100% żądań zakończonych timeoutem.',
+            telemetry: { latencyMs: 29000, errorRate: '100%', rps: '210' },
+            severity: 'P0',
+          },
+        ],
+        fiveWhys: [
+          'Klienci otrzymują błędy 504 Gateway Timeout po dokładnie 29 sekundach oczekiwania.',
+          'Gwałtowny skok ruchu z kampanii wywołał równoległą alokację 120 nowych instancji funkcji serverless.',
+          'Każda zimna instancja wykonywała ciężką inicjalizację TLS i otwierała dedykowane połączenie wewnątrz handlera.',
+          'Brak ponownego użycia kontekstu wykonania (execution context reuse) oraz brak pośrednika połączeń RDS Proxy.',
+          'Brak mechanizmu Provisioned Concurrency dla krytycznych ścieżek oraz brak standardu architektury serverless dla bazy danych.',
+        ],
+        blastRadius: {
+          nodes: [
+            { id: 'n1', name: 'Bramka API Gateway', role: 'Ingress Timeout 29s', status: 'epicenter', statusCode: '504' },
+            { id: 'n2', name: 'Klaster Lambda Workerów', role: 'Obliczenia Serverless', status: 'degraded', statusCode: 'TIMEOUT' },
+            { id: 'n3', name: 'Baza Danych Magazynu', role: 'Instancja PostgreSQL', status: 'degraded', statusCode: 'SATURATED' },
+            { id: 'n4', name: 'Koszyk Zakupowy SPA', role: 'Frontend Klienta', status: 'degraded', statusCode: 'ERROR' },
+          ],
+          summary: { epicenterCount: 1, degradedCount: 3, healthyCount: 0 },
+        },
+        chaosMetrics: [
+          { id: 'm1', name: 'Zimne Starty Serverless P99', severity: 'P0', description: 'Średni czas zimnego startu wzrósł do 29 000ms z powodu kolejki połączeń', status: 'injecting' },
+          { id: 'm2', name: 'Wskaźnik Timeoutów Bramki 504', severity: 'P0', description: '100% żądań odrzuconych po przekroczeniu 29 sekund przez API Gateway', status: 'injecting' },
+        ],
+        postMortem: {
+          summary: 'Inicjalizacja połączeń z bazą danych wewnątrz handlera funkcji serverless wywołała kaskadę zimnych startów i timeout bramki API.',
+          impact: 'Niemożność sprawdzenia stanu magazynowego produktów przez 14 minut trwania wyprzedaży błyskawicznej.',
+          actionItems: [
+            'Wyprowadzić inicjalizację klienta bazy danych poza ciało handlera w celu współdzielenia połączenia.',
+            'Wdrożyć Amazon RDS Proxy do agregacji i buforowania połączeń serverless.',
+            'Skonfigurować Provisioned Concurrency (min. 20 ciepłych instancji) na okres planowanych kampanii marketingowych.',
+          ],
+        },
+      },
+    },
+  },
+  codeSection: {
+    cursedTitle: 'SEKCJA KODU: PRZEKLĘTY A WSKRZESZONY KOD',
+    resurrectedTitle: 'WSKRZESZONY KOD SRE (BEZPIECZNY WZORZEC)',
+    cursedBadge: 'BŁĄD KRYTYCZNY',
+    resurrectedBadge: 'WZORZEC: SRE RESILIENCE',
+    copyCta: 'Kopiuj Wskrzeszony Kod',
+    copied: 'Skopiowano do schowka!',
+  },
+  stackTrace: {
+    title: '>_ SUROWY ŚLAD STOSU (STACK TRACE)',
+  },
+  timeline: {
+    title: '⏱ CHRONOLOGICZNA OŚ CZASU AWARII',
+  },
+  replayer: {
+    title: 'ODTWARZACZ ZAPAŚCI W CZASIE (INCIDENT REPLAYER)',
+    subtitle: 'Symuluj przebieg awarii sekunda po sekundzie i obserwuj degradację telemetrii',
+    play: 'Odtwórz Zapaść',
+    pause: 'Pauza',
+    reset: 'Resetuj',
+    speed: 'Prędkość',
+    stepOf: 'Krok',
+    telemetryLatency: 'Opóźnienie P99',
+    telemetryErrors: 'Wskaźnik Błędów',
+    telemetryRps: 'Przepustowość RPS',
+  },
+  fiveWhys: {
+    sectionTitle: 'DRZEWO PRZYCZYN ŹRÓDŁOWYCH (BLAMELESS 5-WHYS)',
+    sectionSubtitle: 'Systemowe śledztwo inżynieryjne od powierzchownego objawu do luki architektonicznej.',
+    levels: [
+      '1. Objaw Powierzchowny',
+      '2. Bezpośredni Wyzwalacz',
+      '3. Mechanizm Awarii',
+      '4. Luka Architektoniczna',
+      '5. Przyczyna Źródłowa',
+    ],
+    blamelessBadge: 'KULTURA BEZ OBWINIANIA (BLAMELESS SRE)',
+    rootCauseBadge: 'PRZYCZYNA ŹRÓDŁOWA (ROOT CAUSE)',
+    copyChain: 'Kopiuj Ścieżkę Dochodzenia',
+    copied: 'Skopiowano Ścieżkę!',
+  },
+  blastRadius: {
+    title: 'TOPOLOGIA SKAŻENIA ARCHITEKTURY (BLAST RADIUS)',
+    subtitle: 'Wizualizacja kaskadowego wektora awarii mikroserwisów i izolacja Pacjenta Zero.',
+    legendEpicenter: 'Pacjent Zero (Epicentrum P0)',
+    legendDegraded: 'Skażenie Kaskadowe (P1)',
+    legendHealthy: 'Węzeł Zdrowy (200 OK)',
+    badgeEpicenter: 'EPICENTRUM P0',
+    badgeDegraded: 'DEGRADACJA P1',
+    badgeHealthy: 'ZDROWE WĘZŁY',
+  },
+  // Pełny słownik chaos dla komponentu ChaosSandbox.tsx (100% polskich znaków):
+  chaos: {
+    sectionTitle: 'PIASKOWNICA INŻYNIERII CHAOSU (LIVE CHAOS SANDBOX)',
+    sectionSubtitle: 'Wstrzykuj awarie w czasie rzeczywistym i obserwuj kaskadową reakcję telemetrii',
+    btnMitigate: 'Uruchom Samoleczenie',
+    btnInject: 'Wstrzyknij awarię',
+    statusNominal: 'SYSTEM NOMINALNY',
+    metricRps: 'PRZEPUSTOWOŚĆ',
+    metricLatency: 'OPÓŹNIENIE P99',
+    metricErrorRate: 'WSKAŹNIK BŁĘDÓW',
+    scenarioLatencyTitle: 'Skok opóźnień brzegowych (Latency Spike)',
+    scenarioLatencyDesc: 'Sztuczne opóźnienie +2500ms na Edge Gateway, powodujące timeouty w UI',
+    scenarioDbPoolTitle: 'Nasycenie puli bazy danych (DB Pool Saturation)',
+    scenarioDbPoolDesc: '100% wykorzystania połączeń PostgreSQL, kaskada błędów 503',
+    scenarioMemoryTitle: 'Wyciek pamięci (Heap OOM Leak)',
+    scenarioMemoryDesc: 'Eksponencjalny wzrost zużycia RAM w puli workerów asynchronicznych',
+    scenarioAuthStormTitle: 'Burza unieważnienia sesji (Auth Storm)',
+    scenarioAuthStormDesc: 'Zmasowane odrzucenia tokenów JWT i lawina żądań ponownego logowania',
+  },
+  // Wsteczna kompatybilność:
+  chaosSandbox: {
+    title: 'PIASKOWNICA INŻYNIERII CHAOSU (LIVE CHAOS SANDBOX)',
+    subtitle: 'Wstrzykuj awarie w czasie rzeczywistym i obserwuj kaskadową reakcję telemetrii',
+    nominalStatus: 'SYSTEM NOMINALNY',
+    activeStatus: 'WSTRZYKIWANIE CHAOSU W TOKU',
+    metricThroughput: 'PRZEPUSTOWOŚĆ',
+    metricP99: 'OPÓŹNIENIE P99',
+    metricErrorRate: 'WSKAŹNIK BŁĘDÓW',
+    injectCta: 'Wstrzyknij awarię',
+    recoveringCta: 'Samoleczenie...',
+  },
+  postMortem: {
+    title: 'OFICJALNY RAPORT SEKCJI ZWŁOK INCYDENTU',
+    executiveSummary: 'PODSUMOWANIE WYKONAWCZE',
+    blastRadiusImpact: 'PROMIEŃ RAŻENIA I WPŁYW BIZNESOWY',
+    actionItems: 'DZIAŁANIA PREWENCYJNE I NAPRAWCZE',
+    escalateOnCall: 'Eskalacja On-Call',
+    listenCoroner: 'Odsłuchaj Werdykt Koronera',
+    exportMarkdown: 'Eksportuj Raport do Markdown',
+    downloadCertificate: 'Pobierz Kartę Zgonu (PDF)',
+  },
+  dispatcher: {
+    openBtn: 'Eskalacja On-Call',
+  },
+  dispatcherModal: {
+    title: 'CENTRALA ESKALACJI INCYDENTU ON-CALL',
+    subtitle: 'Natychmiastowe powiadomienie inżynierów dyżurnych i utworzenie wojennego pokoju awarii',
+    severityLabel: 'PRIORYTET AWARII',
+    serviceLabel: 'DOTKNIĘTY KOMPONENT',
+    commanderLabel: 'DOWÓDCA INCYDENTU (INCIDENT COMMANDER)',
+    channelLabel: 'KANAŁ INCYDENTU SLACK',
+    zoomLinkLabel: 'POKÓJ WOJENNY (WAR ROOM)',
+    jiraTicketLabel: 'BILET SRE JIRA',
+    statusPageLabel: 'KOMUNIKAT STATUSPAGE',
+    copySummaryCta: 'Kopiuj Raport Eskalacji',
+    copiedNotice: 'Skopiowano do schowka!',
+    dispatchPagingCta: 'Wyślij PagerDuty Alarm (P0)',
+    pagingTriggered: 'Syrena PagerDuty wysłana!',
+    closeCta: 'Zamknij Konsolę',
+  },
+  footer: {
+    disclaimer: '© 2026 BugMortem. Wszelkie prawa zastrzeżone. Stworzone na Kiroween 2026 przez AWS & Devpost.',
+    privacy: 'Polityka Prywatności',
+    terms: 'Regulamin',
+    cookieSettings: 'Ustawienia Cookies',
+  },
 };
-
-export default pl;

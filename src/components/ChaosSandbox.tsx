@@ -1,8 +1,14 @@
 "use client";
 
 import React from "react";
-import { Zap, Activity, Flame, ShieldCheck, Cpu, Database, Timer, RefreshCw } from "lucide-react";
-import type { Dictionary } from "@/i18n/types";
+import { Zap, ShieldCheck, Cpu, Database, Timer, Flame, RefreshCw } from "lucide-react";
+import type { TranslationDictionary } from "@/i18n/types";
+
+// Likwidacja wiszących spójników w opisach kafelków chaosu
+function fixOrphans(text?: string | null): string {
+  if (!text || typeof text !== "string") return text || "";
+  return text.replace(/(^|\s)([aiouwz]|do|na|od|po|ze|we|za|co|że|to)(\s+)/gi, "$1$2\u00A0");
+}
 
 export interface ChaosScenario {
   id: string;
@@ -16,7 +22,7 @@ export interface ChaosScenario {
 }
 
 interface ChaosSandboxProps {
-  t: Dictionary;
+  t: TranslationDictionary | any;
   activeChaos: string | null;
   onTriggerChaos: (scenarioId: string, severity: "P0" | "P1") => void;
   onMitigate: () => void;
@@ -30,11 +36,13 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
   onMitigate,
   isResurrected,
 }) => {
+  const c = t?.chaos || t?.chaosSandbox || {};
+
   const scenarios: ChaosScenario[] = [
     {
       id: "latency-spike",
-      title: t.chaos.scenarioLatencyTitle,
-      desc: t.chaos.scenarioLatencyDesc,
+      title: c?.scenarioLatencyTitle || "Skok opóźnień brzegowych (Latency Spike)",
+      desc: c?.scenarioLatencyDesc || "Sztuczne opóźnienie +2500ms na Edge Gateway, powodujące timeouty w UI",
       severity: "P1",
       icon: <Timer className="w-4 h-4 text-amber-500" />,
       affectedNode: "edge-gateway",
@@ -43,8 +51,8 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
     },
     {
       id: "db-pool-exhaustion",
-      title: t.chaos.scenarioDbPoolTitle,
-      desc: t.chaos.scenarioDbPoolDesc,
+      title: c?.scenarioDbPoolTitle || "Nasycenie puli bazy danych (DB Pool Saturation)",
+      desc: c?.scenarioDbPoolDesc || "100% wykorzystania połączeń PostgreSQL, kaskada błędów 503",
       severity: "P0",
       icon: <Database className="w-4 h-4 text-rose-500" />,
       affectedNode: "database",
@@ -53,8 +61,8 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
     },
     {
       id: "memory-leak",
-      title: t.chaos.scenarioMemoryTitle,
-      desc: t.chaos.scenarioMemoryDesc,
+      title: c?.scenarioMemoryTitle || "Wyciek pamięci (Heap OOM Leak)",
+      desc: c?.scenarioMemoryDesc || "Eksponencjalny wzrost zużycia RAM w puli workerów asynchronicznych",
       severity: "P0",
       icon: <Cpu className="w-4 h-4 text-rose-500" />,
       affectedNode: "worker-pool",
@@ -63,8 +71,8 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
     },
     {
       id: "auth-storm",
-      title: t.chaos.scenarioAuthStormTitle,
-      desc: t.chaos.scenarioAuthStormDesc,
+      title: c?.scenarioAuthStormTitle || "Burza unieważnienia sesji (Auth Storm)",
+      desc: c?.scenarioAuthStormDesc || "Zmasowane odrzucenia tokenów JWT i lawina żądań ponownego logowania",
       severity: "P1",
       icon: <Flame className="w-4 h-4 text-amber-500" />,
       affectedNode: "auth-service",
@@ -87,11 +95,11 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
           <div className="flex items-center gap-2">
             <Zap className="w-4 h-4 text-amber-500" />
             <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100">
-              {t.chaos.sectionTitle}
+              {c?.sectionTitle || "PIASKOWNICA INŻYNIERII CHAOSU (LIVE CHAOS SANDBOX)"}
             </h2>
           </div>
           <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
-            {t.chaos.sectionSubtitle}
+            {fixOrphans(c?.sectionSubtitle || "Wstrzykuj awarie w czasie rzeczywistym i obserwuj kaskadową reakcję telemetrii")}
           </p>
         </div>
 
@@ -99,16 +107,17 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
         <div className="flex items-center gap-2">
           {activeChaos && !isResurrected ? (
             <button
+              type="button"
               onClick={onMitigate}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-colors cursor-pointer"
             >
               <ShieldCheck className="w-3.5 h-3.5" />
-              {t.chaos.btnMitigate}
+              {c?.btnMitigate || "Uruchom Samoleczenie"}
             </button>
           ) : (
             <div className="flex items-center gap-1.5 px-3 py-1 text-xs font-mono font-semibold rounded-md bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
               <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_#10b981]" />
-              {t.chaos.statusNominal}
+              {c?.statusNominal || "SYSTEM NOMINALNY"}
             </div>
           )}
         </div>
@@ -118,7 +127,7 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
       <div className="grid grid-cols-3 gap-3 p-3.5 rounded-xl bg-stone-50 dark:bg-stone-950/60 border border-stone-200 dark:border-stone-800/80">
         <div>
           <span className="block text-[10px] font-mono uppercase text-stone-500 dark:text-stone-400 font-semibold">
-            {t.chaos.metricRps}
+            {c?.metricRps || "PRZEPUSTOWOŚĆ"}
           </span>
           <span className="text-sm sm:text-base font-mono font-bold text-stone-900 dark:text-stone-100">
             {displayedMetrics.rps}
@@ -126,7 +135,7 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
         </div>
         <div>
           <span className="block text-[10px] font-mono uppercase text-stone-500 dark:text-stone-400 font-semibold">
-            {t.chaos.metricLatency}
+            {c?.metricLatency || "OPÓŹNIENIE P99"}
           </span>
           <span
             className={`text-sm sm:text-base font-mono font-bold ${
@@ -140,7 +149,7 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
         </div>
         <div>
           <span className="block text-[10px] font-mono uppercase text-stone-500 dark:text-stone-400 font-semibold">
-            {t.chaos.metricErrorRate}
+            {c?.metricErrorRate || "WSKAŹNIK BŁĘDÓW"}
           </span>
           <span
             className={`text-sm sm:text-base font-mono font-bold ${
@@ -181,10 +190,10 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
                 </div>
 
                 <h3 className="text-xs font-bold text-stone-900 dark:text-stone-100 line-clamp-1">
-                  {scenario.title}
+                  {fixOrphans(scenario.title)}
                 </h3>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 line-clamp-2 leading-relaxed">
-                  {scenario.desc}
+                  {fixOrphans(scenario.desc)}
                 </p>
               </div>
 
@@ -194,7 +203,7 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
                   onClick={() =>
                     isActive ? onMitigate() : onTriggerChaos(scenario.id, scenario.severity)
                   }
-                  className={`w-full py-1.5 px-2.5 text-xs font-mono font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5 ${
+                  className={`w-full py-1.5 px-2.5 text-xs font-mono font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
                     isActive
                       ? "bg-rose-600 hover:bg-rose-700 text-white"
                       : "bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200"
@@ -203,12 +212,12 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
                   {isActive ? (
                     <>
                       <RefreshCw className="w-3 h-3 animate-spin" />
-                      {t.chaos.btnMitigate}
+                      {c?.btnMitigate || "Uruchom Samoleczenie"}
                     </>
                   ) : (
                     <>
                       <Zap className="w-3 h-3 text-amber-500" />
-                      {t.chaos.btnInject}
+                      {c?.btnInject || "Wstrzyknij awarię"}
                     </>
                   )}
                 </button>
