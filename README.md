@@ -52,6 +52,7 @@ Every SRE engineer knows the nightmare: production is dead, the monitor is **fla
   - *Retry Storm*: `envoy-circuit-breaker.yaml` (Envoy circuit breaker) & `resilience-retry.ts` (full jitter).
   - *CORS Nightmare*: `api-gateway-cors.tf` (Terraform preflight) & `nginx-cors.conf` (NGINX preflight cache).
   - *Serverless Timeout*: `serverless-template.yaml` (AWS SAM + RDS Proxy) & `rds-proxy.tf` (Terraform).
+  - *AWS S3 ⇄ Lambda Loop*: `s3-lambda-circuit-breaker.tf` (Terraform bucket isolation & prefix guard) & `aws-lambda-resilience.yaml` (AWS SAM with `RecursiveLoop: Terminate`).
 
 ### 🗺️ Architecture Blast Radius Heatmap
 - **Interactive Microservice Topology** — Real-time visualization of 5 critical architectural tiers: `Client SPA`, `Edge Gateway`, `Auth Service`, `Database`, and `Worker Pool`.
@@ -73,6 +74,7 @@ Every SRE engineer knows the nightmare: production is dead, the monitor is **fla
   - **PagerDuty / Opsgenie** — Standard Common Event Format (CEF v2 JSON) payload with routing keys and dedup tags.
   - **GitHub Issues** — Formatted post-mortem issue template with triage checklist, severity tags, and a direct link to open the prefilled ticket.
 - **1-Click Clipboard Copy** with animated confirmation state.
+- **1-Click Slack Incident Broadcast** — Dedicated 📢 button in the Post-Mortem report toolbar that copies a fully formatted Slack Markdown message (🚨 header, severity emoji, Executive Summary, Blast Radius & Impact, numbered Action Items, UTC timestamp) directly to the system clipboard with a violet confirmation banner.
 
 ### 🎙️ SRE Forensic Coroner Voice Verdict
 - Procedural, browser-native speech synthesis (`window.speechSynthesis`) delivering spoken incident findings.
@@ -107,7 +109,7 @@ Zero external files. Zero dependencies. 100% browser-native Web Audio API:
 |---|---|
 | **P0 Fatal Incident** | Continuous 750 Hz sawtooth routed through resonant low-pass filter + 0.6 Hz LFO tremolo — eerie, atmospheric flatline alarm |
 | **P1 Warning Incident** | Rhythmic 880 Hz sine blips at 90 BPM — clinical ECG monitor pulse synchronized with the waveform animation |
-| **Copy Resurrected Code** | Uplifting C5 → E5 → G5 harmonic sweep with vibrato — the resurrection chime, followed by a calm 70 BPM heartbeat |
+| **Copy Resurrected Code** | Two-stage defibrillator (800 ms capacitor charge sweep 280 → 1400 Hz sawtooth through BPF Q=12; 250 ms discharge thump 120 → 35 Hz sub-bass + low-pass filtered contact noise burst; 200 ms dramatic silence gap) followed by the uplifting C5 → E5 → G5 harmonic chord with vibrato and a calm 70 BPM heartbeat |
 
 - Muted by default to comply with browser autoplay policies.
 - One-click `Volume2 / VolumeX` toggle inside the HUD.
@@ -128,9 +130,9 @@ Zero external files. Zero dependencies. 100% browser-native Web Audio API:
 
 ---
 
-## ⚰️ The 6 Canonical Nightmare Presets
+## ⚰️ The 7 Canonical Nightmare Presets
 
-BugMortem ships with six production-authentic, hand-crafted autopsy presets covering the most feared categories of production disasters:
+BugMortem ships with seven production-authentic, hand-crafted autopsy presets covering the most feared categories of production disasters:
 
 | # | Preset | Severity | Domain |
 |---|---|---|---|
@@ -140,6 +142,7 @@ BugMortem ships with six production-authentic, hand-crafted autopsy presets cove
 | 4 | **The Cascading Retry Storm** | P1 | Concurrency / Network |
 | 5 | **The CORS Preflight Nightmare** | P1 | Network / Security |
 | 6 | **Serverless Cold Start Cascade & Gateway 504 Timeout** | P0 | Cloud / Serverless |
+| 7 | **AWS S3 ⇄ Lambda Recursive Loop Death Spiral** | P0 | AWS / Serverless |
 
 Each preset includes: incident description, cursed crash code, resurrected SRE safe pattern, raw stack trace, chronological timeline with fatal event markers, 3-step replayer simulation, 5-whys root-cause tree, downloadable IaC prescription files, and a full post-mortem report.
 
