@@ -666,6 +666,26 @@ HTTP/1.1 504 Gateway Timeout
     badgeDegraded: 'DEGRADED P1',
     badgeHealthy: 'HEALTHY NODES',
   },
+  // Pełny słownik chaos dla komponentu ChaosSandbox.tsx:
+  chaos: {
+    sectionTitle: 'CHAOS ENGINEERING SANDBOX (LIVE TELEMETRY)',
+    sectionSubtitle: 'Inject active failure vectors and observe real-time telemetry degradation',
+    btnMitigate: 'Trigger Self-Healing',
+    btnInject: 'Inject failure',
+    statusNominal: 'SYSTEM NOMINAL',
+    metricRps: 'THROUGHPUT',
+    metricLatency: 'LATENCY P99',
+    metricErrorRate: 'ERROR RATE',
+    scenarioLatencyTitle: 'Edge Latency Spike (+2500ms)',
+    scenarioLatencyDesc: 'Simulated edge delay on Edge Gateway triggering client-side UI timeouts',
+    scenarioDbPoolTitle: 'Database Connection Pool Saturation',
+    scenarioDbPoolDesc: '100% PostgreSQL connection consumption resulting in cascading 503 errors',
+    scenarioMemoryTitle: 'Worker Heap Memory Leak (OOM)',
+    scenarioMemoryDesc: 'Exponential RAM exhaustion in asynchronous worker pool triggering OOM killer',
+    scenarioAuthStormTitle: 'Session Invalidation Storm (Auth Storm)',
+    scenarioAuthStormDesc: 'Mass cross-origin JWT token rejection and avalanche of re-login requests',
+  },
+  // Wsteczna kompatybilność:
   chaosSandbox: {
     title: 'CHAOS ENGINEERING SANDBOX (LIVE TELEMETRY)',
     subtitle: 'Inject active failure vectors and observe real-time telemetry degradation',
@@ -686,6 +706,9 @@ HTTP/1.1 504 Gateway Timeout
     listenCoroner: 'Play Coroner Verdict',
     exportMarkdown: 'Export Report to Markdown',
     downloadCertificate: 'Download Death Certificate (PDF)',
+  },
+  dispatcher: {
+    openBtn: 'Escalate On-Call',
   },
   dispatcherModal: {
     title: 'ON-CALL INCIDENT ESCALATION DISPATCHER',
