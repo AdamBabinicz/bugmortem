@@ -102,11 +102,12 @@ export function useAudioEngine(severity: SeverityMode): UseAudioEngineResult {
     engine.stopFlatline();
     engine.playResurrectionChime();
 
-    // Start the healthy heartbeat after the chime's longest note ends (~800 ms)
+    // Start the healthy heartbeat after the full resurrection sequence:
+    // 800 ms charge + 250 ms discharge + 200 ms gap + ~800 ms chord = ~2 050 ms
     setTimeout(() => {
       if (!engineRef.current) return;
       engineRef.current.startHeartbeat(70);
-    }, 800);
+    }, 2100);
   }, [audioEnabled, getContext, getEngine]);
 
   // ── Cleanup on unmount ───────────────────────────────────────────────────

@@ -2,11 +2,18 @@
  * BugMortem Sound Engine
  * Pure Web Audio API procedural synthesizer — zero external files, 0 KB footprint.
  *
- * Three sound programs:
- *   playHeartbeat()       — P1 clinical monitor blip (rhythmic sine, 880 Hz)
- *   startFlatline()       — P0 fatal flatline drone (continuous 750 Hz + low-pass)
- *   stopFlatline()        — fade-out and tear down flatline nodes
- *   playResurrectionChime() — "service restored" 2-tone harmonic sweep
+ * Four sound programs:
+ *   playHeartbeat()          — P1 clinical monitor blip (rhythmic sine, 880 Hz)
+ *   startFlatline()          — P0 fatal flatline drone (continuous 750 Hz + low-pass)
+ *   stopFlatline()           — fade-out and tear down flatline nodes
+ *   playDefibrillatorShock() — capacitor charge sweep (280→1400 Hz) + discharge thump (120→35 Hz)
+ *   playResurrectionChime()  — defibrillator shock → "service restored" C-major chord (C5-E5-G5)
+ *
+ * Resurrection sequence total duration: ~2 050 ms
+ *   0 ms    charge sweep   (800 ms)
+ *   800 ms  discharge thump (250 ms)
+ *   1 050 ms silence gap    (200 ms)
+ *   1 250 ms C-major chord  (C5 0 ms, E5 +80 ms, G5 +220 ms, last note ends at ~800 ms)
  */
 
 export class SoundEngine {
@@ -151,14 +158,121 @@ export class SoundEngine {
     this.flatlineGain = null;
   }
 
+  // ── Defibrillator shock ───────────────────────────────────────────────────
+
+  /**
+   * Two-stage defibrillator sequence:
+   *
+   *  Stage 1 — Capacitor charge (800 ms):
+   *    Sawtooth oscillator with an exponential frequency sweep 280 → 1 400 Hz,
+   *    routed through a band-pass filter (Q=12) that adds a clinical whine.
+   *    Gain ramps up from 0 to 0.7 over the full 800 ms — tension building.
+   *
+   *  Stage 2 — Discharge thump (250 ms, starts at +800 ms):
+   *    Low-frequency sine sweep 120 → 35 Hz (body-impact thump).
+   *    Hard transient attack (5 ms) then exponential decay to silence.
+   *    A separate noise burst (white noise through low-pass 200 Hz) adds
+   *    the physical "thud" texture of chest contact.
+   *
+   * Total duration: ~1 050 ms. Returns the absolute AudioContext time at
+   * which the discharge ends, so callers can schedule follow-on audio.
+   */
+  playDefibrillatorShock(): number {
+    const t = this.now();
+
+    // ── Stage 1: capacitor charge sweep ──────────────────────────────────
+    const chargeOsc = this.ctx.createOscillator();
+    chargeOsc.type = 'sawtooth';
+    chargeOsc.frequency.setValueAtTime(280, t);
+    chargeOsc.frequency.exponentialRampToValueAtTime(1400, t + 0.8); // 280→1400 Hz over 800 ms
+
+    const chargeBpf = this.ctx.createBiquadFilter();
+    chargeBpf.type = 'bandpass';
+    chargeBpf.frequency.setValueAtTime(280, t);
+    chargeBpf.frequency.exponentialRampToValueAtTime(1400, t + 0.8);
+    chargeBpf.Q.value = 12; // tight clinical whine
+
+    const chargeEnv = this.ctx.createGain();
+    chargeEnv.gain.setValueAtTime(0, t);
+    chargeEnv.gain.linearRampToValueAtTime(0.7, t + 0.8); // slow build-up
+
+    const chargeMaster = this.masterGain();
+    chargeOsc.connect(chargeBpf);
+    chargeBpf.connect(chargeEnv);
+    chargeEnv.connect(chargeMaster);
+
+    chargeOsc.start(t);
+    chargeOsc.stop(t + 0.82); // tiny tail before discharge
+
+    // ── Stage 2: discharge thump ──────────────────────────────────────────
+    const dischargeStart = t + 0.8;
+    const dischargeEnd   = dischargeStart + 0.25;
+
+    // Sub-bass sine: 120 → 35 Hz body-impact sweep
+    const thumpOsc = this.ctx.createOscillator();
+    thumpOsc.type = 'sine';
+    thumpOsc.frequency.setValueAtTime(120, dischargeStart);
+    thumpOsc.frequency.exponentialRampToValueAtTime(35, dischargeEnd);
+
+    const thumpEnv = this.ctx.createGain();
+    thumpEnv.gain.setValueAtTime(0, dischargeStart);
+    thumpEnv.gain.linearRampToValueAtTime(1.0, dischargeStart + 0.005); // 5 ms hard attack
+    thumpEnv.gain.exponentialRampToValueAtTime(0.001, dischargeEnd);    // decay to silence
+
+    const thumpMaster = this.masterGain();
+    thumpOsc.connect(thumpEnv);
+    thumpEnv.connect(thumpMaster);
+    thumpOsc.start(dischargeStart);
+    thumpOsc.stop(dischargeEnd + 0.02);
+
+    // Noise burst: white noise through low-pass 200 Hz — chest-contact "thud" texture
+    const bufferSize = this.ctx.sampleRate * 0.15; // 150 ms of noise
+    const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1; // white noise
+    }
+
+    const noiseSource = this.ctx.createBufferSource();
+    noiseSource.buffer = noiseBuffer;
+
+    const noiseLpf = this.ctx.createBiquadFilter();
+    noiseLpf.type = 'lowpass';
+    noiseLpf.frequency.value = 200;
+
+    const noiseEnv = this.ctx.createGain();
+    noiseEnv.gain.setValueAtTime(0, dischargeStart);
+    noiseEnv.gain.linearRampToValueAtTime(0.35, dischargeStart + 0.005);
+    noiseEnv.gain.exponentialRampToValueAtTime(0.001, dischargeStart + 0.15);
+
+    const noiseMaster = this.masterGain();
+    noiseSource.connect(noiseLpf);
+    noiseLpf.connect(noiseEnv);
+    noiseEnv.connect(noiseMaster);
+    noiseSource.start(dischargeStart);
+    noiseSource.stop(dischargeStart + 0.16);
+
+    // Return the timestamp when discharge ends so callers can chain audio
+    return dischargeEnd;
+  }
+
   // ── Resurrection chime ────────────────────────────────────────────────────
 
   /**
-   * Uplifting 2-tone harmonic sweep: C5 (523 Hz) → G5 (784 Hz).
-   * Short, clean, signifies the dead service has come back to life.
+   * Full resurrection sequence:
+   *   1. playDefibrillatorShock() — 1 050 ms (charge 800 ms + discharge 250 ms)
+   *   2. 200 ms silence gap       — dramatic breath before the chord
+   *   3. C-major chord            — C5 → E5 → G5 staggered (0 / +80 / +220 ms)
+   *
+   * Total: ~2 050 ms before the chord's last note decays.
    */
   playResurrectionChime(): void {
-    const t = this.now();
+    // Fire defibrillator and get absolute time when discharge finishes
+    const shockEnd = this.playDefibrillatorShock();
+
+    // Chord starts 200 ms after the shock ends (silence gap for dramatic effect)
+    const chordOrigin = shockEnd + 0.2;
+
     const master = this.masterGain();
 
     const freqs: [number, number, number][] = [
@@ -181,7 +295,7 @@ export class SoundEngine {
       lfoDetune.gain.value = 8; // ±8 cents vibrato
 
       const env = this.ctx.createGain();
-      const start = t + startOff;
+      const start = chordOrigin + startOff;
       const end = start + dur;
       env.gain.setValueAtTime(0, start);
       env.gain.linearRampToValueAtTime(0.8, start + 0.04);  // 40 ms attack
