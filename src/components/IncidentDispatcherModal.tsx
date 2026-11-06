@@ -2,8 +2,7 @@
 
 import React, { useState, useId } from "react";
 import { X, Copy, Check, ExternalLink, MessageSquare, AlertTriangle, GitPullRequest } from "lucide-react";
-import type { IncidentPreset, PostMortemReport } from "@/types";
-import type { Dictionary } from "@/i18n/types";
+import type { IncidentPreset, PostMortemReport, Dictionary } from "@/i18n/types";
 
 interface IncidentDispatcherModalProps {
   isOpen: boolean;
@@ -31,7 +30,7 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
   if (!isOpen) return null;
 
   const serviceName = (incident as any).service || incident.badge || 'production-core';
-  const domainName = (incident as any).domain || domainName || 'infra';
+  const domainName = (incident as any).domain || incident.badge || 'infra';
   const incidentRef = `INC-${incident.id.toUpperCase()}-${incident.severity}`;
   const statusLabel = isResurrected ? t.pdf.statusResurrected : incident.badge;
   const summaryText = postMortem?.summary || incident.title;
@@ -171,9 +170,10 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             aria-label={t.dispatcher.closeBtn}
-            className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-200/60 dark:hover:bg-stone-800 transition-colors"
+            className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-200/60 dark:hover:bg-stone-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -182,8 +182,9 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
         {/* Platform Tabs */}
         <div className="flex border-b border-stone-200 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-950/30 px-5 pt-2 gap-2">
           <button
+            type="button"
             onClick={() => setActiveTab("slack")}
-            className={`flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-t-lg transition-colors border-b-2 ${
+            className={`flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-t-lg transition-colors border-b-2 cursor-pointer ${
               activeTab === "slack"
                 ? "border-emerald-500 text-emerald-700 dark:text-emerald-400 bg-white dark:bg-stone-900"
                 : "border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-300"
@@ -193,8 +194,9 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
             {t.dispatcher.tabSlack}
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("pagerduty")}
-            className={`flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-t-lg transition-colors border-b-2 ${
+            className={`flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-t-lg transition-colors border-b-2 cursor-pointer ${
               activeTab === "pagerduty"
                 ? "border-amber-500 text-amber-700 dark:text-amber-400 bg-white dark:bg-stone-900"
                 : "border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-300"
@@ -204,8 +206,9 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
             {t.dispatcher.tabPagerDuty}
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("github")}
-            className={`flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-t-lg transition-colors border-b-2 ${
+            className={`flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-t-lg transition-colors border-b-2 cursor-pointer ${
               activeTab === "github"
                 ? "border-sky-500 text-sky-700 dark:text-sky-400 bg-white dark:bg-stone-900"
                 : "border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-300"
@@ -238,8 +241,9 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
           <div className="flex items-center gap-2">
             {activeTab === "github" && (
               <button
+                type="button"
                 onClick={handleOpenGithub}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 {t.dispatcher.openGithubBtn}
@@ -247,8 +251,9 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
             )}
 
             <button
+              type="button"
               onClick={handleCopy}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-colors cursor-pointer"
             >
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               {copied ? t.dispatcher.copiedBtn : t.dispatcher.copyBtn}
