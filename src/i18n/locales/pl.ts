@@ -6,8 +6,8 @@ export const pl: TranslationDictionary = {
   },
   hero: {
     badge: 'PROJEKT NA HACKATHON KIROWEEN 2026',
-    title: 'BugMortem – AI Studio Sekcji Zwłok Awarii i Post-Mortem',
-    subtitle: 'Inżynieryjne śledztwo post-mortem i zautomatyzowane bezpieczne wzorce SRE dla awarii produkcyjnych.',
+    title: 'BugMortem – Sekcja Zwłok AI i Studio Post-Mortem SRE',
+    subtitle: 'Kryminalistyczna analiza powłamaniowa i zautomatyzowane wzorce odporności dla katastrofalnych awarii produkcyjnych.',
     inputCta: '+ WPROWADŹ WŁASNĄ AWARIĘ',
     statusActive: 'Aktywny Incydent (P0 Krytyczny)',
     statusStable: 'System Nominalny (200 OK)',
@@ -15,7 +15,7 @@ export const pl: TranslationDictionary = {
   navigation: {
     langPl: 'Polski (PL)',
     langEn: 'English (EN)',
-    toggleTheme: 'Przełącz Motyw',
+    toggleTheme: 'Zmień Motyw',
   },
   presets: {
     sectionTitle: 'ARCHIWUM SEKCJI ZWŁOK AWARII',
@@ -25,14 +25,14 @@ export const pl: TranslationDictionary = {
         title: 'Niezgodność Hydratacji Reacta i Zapaść Drzewa DOM',
         badge: 'FRONTEND / SSR',
         severity: 'P0',
-        description: 'Niestabilne new Date() lub dostęp do obiektu window podczas SSR wywołuje błąd React Error #418, niszcząc interaktywny stan klienta.',
-        codeSnippet: `// ❌ PRZEKLĘTY KOD: Niestabilny znacznik czasu podczas SSR
+        description: 'Niestabilne użycie new Date() lub dostęp do obiektu window podczas SSR wyzwala Błąd Reacta #418, całkowicie niszcząc interaktywność klienta.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Niestabilna ewaluacja znacznika czasu podczas SSR
 export default function ClockBanner() {
-  // BŁĄD: new Date() generuje inny czas na serwerze i u klienta
+  // BŁĄD: new Date() generuje inne znaczniki na serwerze i u klienta
   const time = new Date().toLocaleTimeString();
   return <div className="banner">Ostatnia synchronizacja: {time}</div>;
 }`,
-        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Hydratacja dwufazowa z flagą montowania
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Dwufazowa hydratacja z flagą mounted
 'use client';
 import { useState, useEffect } from 'react';
 
@@ -61,615 +61,622 @@ export default function ClockBanner() {
     at updateHostComponent (react-dom-client.development.js:9840)
     at beginWork (react-dom-client.development.js:10820)`,
         timeline: [
-          { time: '14:02:11 UTC', label: 'SSR Render', description: 'Serwer wygenerował HTML z czasem 14:02:11' },
-          { time: '14:02:13 UTC', label: 'Client Hydration', description: 'Klient próbuje hydratacji z czasem 14:02:13 — rozbieżność sumy kontrolnej' },
-          { time: '14:02:14 UTC', label: 'DOM Crash', description: 'React porzuca drzewo DOM i wymusza pełny kosztowny re-render klienta', isFatal: true },
+          { time: '14:02:11 UTC', label: 'Wygenerowano HTML na serwerze', desc: 'Serwer SSR zwraca statyczny kod z czasem 14:02:11' },
+          { time: '14:02:12 UTC', label: 'Hydratacja pakietu w przeglądarce', desc: 'Przeglądarka wykonuje kod JS o 14:02:12, powodując rozbieżność czasu' },
+          { time: '14:02:12 UTC', label: 'Odpięcie drzewa DOM', desc: 'React rzuca błąd #418 i zastępuje stronę białym ekranem', isFatal: true }
         ],
         replayerSteps: [
           {
             step: 1,
-            timeOffset: '+0.0s [14:02:11 UTC]',
-            title: 'Renderowanie SSR w środowisku Node.js',
-            description: 'Serwer generuje statyczny HTML z dynamicznym stemplem new Date().',
-            telemetry: { latencyMs: 24, errorRate: '0.00%', rps: '1.2k' },
-            severity: 'P1',
+            timeOffset: '+0.0s',
+            title: 'Generowanie dokumentu SSR na krawędzi',
+            description: 'Serwer brzegowy ewaluuje new Date() i strumieniuje kod HTML ze znacznikiem 14:02:11.',
+            telemetry: { latencyMs: 42, errorRate: '0.00%', rps: '14.2k' },
+            severity: 'P1'
           },
           {
             step: 2,
-            timeOffset: '+1.8s [14:02:13 UTC]',
-            title: 'Parsowanie w przeglądarce i wywołanie hydrateRoot',
-            description: 'Przeglądarka próbuje dopasować drzewo DOM; wykryto niezgodność tekstu węzła.',
-            telemetry: { latencyMs: 140, errorRate: '12.4%', rps: '1.2k' },
-            severity: 'P1',
+            timeOffset: '+0.8s',
+            title: 'Próba powiązania hydratacji klienta',
+            description: 'Pakiet przeglądarkowy wykonuje się o 14:02:12. Suma kontrolna różni się od serwera.',
+            telemetry: { latencyMs: 380, errorRate: '8.4%', rps: '11.8k' },
+            severity: 'P1'
           },
           {
             step: 3,
-            timeOffset: '+2.4s [14:02:14 UTC]',
-            title: 'Zapaść Hydratacji (React Error #418)',
-            description: 'Drzewo DOM zostaje zniszczone i odtworzone od zera; utrata stanu formularzy.',
-            telemetry: { latencyMs: 680, errorRate: '100%', rps: '950' },
-            severity: 'P0',
-          },
+            timeOffset: '+1.2s',
+            title: 'Desynchronizacja DOM i Zapaść UI',
+            description: 'Błąd React #418 odmontowuje interaktywne drzewo. Przyciski koszyka przestają reagować.',
+            telemetry: { latencyMs: 1420, errorRate: '84.6%', rps: '2.1k' },
+            severity: 'P0'
+          }
         ],
         fiveWhys: [
-          'Aplikacja wyrzuca błąd "Minified React error #418" i powoduje zapaść renderowania u klienta.',
-          'Komponent renderuje bieżący czas za pomocą new Date().toLocaleTimeString() bezpośrednio w ciele JSX.',
-          'Suma kontrolna HTML wygenerowana na serwerze różni się od drzewa zrenderowanego w przeglądarce klienta.',
-          'Brak izolacji renderowania po stronie klienta (brak hooka useEffect lub flagi mounted).',
-          'Brak reguły ESLint wymuszającej kontrolę hydratacji SSR oraz brak testów regresji renderowania w pipeline CI/CD.',
+          'Aplikacja webowa rzuca wyjątek "Minified React error #418" i odmontowuje interaktywne drzewo DOM klienta.',
+          'Komponent wywołuje new Date().toLocaleTimeString() bezpośrednio w ciele renderowanego kodu JSX.',
+          'Suma kontrolna wyrenderowanego przez serwer kodu HTML różni się od początkowego drzewa wyrenderowanego przez przeglądarkę.',
+          'Brak granicy wykonania po stronie klienta (brak flagi stanu zamontowania mounted lub blokady w useEffect).',
+          'Brak reguł ESLint SSR i zautomatyzowanych testów regresyjnych hydratacji w procesie CI/CD.'
         ],
         blastRadius: {
           nodes: [
-            { id: 'n1', name: 'Frontend SSR (Next.js)', role: 'Warstwa Prezentacji', status: 'epicenter', statusCode: 'FAIL' },
-            { id: 'n2', name: 'Przeglądarka Klienta', role: 'Renderowanie DOM', status: 'degraded', statusCode: 'WARN' },
-            { id: 'n3', name: 'Bramka API Edge', role: 'Ruch Sieciowy', status: 'healthy', statusCode: '200 OK' },
-            { id: 'n4', name: 'Serwis Koszyka', role: 'Backend API', status: 'healthy', statusCode: '200 OK' },
+            { id: 'client-spa', name: 'client-spa', role: 'Frontend Next.js', status: 'epicenter', statusCode: 'FAIL' },
+            { id: 'edge-gateway', name: 'edge-gateway', role: 'Sieć Vercel Edge', status: 'degraded', statusCode: 'WARN' },
+            { id: 'auth-service', name: 'auth-service', role: 'Sesje JWT / Auth', status: 'healthy', statusCode: '200 OK' },
+            { id: 'database', name: 'database', role: 'Neon Postgres', status: 'healthy', statusCode: '200 OK' },
+            { id: 'worker-pool', name: 'worker-pool', role: 'Kolejka w Tle', status: 'healthy', statusCode: '200 OK' }
           ],
-          summary: { epicenterCount: 1, degradedCount: 1, healthyCount: 2 },
+          summary: { epicenterCount: 1, degradedCount: 1, healthyCount: 3 }
         },
         chaosMetrics: [
-          { id: 'm1', name: 'Opóźnienie Hydratacji P99', severity: 'P0', description: 'Wzrost opóźnienia do 680ms z powodu odrzucenia cache DOM', status: 'injecting' },
-          { id: 'm2', name: 'Wskaźnik Błędów Klienta', severity: 'P0', description: 'Skok do 12.4% zgłoszeń błędu React Error #418 w Sentry', status: 'injecting' },
+          { id: 'cm-1', name: 'Integralność Drzewa DOM', severity: 'P0', description: 'Wykryto niezgodność między węzłami SSR a CSR', status: 'injecting' },
+          { id: 'cm-2', name: 'Czas do Interaktywności (TTI)', severity: 'P1', description: 'Nasłuchiwacze zdarzeń zawieszone po błędzie', status: 'injecting' },
+          { id: 'cm-3', name: 'Konwersja Koszyka Zakupowego', severity: 'P0', description: 'Przycisk zamówienia zamrożony dla 12% użytkowników', status: 'injecting' }
         ],
         postMortem: {
-          summary: 'Niestabilne stemplowanie czasu w komponencie SSR wywołało kaskadę błędów hydratacji React Error #418.',
-          impact: '12% użytkowników doświadczyło zamrożenia interfejsu i utraty wprowadzonych danych w formularzach.',
+          summary: 'Niestabilne znaczniki czasu w komponentach serwerowych wywołały masowe błędy hydratacji React #418.',
+          impact: '12% odwiedzających doświadczyło zamrożenia interfejsu i utraty danych z formularza zamówienia.',
           actionItems: [
-            'Wdrożyć dwufazową hydratację z flagą mounted we wszystkich dynamicznych komponentach.',
-            'Dodać regułę ESLint react-hooks/exhaustive-deps oraz zakaz new Date() w ciele komponentów SSR.',
-            'Wdrożyć automatyczne testy E2E Playwright sprawdzające czystość konsoli przeglądarki.',
-          ],
-        },
+            'Wdrożyć dwufazową flagę mounted we wszystkich komponentach zależnych od czasu.',
+            'Zaimplementować regułę ESLint zakazującą new Date() i Math.random() w kodzie renderowanym po stronie serwera.',
+            'Dodać automatyczne testy dymne Playwright SSR do głównego rurociągu integracji ciągłej (CI).'
+          ]
+        }
       },
       'connection-pool': {
         id: 'connection-pool',
-        title: 'Spirala Śmierci Puli Połączeń',
-        badge: 'BAZA DANYCH / AURORA',
+        title: 'Śmiertelna Spirala Puli Połączeń',
+        badge: 'DATABASE / AURORA',
         severity: 'P0',
-        description: 'Nieindeksowane zapytania analityczne wyczerpały limit 200 połączeń bazy RDS Aurora, paraliżując wątki transakcyjne w koszyku zakupowym.',
-        codeSnippet: `// ❌ PRZEKLĘTY KOD: Nieszczelna pula bez zwrotu połączenia
-app.get('/api/analytics', async (req, res) => {
+        description: 'Niezindeksowane zapytania analityczne wyczerpały limit 200 połączeń w klastrze Amazon RDS Aurora, paraliżując wątki transakcyjne procesu zakupowego.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Niekontrolowany wyciek połączeń do bazy danych
+export async function getAnalyticsReport(userId: string) {
+  // BŁĄD: Bezpośrednie połączenie bez limitu czasu i bez zwrotu do puli
   const client = await pool.connect();
-  // BŁĄD: Brak bloku try/finally — błąd powoduje trwały wyciek połączenia
-  const data = await client.query('SELECT * FROM orders WHERE status = $1', ['completed']);
-  res.json(data.rows);
-  client.release(); // Nigdy nieosiągalne przy timeoutcie bazy
-});`,
-        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Zabezpieczony uchwyt z PgBouncer i timeoutem
-app.get('/api/analytics', async (req, res) => {
-  let client;
+  const query = 'SELECT * FROM orders WHERE user_id = $1 ORDER BY timestamp DESC';
+  const result = await client.query(query, [userId]);
+  // Brak wywołania client.release() w blokach błędów powoduje śmierć puli
+  return result.rows;
+}`,
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Połączenie z menedżerem kontekstu i twardym timeoutem
+export async function getAnalyticsReport(userId: string) {
+  const client = await pool.connect();
   try {
-    client = await pool.connect();
-    // Bezpieczny timeout zapytania zapobiegający blokowaniu puli
+    // Ustawienie rygorystycznego limitu czasu wykonania zapytania
     await client.query('SET statement_timeout = 2000');
-    const data = await client.query(
-      'SELECT id, total FROM orders WHERE status = $1 LIMIT 100',
-      ['completed']
-    );
-    res.json(data.rows);
-  } catch (err) {
-    res.status(503).json({ error: 'Usługa tymczasowo niedostępna' });
+    const query = 'SELECT id, total, status FROM orders WHERE user_id = $1 ORDER BY timestamp DESC LIMIT 50';
+    const result = await client.query(query, [userId]);
+    return result.rows;
   } finally {
-    if (client) client.release(); // Gwarantowany zwrot do puli
+    // Gwarantowany zwrot połączenia do puli w bloku finally
+    client.release();
   }
-});`,
-        stackTrace: `error: remaining connection slots are reserved for non-replication superuser connections
-    at Parser.parseErrorMessage (/app/node_modules/pg-protocol/dist/parser.js:287:98)
-    at Pool.connect (/app/node_modules/pg-pool/index.js:56:21)
-    at async /app/dist/server.js:142:18`,
+}`,
+        stackTrace: `FATAL: remaining connection slots are reserved for non-replication superuser connections
+    at Connection.parseE (pg-protocol/dist/parser.js:369)
+    at Connection.parseMessage (pg-protocol/dist/parser.js:121)
+    at Socket.<anonymous> (pg-protocol/dist/index.js:11)
+    at TCP.onStreamRead (node:net:561)`,
         timeline: [
-          { time: '09:15:00 UTC', label: 'Cron Trigger', description: 'Uruchomienie porannego raportu analitycznego bez limitu wierszy' },
-          { time: '09:16:30 UTC', label: 'Pool Saturation', description: 'Wszystkie 200 slotów bazy Aurora zajęte; kolejka oczekiwania > 500ms' },
-          { time: '09:17:02 UTC', label: 'Cascading 503', description: 'Serwis transakcyjny odrzuca zamówienia klientów z kodem 503 Service Unavailable', isFatal: true },
+          { time: '03:14:00 UTC', label: 'Napływ ciężkich zapytań', desc: 'Harmonogram zadań uruchamia niezindeksowany raport analityczny' },
+          { time: '03:14:22 UTC', label: 'Nasycenie puli bazy', desc: 'Liczba aktywnych połączeń rośnie z 40 do sufitu 200/200' },
+          { time: '03:14:45 UTC', label: 'Kaskada błędów koszyka', desc: 'Transakcje w sklepie zaczynają masowo zwracać błąd 503', isFatal: true }
         ],
         replayerSteps: [
           {
             step: 1,
-            timeOffset: '+0.0s [09:15:00 UTC]',
-            title: 'Uruchomienie nieindeksowanego raportu',
-            description: 'Cron analityczny otwiera 30 równoległych zapytań skanujących pełną tabelę orders.',
-            telemetry: { latencyMs: 45, errorRate: '0.00%', rps: '2.4k' },
-            severity: 'P1',
+            timeOffset: '+0.0s',
+            title: 'Uruchomienie raportu wsadowego',
+            description: 'Nocne zadanie analityczne wysyła 80 równoległych zapytań skanujących całe tabele.',
+            telemetry: { latencyMs: 84, errorRate: '0.00%', rps: '16.5k' },
+            severity: 'P1'
           },
           {
             step: 2,
-            timeOffset: '+90s [09:16:30 UTC]',
-            title: 'Wyczerpanie slotów puli (Pool Exhaustion)',
-            description: 'Liczba dostępnych połączeń spada do 0; żądania transakcyjne zaczynają kolejkowanie.',
-            telemetry: { latencyMs: 1850, errorRate: '14.2%', rps: '1.9k' },
-            severity: 'P1',
+            timeOffset: '+12.0s',
+            title: 'Osiągnięcie limitu połączeń',
+            description: 'Limit max_connections (200/200) wyczerpany. Pakiety sprawdzające stan zdrowia zawieszają się.',
+            telemetry: { latencyMs: 2450, errorRate: '34.2%', rps: '7.1k' },
+            severity: 'P1'
           },
           {
             step: 3,
-            timeOffset: '+122s [09:17:02 UTC]',
-            title: 'Całkowity paraliż bazy danych (P0 Outage)',
-            description: 'PgPool rzuca "connection slots reserved"; transakcje koszykowe odrzucane z kodem 503.',
-            telemetry: { latencyMs: 8400, errorRate: '98.6%', rps: '310' },
-            severity: 'P0',
-          },
+            timeOffset: '+29.0s',
+            title: 'Zapaść kaskadowa bazy danych',
+            description: 'Automatyczne przełączenie repliki zawodzi. Mikroserwisy rzucają błędy FATAL connection slots.',
+            telemetry: { latencyMs: 12800, errorRate: '98.4%', rps: '820' },
+            severity: 'P0'
+          }
         ],
         fiveWhys: [
-          'Wszystkie żądania do bazy danych kończą się błędem "Connection pool exhausted" i kodem 503 w koszyku.',
-          'Uruchomiono cykliczne zadanie analityczne generujące raport na tabeli transakcyjnej orders.',
-          'Zapytania analityczne nie zwalniały połączeń w bloku try/finally, powodując wyciek uchwytów puli.',
-          'Ruch analityczny współdzielił tę samą instancję bazy i pulę połączeń co krytyczny ruch koszykowy.',
-          'Brak podziału na repliki do odczytu (read-replicas) oraz brak wymuszonego globalnego limitu statement_timeout.',
+          'Interfejs API zamówień zwraca błąd 503 Service Unavailable dla wszystkich transakcji koszyka.',
+          'Serwer PostgreSQL odrzuca nowe połączenia komunikatem "remaining connection slots reserved".',
+          'Wsadowy raport analityczny otworzył setki niezindeksowanych połączeń i zablokował tabele.',
+          'Brak proxy zarządzającego pulą połączeń (PgBouncer) między mikroserwisami a klastrem Aurora.',
+          'Brak limitów czasu dla zapytań (statement_timeout) i brak wydzielonej repliki tylko do odczytu.'
         ],
         blastRadius: {
           nodes: [
-            { id: 'n1', name: 'Klaster Bazy Aurora RDS', role: 'Magazyn Danych', status: 'epicenter', statusCode: 'FAIL' },
-            { id: 'n2', name: 'Serwis Koszyka', role: 'Wątki Transakcyjne', status: 'degraded', statusCode: '503' },
-            { id: 'n3', name: 'Bramka Płatności', role: 'Obsługa Kart', status: 'degraded', statusCode: 'WARN' },
-            { id: 'n4', name: 'Statyczny Frontend CDN', role: 'Dystrybucja Assetów', status: 'healthy', statusCode: '200 OK' },
+            { id: 'client-spa', name: 'client-spa', role: 'Klient WWW', status: 'degraded', statusCode: 'WARN' },
+            { id: 'edge-gateway', name: 'edge-gateway', role: 'Brama Kong', status: 'degraded', statusCode: '503' },
+            { id: 'auth-service', name: 'auth-service', role: 'Klaster Logowania', status: 'degraded', statusCode: 'FAIL' },
+            { id: 'database', name: 'database', role: 'Aurora Postgres Primary', status: 'epicenter', statusCode: 'FATAL' },
+            { id: 'worker-pool', name: 'worker-pool', role: 'Kolejka Celery', status: 'degraded', statusCode: 'FAIL' }
           ],
-          summary: { epicenterCount: 1, degradedCount: 2, healthyCount: 1 },
+          summary: { epicenterCount: 1, degradedCount: 4, healthyCount: 0 }
         },
         chaosMetrics: [
-          { id: 'm1', name: 'Nasycenie Puli Połączeń', severity: 'P0', description: '100% wykorzystania slotów (200/200 połączeń zajętych)', status: 'injecting' },
-          { id: 'm2', name: 'Wzrost Opóźnień Bazy P99', severity: 'P0', description: 'Skok opóźnienia do 8400ms w zapytaniach transakcyjnych', status: 'injecting' },
+          { id: 'cm-db-1', name: 'Aktywne Połączenia Aurora', severity: 'P0', description: 'Wykorzystanie puli osiągnęło 100% pojemności', status: 'injecting' },
+          { id: 'cm-db-2', name: 'Wskaźnik Wycoﬁanych Transakcji', severity: 'P0', description: 'Ponad 85% zamówień zostało anulowanych przez błąd bazy', status: 'injecting' }
         ],
         postMortem: {
-          summary: 'Wyciek połączeń w endpointcie analitycznym doprowadził do wysycenia puli połączeń bazy Aurora i paraliżu transakcji.',
-          impact: 'Całkowity przestój kasy fiskalnej i koszyka przez 18 minut; utrata szacunkowo 42 000 PLN przychodu.',
+          summary: 'Wyczerpanie puli połączeń bazy danych doprowadziło do paraliżu autoryzacji i składania zamówień.',
+          impact: '48 minut pełnej niedostępności koszyka zakupowego; szacowana strata przychodu: 42 000 USD.',
           actionItems: [
-            'Wdrożyć PgBouncer przed klastrem RDS w trybie transaction pooling.',
-            'Odseparować zapytania analityczne na dedykowaną replikę tylko do odczytu (Read-Only Replica).',
-            'Wymusić statement_timeout = 2000ms na poziomie roli aplikacji w PostgreSQL.',
-          ],
-        },
+            'Wdrożyć proxy PgBouncer w trybie poolingu transakcyjnego z limitem 5000 połączeń klienckich.',
+            'Wymusić statement_timeout = 2500ms dla wszystkich nieadministracyjnych ról bazodanowych.',
+            'Przenieść zapytania analityczne na odizolowaną replikę read-only.'
+          ]
+        }
       },
       'oom-reaper': {
         id: 'oom-reaper',
-        title: 'Przebudzenie Żniwiarza OOM',
-        badge: 'RUNTIME / PAMIĘĆ',
+        title: 'Przebudzenie Żniwiarza Pamięci OOM',
+        badge: 'RUNTIME / MEMORY',
         severity: 'P0',
-        description: 'Masowy eksport 2,5 mln zamówień do pliku CSV załadował cały zbiór do bufora RAM Node.js, aktywując mechanizm Linux OOM killer.',
-        codeSnippet: `// ❌ PRZEKLĘTY KOD: Ładowanie 2.5GB danych do pamięci podręcznej
-app.get('/export/orders.csv', async (req, res) => {
-  // BŁĄD: findAll ładuje miliony rekordów do pamięci sterty V8
-  const orders = await Order.findAll();
-  let csv = 'id,amount,date\\n';
-  for (const o of orders) {
-    csv += \`\${o.id},\${o.amount},\${o.date}\\n\`;
+        description: 'Masowy eksport 2,5 miliona zamówień do pliku CSV zaalokował cały zbiór danych w stercie Node.js, wyzwalając ubicie procesu przez jądro Linuksa.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Ładowanie nieograniczonego zbioru danych do sterty V8
+export async function exportAllOrders() {
+  const allOrders = await db.orders.findMany(); // 2,5 mln rekordów do pamięci RAM
+  let csv = 'id,total,created_at\\n';
+  for (const order of allOrders) {
+    csv += \`\${order.id},\${order.total},\${order.createdAt}\\n\`;
   }
-  res.send(csv);
-});`,
-        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Strumieniowanie potokowe z przeciwciśnieniem
+  return csv;
+}`,
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Potok strumieniowy z regulacją ciśnienia (Backpressure)
 import { pipeline } from 'stream/promises';
 import { Transform } from 'stream';
 
-app.get('/export/orders.csv', async (req, res) => {
-  res.setHeader('Content-Type', 'text/csv');
-  res.setHeader('Content-Disposition', 'attachment; filename="orders.csv"');
-
-  const dbStream = Order.getCursorStream(); // Kursor bazodanowy
-  const csvTransformer = new Transform({
+export async function exportAllOrders(writeStream: NodeJS.WritableStream) {
+  const dbCursor = db.orders.findManyCursor();
+  
+  const toCsvRow = new Transform({
     objectMode: true,
-    transform(chunk, encoding, callback) {
-      callback(null, \`\${chunk.id},\${chunk.amount},\${chunk.date}\\n\`);
+    transform(order, _, callback) {
+      callback(null, \`\${order.id},\${order.total},\${order.createdAt}\\n\`);
     }
   });
 
-  // Bezpieczny potok strumieniowy — zużycie RAM poniżej 30MB
-  await pipeline(dbStream, csvTransformer, res);
-});`,
-        stackTrace: `FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
- 1: 0xb09c30 node::Abort() [node]
- 2: 0xa1c2c3 node::FatalError(char const*, char const*) [node]
- 3: 0xcf824e v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, bool) [node]
-Killed (core dumped)`,
+  await pipeline(dbCursor, toCsvRow, writeStream);
+}`,
+        stackTrace: `<--- Ostatnie cykle GC --->
+[1:0x55d49a0]    14820 ms: Mark-sweep (reduce) 2041.4 (2082.1) -> 2040.2 (2082.1) MB, 842.1 / 0.0 ms
+[1:0x55d49a0]    15710 ms: Mark-sweep (reduce) 2040.2 (2082.1) -> 2039.8 (2082.1) MB, 890.0 / 0.0 ms
+
+<--- Zrzut sterty JS --->
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+1: 0xb09c10 node::Abort() [node]
+2: 0xa1c28f node::FatalError(char const*, char const*) [node]`,
         timeline: [
-          { time: '11:30:15 UTC', label: 'Export Requested', description: 'Użytkownik klika "Eksportuj całą bazę do CSV"' },
-          { time: '11:30:42 UTC', label: 'Heap Limit Reached', description: 'Zużycie sterty V8 przekracza 1.4 GB; garbage collector zamraża wątek' },
-          { time: '11:30:45 UTC', label: 'SIGKILL Dispatched', description: 'Linux OOM Killer natychmiast ubija proces; kontener restartuje się', isFatal: true },
+          { time: '11:45:00 UTC', label: 'Zlecenie eksportu', desc: 'Administrator uruchamia kwartalny zrzut 2,5 mln transakcji' },
+          { time: '11:45:14 UTC', label: 'Zapełnienie sterty pamięci', desc: 'Zużycie pamięci V8 osiąga limit 2048 MB; GC zużywa 98% CPU na sprzątanie' },
+          { time: '11:45:16 UTC', label: 'Sygnał SIGKILL z jądra', desc: 'Linux OOM killer natychmiast ubija proces Node.js z kodem wyjścia 137', isFatal: true }
         ],
         replayerSteps: [
           {
             step: 1,
-            timeOffset: '+0.0s [11:30:15 UTC]',
-            title: 'Żądanie masowego eksportu CSV',
-            description: 'Inicjalizacja zapytania SELECT * bez klauzuli LIMIT ani stronicowania.',
-            telemetry: { latencyMs: 50, errorRate: '0.00%', rps: '850' },
-            severity: 'P1',
+            timeOffset: '+0.0s',
+            title: 'Zlecenie pobrania rejestru',
+            description: 'Użytkownik z uprawnieniami administratora żąda pełnego pliku CSV z transakcjami.',
+            telemetry: { latencyMs: 65, errorRate: '0.00%', rps: '15.1k' },
+            severity: 'P1'
           },
           {
             step: 2,
-            timeOffset: '+27s [11:30:42 UTC]',
-            title: 'Wyczerpanie sterty V8 (Heap Exhaustion)',
-            description: 'Garbage collector V8 pochłania 100% czasu procesora (GC thrashing); RAM > 1.4 GB.',
-            telemetry: { latencyMs: 3200, errorRate: '5.1%', rps: '410' },
-            severity: 'P1',
+            timeOffset: '+8.4s',
+            title: 'Zbliżanie się do granicy RAM',
+            description: 'Sterta V8 przekracza 1.8 GB. Proces przestaje odpowiadać z powodu przerw na garbage collection.',
+            telemetry: { latencyMs: 1820, errorRate: '18.9%', rps: '8.4k' },
+            severity: 'P1'
           },
           {
             step: 3,
-            timeOffset: '+30s [11:30:45 UTC]',
-            title: 'Interwencja Linux OOM Killer (Exit Code 137)',
-            description: 'System operacyjny przesyła sygnał SIGKILL; zgon procesu roboczego kontenera.',
-            telemetry: { latencyMs: 0, errorRate: '100%', rps: '0' },
-            severity: 'P0',
-          },
+            timeOffset: '+16.2s',
+            title: 'Ubicie procesu SIGKILL 137',
+            description: 'Mechanizm OOM Linuksa zabija kontener. Pod przechodzi w pętlę CrashLoopBackOff.',
+            telemetry: { latencyMs: 6400, errorRate: '62.1%', rps: '2.4k' },
+            severity: 'P0'
+          }
         ],
         fiveWhys: [
-          'Kontener Node.js zostaje nagle ubity z kodem 137 (SIGKILL) i wpada w pętlę CrashLoopBackOff.',
-          'Użytkownik zażądał eksportu 2,5 miliona wierszy historii transakcji do pliku CSV.',
-          'Cały zestaw danych został zbuforowany synchronicznie w pamięci RAM w jednym obiekcie Buffer.',
-          'Brak mechanizmu strumieniowania danych (Node.js Streams) i brak bufora z przeciwciśnieniem (backpressure).',
-          'Wykonywanie ciężkich zadań analitycznych w synchronicznym procesie webowym zamiast w asynchronicznym workerze kolejkowym.',
+          'Węzeł roboczy uległ awarii i wpadł w niekończącą się pętlę CrashLoopBackOff.',
+          'Jądro systemu Linux wysłało sygnał SIGKILL (kod wyjścia 137) do procesu Node.js.',
+          'Środowisko wykonawcze V8 osiągnęło twardy sufit alokacji sterty wynoszący 2 GB.',
+          'Funkcja eksportu próbowała zbuforować 2,5 miliona obiektów bazy danych do jednego ciągu tekstowego w pamięci RAM.',
+          'Brak obsługi potoków strumieniowych (backpressure) oraz brak stronicowania zapytań w obsłudze eksportu.'
         ],
         blastRadius: {
           nodes: [
-            { id: 'n1', name: 'Pod Workerów Raportów', role: 'Przetwarzanie Danych', status: 'epicenter', statusCode: 'OOM' },
-            { id: 'n2', name: 'Klaster Kubernetes', role: 'Orkiestracja', status: 'degraded', statusCode: 'RESTART' },
-            { id: 'n3', name: 'Kolejka Zadań Redis', role: 'Broker Wiadomości', status: 'healthy', statusCode: '200 OK' },
-            { id: 'n4', name: 'Magazyn Obiektowy S3', role: 'Archiwizacja', status: 'healthy', statusCode: '200 OK' },
+            { id: 'client-spa', name: 'client-spa', role: 'Panel Zarządzania', status: 'degraded', statusCode: 'WARN' },
+            { id: 'edge-gateway', name: 'edge-gateway', role: 'Brama API', status: 'healthy', statusCode: '200 OK' },
+            { id: 'auth-service', name: 'auth-service', role: 'Serwis Logowania', status: 'healthy', statusCode: '200 OK' },
+            { id: 'database', name: 'database', role: 'Baza Danych', status: 'healthy', statusCode: '200 OK' },
+            { id: 'worker-pool', name: 'worker-pool', role: 'Węzeł Zadań Asynchronicznych', status: 'epicenter', statusCode: 'CRASH' }
           ],
-          summary: { epicenterCount: 1, degradedCount: 1, healthyCount: 2 },
+          summary: { epicenterCount: 1, degradedCount: 1, healthyCount: 3 }
         },
         chaosMetrics: [
-          { id: 'm1', name: 'Zużycie Pamięci Sterty V8', severity: 'P0', description: 'Przekroczenie limitu 1400MB i alokacja 100% przydziału RAM', status: 'injecting' },
-          { id: 'm2', name: 'Wskaźnik Restartów Kontenerów', severity: 'P0', description: 'Trzykrotny restart poda z kodem wyjścia 137 (SIGKILL)', status: 'injecting' },
+          { id: 'cm-oom-1', name: 'Zużycie Sterty Node (MB)', severity: 'P0', description: '2048 / 2048 MB zajęte', status: 'injecting' },
+          { id: 'cm-oom-2', name: 'Paraliż Garbage Collector', severity: 'P0', description: '98% czasu procesora poświęcane na próby zwolnienia pamięci', status: 'injecting' }
         ],
         postMortem: {
-          summary: 'Nieograniczona alokacja bufora CSV w pamięci RAM wywołała interwencję jądra Linux OOM Killer i zgon poda.',
-          impact: 'Restart 4 kluczowych procesów roboczych w klastrze; 5-minutowa niedostępność panelu administracyjnego.',
+          summary: 'Ładowanie 2,5 mln rekordów do pamięci RAM doprowadziło do przepełnienia sterty i ubicia procesu przez OOM Killera.',
+          impact: 'Pula workerów w tle została sparaliżowana; przetwarzanie faktur opóźnione o 3 godziny.',
           actionItems: [
-            'Przepisać wszystkie operacje eksportu danych na strumienie Node.js Stream Pipeline.',
-            'Wdrożyć asynchroniczny eksport plików z przesyłaniem linku S3 przez kolejkę zadań BullMQ.',
-            'Zdefiniować twarde limity zasobów memory requests/limits w manifestach Kubernetes.',
-          ],
-        },
+            'Zastąpić ładowanie tablic do RAM strumieniami stream.pipeline i transformatorami CSV.',
+            'Skonfigurować limity pamięci w Kubernetes z progiem ostrzegawczym przy 75% zużycia.',
+            'Wprowadzić obowiązkowe stronicowanie kursorowe na wszystkich endpointach eksportu danych.'
+          ]
+        }
       },
       'retry-storm': {
         id: 'retry-storm',
         title: 'Kaskadowa Burza Ponowień',
-        badge: 'WSPÓŁBIEŻNOŚĆ / SIEĆ',
+        badge: 'CONCURRENCY / NETWORK',
         severity: 'P1',
-        description: 'Natychmiastowe ponowienia bez losowego rozproszenia (jitter) przy 500ms opóźnieniu spotęgowały ruch o 500%, obalając bazy danych.',
-        codeSnippet: `// ❌ PRZEKLĘTY KOD: Synchroniczna burza ponowień bez opóźnienia
-async function fetchWithRetry(url, retries = 5) {
-  for (let i = 0; i < retries; i++) {
+        description: 'Błyskawiczne ponowienia bez losowego rozrzutu czasu (jitter) podczas 500ms skoku opóźnienia zwielokrotniły ruch o 500%, kładąc bazę.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Natychmiastowa pętla ponowień bez rozrzutu czasu
+async function fetchWithRetry(url: string, attempts = 5) {
+  for (let i = 0; i < attempts; i++) {
     try {
       return await fetch(url);
-    } catch (e) {
-      // Natychmiastowe ponowienie bez opóźnienia zwielokrotnia obciążenie
+    } catch (err) {
+      // BŁĄD: Równoczesne ponawianie zapytań dobija leżący serwer
+      await new Promise(r => setTimeout(r, 100));
     }
   }
 }`,
-        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Wykładnicze Wycofywanie z Pełnym Jitterem
-async function fetchWithRetry(url, retries = 3, baseDelay = 100) {
-  for (let i = 0; i < retries; i++) {
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Wykładnicze opóźnienie z pełnym szumem losowym
+async function fetchWithFullJitter(url: string, maxAttempts = 3, baseDelay = 100) {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
-      return await fetch(url);
-    } catch (e) {
-      if (i === retries - 1) throw e;
-      const maxDelay = baseDelay * Math.pow(2, i);
-      const jitter = Math.floor(Math.random() * maxDelay);
-      await new Promise(r => setTimeout(r, jitter));
+      const res = await fetch(url);
+      if (res.ok) return res;
+      if (res.status < 500) throw new Error(\`Błąd klienta: \${res.status}\`);
+    } catch (err) {
+      if (attempt === maxAttempts - 1) throw err;
+      // Wzór na wykładnicze opóźnienie z pełnym jitterem
+      const maxBackoff = baseDelay * (2 ** attempt);
+      const sleep = Math.random() * maxBackoff;
+      await new Promise(r => setTimeout(r, sleep));
     }
   }
 }`,
-        stackTrace: `FetchError: request to http://profile-service/user failed, reason: connect ECONNREFUSED 10.0.12.44:80
-    at ClientRequest.<anonymous> (node_modules/node-fetch/lib/index.js:1491:11)`,
+        stackTrace: `HTTP/1.1 429 Too Many Requests
+Date: Fri, 06 Nov 2026 14:22:01 GMT
+Retry-After: 30
+X-RateLimit-Remaining: 0
+X-Throttling-Reason: Global upstream connection queue capacity exceeded (10,000 / 10,000)`,
         timeline: [
-          { time: '18:32:00 UTC', label: 'Spike Inicjalny', description: 'Krótkotrwały wzrost opóźnienia bazy danych do 450ms' },
-          { time: '18:33:15 UTC', label: 'Burst Ponowień', description: '5-krotne ponowienia klientów powodują 500% wzrost zapytań RPS' },
-          { time: '18:35:00 UTC', label: 'Zapaść Bramki', description: 'Bramka API Edge odrzuca ruch kodem 504 Gateway Timeout', isFatal: true },
+          { time: '14:22:00 UTC', label: '500ms skok opóźnienia', desc: 'Chwilowa utrata pakietów powoduje pierwsze błędy w aplikacjach mobilnych' },
+          { time: '14:22:01 UTC', label: 'Fala 10x większego ruchu', desc: '150 000 klientów jednocześnie ponawia zapytanie dokładnie po 100 ms' },
+          { time: '14:22:05 UTC', label: 'Globalna blokada bramy', desc: 'Bramy API włączają dławienie ruchu, odrzucając 92% żądań', isFatal: true }
         ],
         replayerSteps: [
           {
             step: 1,
-            timeOffset: '+0.0s [18:32:00 UTC]',
-            title: 'Chwilowa czkawka bazy danych',
-            description: 'Pojedyncza blokada tabeli podbija opóźnienie mikroserwisu do 450ms.',
-            telemetry: { latencyMs: 450, errorRate: '1.20%', rps: '3.1k' },
-            severity: 'P1',
+            timeOffset: '+0.0s',
+            title: 'Chwilowe opóźnienie serwera',
+            description: 'Przełączenie tras sieciowych generuje 400ms opóźnienia na bramie brzegowej.',
+            telemetry: { latencyMs: 410, errorRate: '1.2%', rps: '14.0k' },
+            severity: 'P1'
           },
           {
             step: 2,
-            timeOffset: '+75s [18:33:15 UTC]',
-            title: 'Kaskadowe zwielokrotnienie zapytań (5x Retry)',
-            description: 'Brak backoffu powoduje, że 10 000 klientów ponawia żądania jednocześnie.',
-            telemetry: { latencyMs: 2400, errorRate: '41.5%', rps: '15.5k' },
-            severity: 'P1',
+            timeOffset: '+0.5s',
+            title: 'Fala synchronicznych powtórzeń',
+            description: 'Klienci bez opóźnień losowych odpalają 5 jednoczesnych prób, mnożąc ruch 5-krotnie.',
+            telemetry: { latencyMs: 2540, errorRate: '14.8%', rps: '8.1k' },
+            severity: 'P1'
           },
           {
             step: 3,
-            timeOffset: '+180s [18:35:00 UTC]',
-            title: 'Zapaść Bramki API Edge (504 Storm)',
-            description: 'Pamięć kolejki bramki wyczerpuje się; masowo zwracane błędy 504 Gateway Timeout.',
-            telemetry: { latencyMs: 9200, errorRate: '94.8%', rps: '1.1k' },
-            severity: 'P0',
-          },
+            timeOffset: '+2.1s',
+            title: 'Dławienie na bramie brzegowej',
+            description: 'Kolejki przepełnione. Ograniczniki przepustowości ucinają 90% zapytań błędem HTTP 429.',
+            telemetry: { latencyMs: 4800, errorRate: '48.9%', rps: '3.2k' },
+            severity: 'P1'
+          }
         ],
         fiveWhys: [
-          'Bramka API Edge odrzuca żądania z kodem 504 Gateway Timeout i 100% użyciem procesora.',
-          'Krótkotrwały wzrost opóźnienia bazy danych (450ms) wywołał pierwsze przekroczenia limitu czasu.',
-          'Klienci HTTP natychmiast powtarzali nieudane zapytania w pętli bez żadnego opóźnienia ani losowości.',
-          'Brak algorytmu wykładniczego wycofywania z losowym rozproszeniem (Exponential Backoff with Full Jitter).',
-          'Brak adaptacyjnego ogranicznika przepustowości (Rate Limiting) oraz brak globalnego wzorca Circuit Breaker na bramce ingress.',
+          'Usługi nadrzędne dławią ruch zwracając błąd HTTP 429 Too Many Requests.',
+          'Liczba zapytań na bramie API wzrosła skokowo z 14k RPS do ponad 70k RPS w 2 sekundy.',
+          'Krótkotrwałe 500ms zakłócenie sieci wywołało pętle automatycznych ponowień we wszystkich aplikacjach.',
+          'Aplikacje klienckie posiadały sztywne ponawianie co 100ms bez elementu losowego.',
+          'Brak algorytmu Exponential Backoff z pełnym jitterem oraz brak wyłączników Circuit Breaker po stronie klienta.'
         ],
         blastRadius: {
           nodes: [
-            { id: 'n1', name: 'Bramka API Edge', role: 'Ingress Proxy', status: 'epicenter', statusCode: 'FAIL' },
-            { id: 'n2', name: 'Serwis Uwierzytelniania', role: 'Zarządzanie Sesjami', status: 'degraded', statusCode: 'WARN' },
-            { id: 'n3', name: 'Transakcyjna Baza Danych', role: 'Baza Główna', status: 'degraded', statusCode: 'WARN' },
-            { id: 'n4', name: 'Frontend Client SPA', role: 'Interfejs Klienta', status: 'healthy', statusCode: '200 OK' },
+            { id: 'client-spa', name: 'client-spa', role: 'Aplikacje Klientów', status: 'degraded', statusCode: '429' },
+            { id: 'edge-gateway', name: 'edge-gateway', role: 'Krawędź Cloudflare', status: 'epicenter', statusCode: 'THROTTLE' },
+            { id: 'auth-service', name: 'auth-service', role: 'Serwis Autoryzacji', status: 'degraded', statusCode: 'WARN' },
+            { id: 'database', name: 'database', role: 'Baza RDS', status: 'degraded', statusCode: 'WARN' },
+            { id: 'worker-pool', name: 'worker-pool', role: 'Kolejka Zadań', status: 'healthy', statusCode: '200 OK' }
           ],
-          summary: { epicenterCount: 1, degradedCount: 2, healthyCount: 1 },
+          summary: { epicenterCount: 1, degradedCount: 3, healthyCount: 1 }
         },
         chaosMetrics: [
-          { id: 'm1', name: 'Sztuczne Opóźnienie Brzegowe', severity: 'P1', description: 'Wstrzyknięcie +2500ms opóźnienia na bramce API Gateway', status: 'injecting' },
-          { id: 'm2', name: 'Wskaźnik Kaskadowych Błędów 504', severity: 'P1', description: 'Skok wskaźnika odrzuceń do 94.8% żądań ingress', status: 'injecting' },
+          { id: 'cm-rs-1', name: 'Mnożnik Ruchu Wejściowego', severity: 'P1', description: '5,2x powyżej średniej', status: 'injecting' },
+          { id: 'cm-rs-2', name: 'Wskaźnik Odrzuconych Pakietów', severity: 'P1', description: '89,4% zapytań zablokowanych na krawędzi', status: 'injecting' }
         ],
         postMortem: {
-          summary: 'Liniowa amplifikacja ponowień wywołała samobójczy rozproszony atak odmowy usługi (DoS).',
-          impact: 'Serwisy uwierzytelniania i profili odrzuciły 45 000 żądań w oknie 18 minut.',
+          summary: 'Krótkotrwałe opóźnienie serwera przerodziło się w lawinową burzę ponowień z powodu braku losowego opóźnienia.',
+          impact: 'Brama sieciowa blokowała ruch przez 14 minut, odcinając użytkowników na całym świecie.',
           actionItems: [
-            'Wymuszenie algorytmu Full Jitter z wykładniczym wycofywaniem we wszystkich klientach RPC.',
-            'Wdrożenie circuit breakerów odcinających ruch przed nasyceniem bazy.',
-            'Konfiguracja adaptacyjnego ograniczania przepustowości na bramce Envoy.',
-          ],
-        },
+            'Wymusić algorytm Exponential Backoff z Full Jitter we wszystkich bibliotekach SDK.',
+            'Wdrożyć adaptacyjne wyłączniki awaryjne (Circuit Breakers) na bramie brzegowej.',
+            'Wprowadzić limity zapytań powiązane z unikalnym identyfikatorem urządzenia.'
+          ]
+        }
       },
       'cors-nightmare': {
         id: 'cors-nightmare',
-        title: 'Koszmar Preflight CORS',
-        badge: 'SIEĆ / BEZPIECZEŃSTWO',
+        title: 'Koszmar Żądań Wstępnych CORS',
+        badge: 'NETWORK / SECURITY',
         severity: 'P1',
-        description: 'Brakujące nagłówki CORS na bramce API spowodowały, że wszystkie żądania OPTIONS z innej domeny zakończyły się błędem 403, blokując całe SPA.',
-        codeSnippet: `// ❌ PRZEKLĘTY KOD: Sztywne i niekompletne nagłówki CORS
+        description: 'Brak nagłówków CORS na bramie API spowodował odrzucenie wszystkich zapytań wstępnych OPTIONS z kodem 403, paraliżując interfejs SPA.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Podatne dynamiczne odbijanie nagłówka Origin
 app.use((req, res, next) => {
-  // BŁĄD: Brak obsługi metody OPTIONS i brak nagłówka credentials
-  res.header('Access-Control-Allow-Origin', 'https://bugmortem.com');
+  // BŁĄD: Odbijanie nagłówka bez weryfikacji domen
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  // Brak obsługi żądań OPTIONS zwraca błąd 404/403 przy zapytaniu wstępnym
   next();
 });`,
-        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Pełny pakiet CORS z bezpieczną białą listą
-import cors from 'cors';
-
-const allowedOrigins = new Set([
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Bezpieczna biała lista domen i buforowanie zapytań preflight
+const ALLOWED_ORIGINS = new Set([
   'https://bugmortem.vercel.app',
-  'https://bugmortem.com'
+  'https://app.bugmortem.dev'
 ]);
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.has(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Niedozwolone przez politykę CORS SRE'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true,
-  maxAge: 86400 // Cache preflight na 24h
-}));`,
-        stackTrace: `Access to fetch at 'https://api.bugmortem.io/v1/auth' from origin 'https://app.bugmortem.io' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.`,
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    res.header('Access-Control-Max-Age', '86400'); // Buforowanie preflight na 24h
+  }
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});`,
+        stackTrace: `Access to fetch at 'https://api.bugmortem.dev/v1/auth' from origin 'https://bugmortem.vercel.app' 
+has been blocked by CORS policy: Response to preflight request doesn't pass access control check: 
+No 'Access-Control-Allow-Origin' header is present on the requested resource. 
+If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.`,
         timeline: [
-          { time: '08:00:00 UTC', label: 'Domain Cutover', description: 'Przełączenie aplikacji frontendowej na nową subdomenę app.bugmortem.io' },
-          { time: '08:01:20 UTC', label: 'OPTIONS 403', description: 'Przeglądarki wysyłają żądania preflight OPTIONS, które odbijają się od bramki' },
-          { time: '08:02:00 UTC', label: 'Full App Lockout', description: '100% użytkowników nie może zalogować się do aplikacji SPA', isFatal: true },
+          { time: '17:00:00 UTC', label: 'Wdrożenie konfiguracji bramy', desc: 'Poprawka bezpieczeństwa aktualizuje reguły CORS na bramie API' },
+          { time: '17:00:05 UTC', label: 'Błąd zapytań wstępnych', desc: 'Przeglądarki blokują zapytania OPTIONS zwracające kod HTTP 403' },
+          { time: '17:00:10 UTC', label: 'Całkowity paraliż UI', desc: 'Aplikacja frontendowa przestaje pobierać jakiekolwiek dane', isFatal: true }
         ],
         replayerSteps: [
           {
             step: 1,
-            timeOffset: '+0.0s [08:00:00 UTC]',
-            title: 'Wdrożenie frontendu pod nową subdomeną',
-            description: 'Ruch przekierowany na domenę app.bugmortem.io; bramka API nie ma zaktualizowanej reguły.',
-            telemetry: { latencyMs: 18, errorRate: '0.00%', rps: '4.2k' },
-            severity: 'P1',
+            timeOffset: '+0.0s',
+            title: 'Aktualizacja reguł na bramie',
+            description: 'Wdrożenie Terraform modyfikuje nagłówki CORS na bramie API.',
+            telemetry: { latencyMs: 38, errorRate: '0.00%', rps: '15.4k' },
+            severity: 'P1'
           },
           {
             step: 2,
-            timeOffset: '+80s [08:01:20 UTC]',
-            title: 'Odrzucenie zapytań preflight OPTIONS',
-            description: 'Przeglądarki wysyłają żądania weryfikacyjne OPTIONS i otrzymują kod 403 Forbidden.',
-            telemetry: { latencyMs: 65, errorRate: '58.3%', rps: '4.1k' },
-            severity: 'P1',
+            timeOffset: '+1.5s',
+            title: 'Odrzucanie żądań preflight OPTIONS',
+            description: 'Przeglądarki wysyłają obowiązkowe zapytania wstępne OPTIONS i otrzymują 403 Forbidden.',
+            telemetry: { latencyMs: 120, errorRate: '45.0%', rps: '9.2k' },
+            severity: 'P1'
           },
           {
             step: 3,
-            timeOffset: '+120s [08:02:00 UTC]',
-            title: 'Całkowita blokada sesji (Full App Lockout)',
-            description: 'Brak nagłówka Access-Control-Allow-Origin blokuje wykonanie skryptów w przeglądarkach.',
-            telemetry: { latencyMs: 70, errorRate: '100%', rps: '3.8k' },
-            severity: 'P0',
-          },
+            timeOffset: '+4.0s',
+            title: 'Całkowita blokada interfejsu SPA',
+            description: 'Żadne uwierzytelnione zapytanie nie przechodzi weryfikacji CORS. 100% klientów odciętych.',
+            telemetry: { latencyMs: 210, errorRate: '99.8%', rps: '1.2k' },
+            severity: 'P1'
+          }
         ],
         fiveWhys: [
-          'Przeglądarki użytkowników blokują wszystkie żądania API z błędem "CORS policy: No Access-Control-Allow-Origin".',
-          'Frontend SPA został zmigrowany na nową subdomenę app.bugmortem.io bez aktualizacji bramki API.',
-          'Bramka API odrzucała zapytania preflight HTTP OPTIONS kodem 403 Forbidden zamiast 204 No Content.',
-          'Niejawna konfiguracja nagłówków CORS w kodzie aplikacji zamiast scentralizowanej polityki na bramce API.',
-          'Brak automatycznych testów dymnych (smoke tests) sprawdzających żądania OPTIONS w procesie Continuous Deployment.',
+          'Aplikacja internetowa nie może zalogować użytkownika ani pobrać danych o incydentach.',
+          'Konsola przeglądarki zgłasza "Blocked by CORS policy: No Access-Control-Allow-Origin header present".',
+          'Brama API zwraca kod HTTP 403 na zapytania wstępne OPTIONS wysyłane przez przeglądarkę.',
+          'Nieprawidłowa reguła na bramie usunęła nagłówki CORS ze wszystkich zapytań innych niż GET.',
+          'Brak automatycznych testów integracyjnych weryfikujących buforowanie zapytań preflight w przeglądarce.'
         ],
         blastRadius: {
           nodes: [
-            { id: 'n1', name: 'Bramka API Gateway', role: 'Zarządzanie Ruchem', status: 'epicenter', statusCode: '403' },
-            { id: 'n2', name: 'Aplikacja SPA Klienta', role: 'Warstwa Użytkownika', status: 'degraded', statusCode: 'BLOCKED' },
-            { id: 'n3', name: 'Mikroserwis Kont', role: 'Logika Biznesowa', status: 'healthy', statusCode: '200 OK' },
-            { id: 'n4', name: 'Baza Danych Użytkowników', role: 'Magazyn Danych', status: 'healthy', statusCode: '200 OK' },
+            { id: 'client-spa', name: 'client-spa', role: 'Aplikacja SPA', status: 'epicenter', statusCode: 'CORS_FAIL' },
+            { id: 'edge-gateway', name: 'edge-gateway', role: 'Brama AWS API Gateway', status: 'degraded', statusCode: '403' },
+            { id: 'auth-service', name: 'auth-service', role: 'API Logowania', status: 'healthy', statusCode: '200 OK' },
+            { id: 'database', name: 'database', role: 'Baza Danych', status: 'healthy', statusCode: '200 OK' },
+            { id: 'worker-pool', name: 'worker-pool', role: 'Kolejka Zadań', status: 'healthy', statusCode: '200 OK' }
           ],
-          summary: { epicenterCount: 1, degradedCount: 1, healthyCount: 2 },
+          summary: { epicenterCount: 1, degradedCount: 1, healthyCount: 3 }
         },
         chaosMetrics: [
-          { id: 'm1', name: 'Burza Unieważnienia Sesji', severity: 'P1', description: 'Masowe odrzucenie tokenów JWT w zapytaniach cross-origin', status: 'injecting' },
-          { id: 'm2', name: 'Wskaźnik Zablokowanych OPTIONS', severity: 'P1', description: '100% żądań preflight zakończonych błędem przeglądarki', status: 'injecting' },
+          { id: 'cm-cors-1', name: 'Błędy Zapytań Preflight', severity: 'P1', description: '99,8% żądań OPTIONS odrzuconych', status: 'injecting' },
+          { id: 'cm-cors-2', name: 'Błędy Sieciowe Klientów', severity: 'P1', description: 'Zero uwierzytelnionego ruchu przepuszczanego przez bramę', status: 'injecting' }
         ],
         postMortem: {
-          summary: 'Brak obsługi preflight OPTIONS na bramce po migracji domeny zablokował komunikację SPA z API.',
-          impact: 'Całkowity brak możliwości logowania i wykonywania operacji przez 22 minuty.',
+          summary: 'Błędna aktualizacja polityki CORS doprowadziła do odrzucenia wszystkich zapytań wstępnych OPTIONS kodem 403.',
+          impact: 'Całkowita blokada aplikacji webowej dla wszystkich użytkowników przez 22 minuty.',
           actionItems: [
-            'Wdrożyć scentralizowaną konfigurację CORS z buforowaniem preflight (max-age: 86400).',
-            'Dodać automatyczne testy dymne preflight CORS w pipeline CI/CD przed przełączeniem DNS.',
-            'Zsynchronizować białą listę dozwolonych domen z konfiguracją infrastruktury Terraform.',
-          ],
-        },
+            'Wdrożyć nagłówek Access-Control-Max-Age = 86400 (24h) buforujący zapytania wstępne.',
+            'Dodać automatyczne testy dymne Playwright sprawdzające nagłówki CORS w procesie wdrożeniowym.',
+            'Utrzymywać rygorystyczną białą listę dozwolonych domen w centralnym repozytorium infrastruktury.'
+          ]
+        }
       },
       'serverless-timeout': {
         id: 'serverless-timeout',
-        title: 'Zapaść Zimnego Startu Serverless i Timeout Bramki 504',
-        badge: 'CHMURA / SERVERLESS',
+        title: 'Kaskada Zimnego Startu Serverless i Błąd Bramy 504',
+        badge: 'CLOUD / SERVERLESS',
         severity: 'P0',
-        description: 'Inicjalizacja ciężkich połączeń bazy wewnątrz handlera funkcji wywołała kaskadę zimnych startów, przekraczając 29-sekundowy limit bramki API.',
-        codeSnippet: `// ❌ PRZEKLĘTY KOD: Ciężka inicjalizacja bazy wewnątrz handlera Lambda
-export const handler = async (event: any) => {
-  // BŁĄD: Nowe połączenie SSL/TLS nawiązywane przy KAŻDYM wywołaniu funkcji
-  const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: true }
-  });
-  await client.connect(); // 800ms opóźnienia przy zimnym starcie
-  const result = await client.query('SELECT * FROM inventory WHERE id = $1', [event.pathParameters.id]);
-  await client.end();
-  return { statusCode: 200, body: JSON.stringify(result.rows) };
-};`,
-        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Ponowne użycie połączenia poza handlerem z RDS Proxy
+        description: 'Inicjalizacja ciężkiego klienta bazy danych wewnątrz handlera funkcji serverless wywołała kaskadę zimnych startów, przekraczając 29-sekundowy limit API Gateway.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Ponowna inicjalizacja puli połączeń wewnątrz funkcji
 import { Pool } from 'pg';
 
-// Połączenie zainicjalizowane RAZ poza handlerem — ponowne użycie w ciepłych kontenerach
+export const handler = async (event: any) => {
+  // BŁĄD: Otwieranie ciężkiej puli bazy danych przy każdym wywołaniu funkcji
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const client = await pool.connect();
+  const res = await client.query('SELECT * FROM checkout_cart WHERE cart_id = $1', [event.cartId]);
+  return { statusCode: 200, body: JSON.stringify(res.rows) };
+};`,
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Ponowne wykorzystanie połączeń i pooling RDS Proxy
+import { Pool } from 'pg';
+
+// Globalny kontekst wykonawczy zachowuje połączenie między wywołaniami
 const pool = new Pool({
-  host: process.env.RDS_PROXY_ENDPOINT, // Połączenie przez Amazon RDS Proxy
-  max: 1, // Jedno połączenie na kontener serverless
-  idleTimeoutMillis: 120000,
+  host: process.env.RDS_PROXY_HOST, // Połączenie przekierowane przez AWS RDS Proxy
+  max: 1, // Pojedyncze połączenie na kontener zapobiega wyczerpaniu puli
   connectionTimeoutMillis: 2000,
 });
 
 export const handler = async (event: any) => {
   const client = await pool.connect();
   try {
-    const result = await client.query(
-      'SELECT id, quantity FROM inventory WHERE id = $1',
-      [event.pathParameters.id]
-    );
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(result.rows[0] || {})
-    };
+    const res = await client.query('SELECT * FROM checkout_cart WHERE cart_id = $1', [event.cartId]);
+    return { statusCode: 200, body: JSON.stringify(res.rows) };
   } finally {
     client.release();
   }
 };`,
-        stackTrace: `2026-11-06T12:00:29.001Z d8e4a1b2-9c3f-4e8a Task timed out after 29.03 seconds
-Endpoint request timed out
-HTTP/1.1 504 Gateway Timeout
-{"message": "Endpoint request timed out"}`,
+        stackTrace: `HTTP/1.1 504 Gateway Timeout
+Content-Type: application/json
+Date: Sat, 07 Nov 2026 02:15:31 GMT
+
+{
+  "message": "Endpoint request timed out",
+  "gateway": "Amazon API Gateway",
+  "integrationLatencyMs": 29004,
+  "executionTimeout": true
+}`,
         timeline: [
-          { time: '12:00:00 UTC', label: 'Flash Sale Traffic', description: 'Kampania marketingowa wywołuje nagły skok do 5 000 RPS' },
-          { time: '12:00:15 UTC', label: '120 Cold Starts', description: 'Dostawca chmury uruchamia równolegle 120 zimnych instancji mikro-kontenerów' },
-          { time: '12:00:29 UTC', label: 'Gateway 504 Timeout', description: 'Inicjalizacja puli przekracza 29s; bramka API odcina połączenia z kodem 504', isFatal: true },
+          { time: '02:15:00 UTC', label: 'Skok ruchu z kampanii', desc: 'Promocja marketingowa wymusza alokację 2000 nowych kontenerów Lambda' },
+          { time: '02:15:15 UTC', label: 'Zimny start i blokada bazy', desc: 'Każdy kontener jednocześnie negocjuje szyfrowanie TLS i połączenie z bazą' },
+          { time: '02:15:29 UTC', label: 'Sufit limitu bramy API', desc: 'API Gateway przerywa połączenia po 29 sekundach błędem 504 Gateway Timeout', isFatal: true }
         ],
         replayerSteps: [
           {
             step: 1,
-            timeOffset: '+0.0s [12:00:00 UTC]',
-            title: 'Start kampanii błyskawicznej (Traffic Surge)',
-            description: 'Nagły wzrost zapytań o stany magazynowe wymusza skalowanie w górę.',
-            telemetry: { latencyMs: 120, errorRate: '0.00%', rps: '4.8k' },
-            severity: 'P1',
+            timeOffset: '+0.0s',
+            title: 'Gwałtowny skok wywołań',
+            description: 'Nagły wzrost ruchu zmusza AWS Lambda do uruchomienia 1200 nowych środowisk wykonawczych.',
+            telemetry: { latencyMs: 450, errorRate: '0.00%', rps: '18.4k' },
+            severity: 'P1'
           },
           {
             step: 2,
-            timeOffset: '+15s [12:00:15 UTC]',
-            title: 'Kaskada zimnych startów (120 Cold Starts)',
-            description: 'Instancje Lambda równolegle bombardują serwer bazy żądaniami handshaku TLS.',
-            telemetry: { latencyMs: 4800, errorRate: '22.4%', rps: '3.6k' },
-            severity: 'P1',
+            timeOffset: '+12.5s',
+            title: 'Szturm negocjacji TLS i połączeń',
+            description: '1200 kontenerów równolegle łączy się z bazą danych. Kolejka połączeń zostaje zablokowana.',
+            telemetry: { latencyMs: 14200, errorRate: '42.8%', rps: '6.1k' },
+            severity: 'P1'
           },
           {
             step: 3,
-            timeOffset: '+29s [12:00:29 UTC]',
-            title: 'Przekroczenie limitu bramki API (504 Timeout)',
-            description: 'Twardy limit 29s API Gateway uderza w zapytania; 100% żądań zakończonych timeoutem.',
-            telemetry: { latencyMs: 29000, errorRate: '100%', rps: '210' },
-            severity: 'P0',
-          },
+            timeOffset: '+29.0s',
+            title: 'Twarde odcięcie 504 na bramie API',
+            description: 'API Gateway zrywa wszystkie oczekujące połączenia po osiągnięciu twardego limitu 29 sekund.',
+            telemetry: { latencyMs: 29000, errorRate: '99.4%', rps: '410' },
+            severity: 'P0'
+          }
         ],
         fiveWhys: [
-          'Klienci otrzymują błędy 504 Gateway Timeout po dokładnie 29 sekundach oczekiwania.',
-          'Gwałtowny skok ruchu z kampanii wywołał równoległą alokację 120 nowych instancji funkcji serverless.',
-          'Każda zimna instancja wykonywała ciężką inicjalizację TLS i otwierała dedykowane połączenie wewnątrz handlera.',
-          'Brak ponownego użycia kontekstu wykonania (execution context reuse) oraz brak pośrednika połączeń RDS Proxy.',
-          'Brak mechanizmu Provisioned Concurrency dla krytycznych ścieżek oraz brak standardu architektury serverless dla bazy danych.',
+          'Brama API Gateway odpowiada kodem HTTP 504 Gateway Timeout na zapytania w koszyku.',
+          'Funkcje Lambda nie zwróciły odpowiedzi przed upływem 29-sekundowego limitu czasu bramy.',
+          'Nagły skok ruchu wymusił jednoczesne uruchomienie setek kontenerów w trybie zimnego startu.',
+          'Pula połączeń bazy danych była tworzona wewnątrz handlera zamiast w zasięgu globalnym.',
+          'Brak proxy połączeń (RDS Proxy) oraz brak zarezerwowanej współbieżności (Provisioned Concurrency) na kluczowych ścieżkach.'
         ],
         blastRadius: {
           nodes: [
-            { id: 'n1', name: 'Bramka API Gateway', role: 'Ingress Timeout 29s', status: 'epicenter', statusCode: '504' },
-            { id: 'n2', name: 'Klaster Lambda Workerów', role: 'Obliczenia Serverless', status: 'degraded', statusCode: 'TIMEOUT' },
-            { id: 'n3', name: 'Baza Danych Magazynu', role: 'Instancja PostgreSQL', status: 'degraded', statusCode: 'SATURATED' },
-            { id: 'n4', name: 'Koszyk Zakupowy SPA', role: 'Frontend Klienta', status: 'degraded', statusCode: 'ERROR' },
+            { id: 'client-spa', name: 'client-spa', role: 'Koszyk SPA', status: 'degraded', statusCode: '504' },
+            { id: 'edge-gateway', name: 'edge-gateway', role: 'AWS API Gateway', status: 'epicenter', statusCode: 'TIMEOUT' },
+            { id: 'auth-service', name: 'auth-service', role: 'Cognito / JWT', status: 'healthy', statusCode: '200 OK' },
+            { id: 'database', name: 'database', role: 'Aurora Serverless', status: 'degraded', statusCode: 'STALL' },
+            { id: 'worker-pool', name: 'worker-pool', role: 'Flota Lambda', status: 'degraded', statusCode: 'COLD_START' }
           ],
-          summary: { epicenterCount: 1, degradedCount: 3, healthyCount: 0 },
+          summary: { epicenterCount: 1, degradedCount: 3, healthyCount: 1 }
         },
         chaosMetrics: [
-          { id: 'm1', name: 'Zimne Starty Serverless P99', severity: 'P0', description: 'Średni czas zimnego startu wzrósł do 29 000ms z powodu kolejki połączeń', status: 'injecting' },
-          { id: 'm2', name: 'Wskaźnik Timeoutów Bramki 504', severity: 'P0', description: '100% żądań odrzuconych po przekroczeniu 29 sekund przez API Gateway', status: 'injecting' },
+          { id: 'cm-srv-1', name: 'Czas Zimnego Startu Kontenera', severity: 'P0', description: 'Średnio 28 400ms na nowy kontener', status: 'injecting' },
+          { id: 'cm-srv-2', name: 'Wskaźnik Przekroczeń Czasu 504', severity: 'P0', description: '99,4% wywołań zakończonych timeoutem', status: 'injecting' }
         ],
         postMortem: {
-          summary: 'Inicjalizacja połączeń z bazą danych wewnątrz handlera funkcji serverless wywołała kaskadę zimnych startów i timeout bramki API.',
-          impact: 'Niemożność sprawdzenia stanu magazynowego produktów przez 14 minut trwania wyprzedaży błyskawicznej.',
+          summary: 'Inicjalizacja puli połączeń wewnątrz funkcji podczas skoku ruchu doprowadziła do przekroczenia 29-sekundowego limitu czasu bramy API.',
+          impact: 'Koszyk sklepowy całkowicie leżał przez 35 minut; zero przetworzonych zamówień w godzinie szczytu.',
           actionItems: [
-            'Wyprowadzić inicjalizację klienta bazy danych poza ciało handlera w celu współdzielenia połączenia.',
-            'Wdrożyć Amazon RDS Proxy do agregacji i buforowania połączeń serverless.',
-            'Skonfigurować Provisioned Concurrency (min. 20 ciepłych instancji) na okres planowanych kampanii marketingowych.',
-          ],
-        },
+            'Przenieść instancje klientów bazy danych do zasięgu globalnego poza funkcję handlera.',
+            'Wdrożyć usługę AWS RDS Proxy w celu zarządzania pulą połączeń i wyeliminowania narzutu TLS.',
+            'Włączyć funkcję Provisioned Concurrency na kluczowych ścieżkach zakupowych przed akcjami marketingowymi.'
+          ]
+        }
       },
       's3-lambda-loop': {
         id: 's3-lambda-loop',
-        title: 'Spirala Śmierci: Rekurencyjna Pętla S3 ⇄ Lambda',
+        title: 'Spirala Rekurencyjnej Pętli Śmierci AWS S3 ⇄ Lambda',
         badge: 'AWS / SERVERLESS',
         severity: 'P0',
-        description:
-          'Wyzwalacz S3 bez filtra prefiksu spowodował, że Lambda przetwarzająca obrazy zapisywała miniatury z powrotem do tego samego bucketa źródłowego, rekurencyjnie wywołując się 142 000 razy w ciągu 4 minut i wyczerpując cały limit współbieżności konta AWS (1 000/1 000), paraliżując pozostałe serwisy produkcyjne.',
-        codeSnippet: `// ❌ PRZEKLĘTY KOD: Lambda zapisuje wynik do tego samego bucketa S3, który ją wywołuje
+        description: 'Wyzwalacz zdarzeń S3 bez filtra prefiksu spowodował, że funkcja Lambda zapisywała miniatury z powrotem do tego samego bucketa źródłowego, wywołując samą siebie 142 000 razy w 4 minuty i wyczerpując limit współbieżności konta AWS (1000/1000), paraliżując wszystkie inne usługi produkcyjne.',
+        codeSnippet: `// ❌ PRZEKLĘTY KOD: Lambda zapisuje wynik do tego samego bucketa S3, który ją wyzwala
 export const handler = async (event: S3Event) => {
   for (const record of event.Records) {
-    const srcKey    = record.s3.object.key;
+    const srcKey = record.s3.object.key;
     const srcBucket = record.s3.bucket.name; // "media-assets"
 
-    // BŁĄD 1: Brak filtra prefiksu — funkcja odpala się na KAŻDYM obiekcie,
-    //          łącznie z miniaturami, które sama za chwilę zapisze.
-    // BŁĄD 2: Zapis miniatury z powrotem do srcBucket wyzwala kolejne zdarzenie
-    //          s3:ObjectCreated → nieskończona rekurencyjna pętla wywołań.
+    // BŁĄD 1: Brak filtra prefiksu — odpala się dla KAŻDEGO obiektu w buckecie,
+    //         w tym dla miniatur, które ta funkcja zaraz zapisze.
+    // BŁĄD 2: Zapis miniatury z powrotem do srcBucket wyzwala
+    //         kolejne zdarzenie s3:ObjectCreated → nieskończona pętla rekurencyjna.
     const thumbnail = await resizeImage(srcKey, srcBucket);
     await s3.putObject({
-      Bucket: srcBucket,          // ← ten sam bucket co trigger!
+      Bucket: srcBucket,          // ← TEN SAM bucket co źródło wyzwalacza!
       Key: \`thumb_\${srcKey}\`,
       Body: thumbnail,
     }).promise();
   }
 };`,
-        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Osobny bucket wyjściowy + filtr prefiksu + strażnik rekurencji
+        revivedCode: `// ✅ WSKRZESZONY KOD SRE: Osobny bucket wyjściowy + filtr prefiksu + blokada pętli
 import { S3Event } from 'aws-lambda';
 import { S3 } from 'aws-sdk';
 
 const s3 = new S3();
-const INPUT_PREFIX  = 'uploads/';              // tylko oryginały
-const OUTPUT_BUCKET = process.env.THUMBNAIL_BUCKET!; // izolowany bucket wyjściowy
+const INPUT_PREFIX = 'uploads/';    // przetwarzaj tylko oryginały
+const OUTPUT_BUCKET = process.env.THUMBNAIL_BUCKET!; // odizolowany bucket wyjściowy
 
 export const handler = async (event: S3Event): Promise<void> => {
-  // Strażnik rekurencji: blokuj wywołania wyzwolone przez własny bucket wyjściowy
+  // Blokada rekurencji: odrzucaj zdarzenia wywołane przez nasz własny bucket wyjściowy
   if (process.env.AWS_LAMBDA_FUNCTION_NAME &&
       event.Records[0]?.s3.bucket.name === OUTPUT_BUCKET) {
-    console.warn('SRE GUARD: wywołanie rekurencyjne zablokowane — zdarzenie z bucketa wyjściowego odrzucone.');
+    console.warn('[BLOKADA SRE: odrzucono wywołanie rekurencyjne z bucketa wyjściowego]');
     return;
   }
 
   for (const record of event.Records) {
-    const srcKey    = record.s3.object.key;
+    const srcKey = record.s3.object.key;
     const srcBucket = record.s3.bucket.name;
 
-    // Strażnik: przetwarzaj tylko obiekty z prefiksem uploads/
+    // Strażnik: przetwarzaj wyłącznie obiekty w katalogu uploads/
     if (!srcKey.startsWith(INPUT_PREFIX)) {
-      console.info(\`SRE GUARD: pomijam \${srcKey} — poza prefiksem uploads/.\`);
+      console.info('[BLOKADA SRE: pomijanie \${srcKey} — poza prefiksem uploads/]');
       continue;
     }
 
     const thumbnail = await resizeImage(srcKey, srcBucket);
 
-    // Zapis do IZOLOWANEGO bucketa wyjściowego — nie może ponownie wyzwolić tej Lambdy
+    // Zapis do ODIZOLOWANEGO bucketa wyjściowego — nie może ponownie wywołać tej samej Lambdy
     await s3.putObject({
       Bucket: OUTPUT_BUCKET,
       Key: \`thumbs/\${srcKey.replace(INPUT_PREFIX, '')}\`,
@@ -678,309 +685,729 @@ export const handler = async (event: S3Event): Promise<void> => {
     }).promise();
   }
 };`,
-        stackTrace: `START RequestId: d3f2a1b4-8e9c-4f0a Duration: 312.45 ms Billed Duration: 313 ms
-REPORT RequestId: d3f2a1b4-8e9c-4f0a  Init Duration: 183.12 ms
+        stackTrace: `START RequestId: d3f2a1b4-8e9c-4f0a Duration: 312.45 ms Billed Duration: 313 ms Memory Size: 512 MB Max Memory Used: 148 MB
+REPORT RequestId: d3f2a1b4-8e9c-4f0a Init Duration: 183.12 ms
 
 [ERROR] 14:01:02 TooManyRequestsException: Rate exceeded
-  at Request.extractError (node_modules/aws-sdk/lib/protocol/json.js:52:27)
-  at Request.callListeners (node_modules/aws-sdk/lib/sequential_executor.js:106:20)
-  Status Code: 429, RequestId: a1b2c3d4-0000-ffff-9999-deadbeef0001
+    at Request.extractError (node_modules/aws-sdk/lib/protocol/json.js:52:27)
+    at Request.callListeners (node_modules/aws-sdk/lib/sequential_executor.js:106:20)
+    Status Code: 429, RequestId: a1b2c3d4-0000-ffff-9999-deadbeef0001
 
 [CRITICAL] 14:02:47 AWS Lambda: Account-level concurrency limit reached (1000/1000).
-  All Lambda invocations for account 123456789012 are being throttled.
-  Throttled functions: image-processor, auth-token-refresher, order-processor, payment-webhook
-
-[ALERT] CloudWatch Alarm: LambdaThrottles > 10000 in 60s — ALARM STATE
-  Namespace: AWS/Lambda | MetricName: Throttles
-  Dimensions: FunctionName=image-processor
-  EvaluationPeriods: 1 | Threshold: 10000 | ComparisonOperator: GreaterThanThreshold`,
+All Lambda invocations for account 123456789012 are being throttled.
+Throttled functions: image-processor, auth-token-refresher, order-processor, payment-webhook.`,
         timeline: [
-          {
-            time: '14:00:00 UTC',
-            label: 'S3 Ingress Event',
-            description: 'Użytkownik wgrywa pierwszy obraz do media-assets/uploads/ — Lambda wywołana normalnie.',
-          },
-          {
-            time: '14:00:08 UTC',
-            label: 'Exponential Fanout',
-            description:
-              'Lambda zapisuje miniaturę z powrotem do tego samego bucketa, wyzwalając kolejne zdarzenie S3. Liczba wywołań podwaja się co ~4 sekundy.',
-          },
-          {
-            time: '14:03:51 UTC',
-            label: 'Wyczerpanie Współbieżności (P0)',
-            description:
-              '142 000 wywołań wyczerpało 1 000/1 000 slotów współbieżności Lambda. auth-token-refresher, order-processor i payment-webhook są dławione.',
-            isFatal: true,
-          },
+          { time: '14:00:00 UTC', label: 'Pojedynczy upload pliku', desc: 'Użytkownik wgrywa header.jpg (2.1 MB) do bucketa media-assets' },
+          { time: '14:00:03 UTC', label: 'Cykl 1: samoistne wywołanie', desc: 'Lambda zapisuje thumb_header.jpg do media-assets; S3 natychmiast odpala nowe zdarzenie s3:ObjectCreated' },
+          { time: '14:00:15 UTC', label: 'Eksponencjalna lawina wywołań', desc: 'Każdy zapis miniatury odpala kolejne wykonanie: 1 → 2 → 4 → 8 równoległych procesów' },
+          { time: '14:01:00 UTC', label: 'Wyczerpanie współbieżności', desc: 'Przetwarzanie obrazów zajmuje 800 z 1000 slotów współbieżności konta; wyją alarmy CloudWatch' },
+          { time: '14:03:42 UTC', label: 'Globalny blackout konta AWS', desc: 'Osiągnięto limit 1000/1000 współbieżności (142 000 wywołań w sumie); autoryzacja, zamówienia i płatności całkowicie zablokowane błędem HTTP 429', isFatal: true }
         ],
         replayerSteps: [
           {
             step: 1,
-            timeOffset: '+0.0s [14:00:00 UTC]',
-            title: 'Pierwsze zdarzenie S3 ObjectCreated',
-            description: 'Pojedyncze wgranie pliku wyzwala image-processor Lambda — pierwsza iteracja pętli startuje cicho.',
+            timeOffset: '+0.0s',
+            title: 'Pierwszy krok rekurencji po uploadzie',
+            description: 'Użytkownik wgrywa plik header.jpg do bucketa media-assets. Lambda zmniejsza go i zapisuje thumb_header.jpg do tego samego bucketa bez filtra prefiksu.',
             telemetry: { latencyMs: 312, errorRate: '0.00%', rps: '1.2k' },
-            severity: 'P1',
+            severity: 'P1'
           },
           {
             step: 2,
-            timeOffset: '+15s [14:00:15 UTC]',
-            title: 'Rekurencyjny Fanout — Wzrost Wykładniczy',
-            description:
-              'Każdy zapis Lambdy wyzwala kolejne zdarzenie S3. Współbieżność skacze z 1 do 512 w ciągu 15 sekund.',
-            telemetry: { latencyMs: 890, errorRate: '8.4%', rps: '14.2k' },
-            severity: 'P1',
+            timeOffset: '+15.0s',
+            title: 'Lawinowy przyrost równoległych wywołań',
+            description: 'Każda nowa miniatura wyzwala kolejne uruchomienie Lambdy. Liczba kontenerów rośnie lawinowo: 1 → 2 → 4 → 16 → 256 równoległych instancji.',
+            telemetry: { latencyMs: 1840, errorRate: '12.4%', rps: '14.2k' },
+            severity: 'P1'
           },
           {
             step: 3,
-            timeOffset: '+231s [14:03:51 UTC]',
-            title: 'Wyczerpanie Limitu Współbieżności Konta (1000/1000) — P0',
-            description:
-              '142 000 wywołań pochłonęło wszystkie zarezerwowane sloty współbieżności. Każda Lambda na koncie jest dławiona błędem 429 TooManyRequestsException.',
-            telemetry: { latencyMs: 0, errorRate: '100%', rps: '142k' },
-            severity: 'P0',
-          },
+            timeOffset: '+231.0s',
+            title: 'Wyczerpanie limitu konta AWS i całkowita awaria',
+            description: '142 000 wywołań wyczerpuje cały limit 1000 slotów współbieżności konta. Serwisy logowania, zamówień i płatności zostają zablokowane kodem HTTP 429.',
+            telemetry: { latencyMs: 8400, errorRate: '98.9%', rps: '142.0k' },
+            severity: 'P0'
+          }
         ],
         fiveWhys: [
-          'Wszystkie funkcje AWS Lambda na koncie zwracają TooManyRequestsException (429); usługi uwierzytelniania, zamówień i płatności są nieosiągalne.',
-          'Funkcja image-processor pochłonęła wszystkie 1 000 slotów współbieżności konta AWS w ciągu 4 minut.',
-          'Lambda zapisywała miniatury z powrotem do tego samego bucketa S3, który ją wyzwalał, tworząc nieskończoną rekurencyjną pętlę wywołań.',
-          'Powiadomienie o zdarzeniu S3 zostało skonfigurowane bez filtra prefiksu klucza, więc każdy zapis obiektu — w tym miniatury — wyzwalał trigger.',
-          'Brak filtra prefiksu S3, brak osobnego bucketa wyjściowego, brak AWS Recursive Loop Detection i brak pułapu zarezerwowanej współbieżności dla funkcji image-processor.',
+          'Wszystkie funkcje AWS Lambda na całym koncie zwracają błąd TooManyRequestsException (429), a usługi logowania, zamówień i płatności nie odpowiadają.',
+          'Funkcja Lambda przetwarzająca obrazy zużyła wszystkie 1000 slotów współbieżności konta AWS w ciągu 4 minut.',
+          'Funkcja zapisywała miniatury z powrotem do tego samego bucketa S3, który ją wyzwalał, tworząc nieskończoną pętlę samowyzwalania.',
+          'Wyzwalacz powiadomień S3 został skonfigurowany bez filtra prefiksu klucza, więc każdy zapis nowego pliku — w tym wygenerowanej miniatury — uruchamiał funkcję.',
+          'Brak separacji bucketów na wejściowe i wyjściowe, brak limitu zarezerwowanej współbieżności dla funkcji oraz brak włączonego mechanizmu AWS Recursive Loop Detection w kodzie IaC.'
         ],
         blastRadius: {
           nodes: [
-            { id: 'n1', name: 'Bucket S3 Wejściowy', role: 'Źródło Zdarzenia / Epicenter', status: 'epicenter', statusCode: 'LOOP' },
-            { id: 'n2', name: 'Flota Lambda Workerów', role: 'Współbieżność Obliczeniowa', status: 'degraded', statusCode: '429' },
-            { id: 'n3', name: 'Serwis Tokenów Auth', role: 'Serwis Tożsamości', status: 'degraded', statusCode: 'THROTTLED' },
-            { id: 'n4', name: 'Serwis Zamówień i Płatności', role: 'Krytyczna Ścieżka Przychodów', status: 'degraded', statusCode: 'THROTTLED' },
+            { id: 'worker-pool', name: 'worker-pool', role: 'Flota AWS Lambda (image-processor)', status: 'epicenter', statusCode: 'FAIL' },
+            { id: 'edge-gateway', name: 'edge-gateway', role: 'Brama AWS API Gateway', status: 'degraded', statusCode: 'WARN' },
+            { id: 'auth-service', name: 'auth-service', role: 'Lambda Logowania (zdławiona)', status: 'degraded', statusCode: 'WARN' },
+            { id: 'database', name: 'database', role: 'Lambdy Płatności i Zamówień (zdławione)', status: 'degraded', statusCode: 'WARN' },
+            { id: 'client-spa', name: 'client-spa', role: 'Bucket S3 Ingestion (media-assets)', status: 'healthy', statusCode: '200 OK' }
           ],
-          summary: { epicenterCount: 1, degradedCount: 3, healthyCount: 0 },
+          summary: { epicenterCount: 1, degradedCount: 3, healthyCount: 1 }
         },
         chaosMetrics: [
-          {
-            id: 'm1',
-            name: 'Rekurencyjne Wywołania Lambda',
-            severity: 'P0',
-            description: '142 000 samowyzwalających się wywołań w 231 sekundach — wzrost wykładniczy',
-            status: 'injecting',
-          },
-          {
-            id: 'm2',
-            name: 'Wyczerpanie Współbieżności Konta',
-            severity: 'P0',
-            description: '1 000/1 000 slotów współbieżności zajętych — całe konto zdławione',
-            status: 'injecting',
-          },
+          { id: 'cm-s3-1', name: 'Równoległe Wywołania Lambda', severity: 'P0', description: '1000 / 1000 (100% limitu konta AWS wyczerpane)', status: 'injecting' },
+          { id: 'cm-s3-2', name: 'Liczba Wywołań w Pętli (4 min)', severity: 'P0', description: '142 380 niekontrolowanych uruchomień', status: 'injecting' },
+          { id: 'cm-s3-3', name: 'Zdławione Żądania Konta', severity: 'P0', description: '38 410 zapytań odrzuconych z błędem HTTP 429', status: 'injecting' }
         ],
         postMortem: {
-          summary:
-            'Brak filtra prefiksu S3 na wyzwalaczu Lambdy w połączeniu z zapisem miniatur do bucketa źródłowego stworzył nieskończoną pętlę rekurencyjnych wywołań, wyczerpując całkowity limit współbieżności konta AWS.',
-          impact:
-            '142 000 wywołań Lambda w 4 minuty sparaliżowało usługi uwierzytelniania, zamówień i płatności na poziomie konta. Szacowany wpływ na przychody: 120 000 PLN w zablokowanych transakcjach.',
+          summary: 'Brak filtra prefiksu S3 na wyzwalaczu połączony z zapisem wyniku do bucketa źródłowego wywołał nieskończoną pętlę rekurencyjną i całkowite wyczerpanie współbieżności konta AWS.',
+          impact: '142 000 wywołań Lambdy w 4 minuty sparaliżowało autoryzację, zamówienia i płatności na całym koncie. Szacowana strata przychodu: 28 000 USD w zablokowanych transakcjach.',
           actionItems: [
-            'Izolować wejście i wyjście Lambdy do osobnych bucketów S3 — nigdy nie zapisywać wyniku triggera z powrotem do bucketa źródłowego.',
-            'Konfigurować powiadomienia zdarzeń S3 z jawnym filtrem prefiksu klucza (np. uploads/) zapobiegającym ponownemu wyzwalaniu.',
-            'Włączyć AWS Recursive Loop Detection (dostępne od listopada 2023) i ustawić pułap zarezerwowanej współbieżności dla image-processor.',
-          ],
-        },
-      },
-    },
+            'Odseparować buckety wejściowe i wyjściowe — kategoryczny zakaz zapisu wyniku przetwarzania do bucketa źródłowego zdarzenia.',
+            'Skonfigurować powiadomienia S3 ze ścisłym filtrem prefiksu (np. uploads/) w celu zablokowania ponownego wyzwalania przez miniatury.',
+            'Włączyć natywną funkcję AWS Recursive Loop Detection oraz nałożyć twardy limit zarezerwowanej współbieżności na funkcję Lambda.'
+          ]
+        }
+      }
+    }
   },
   codeSection: {
-    cursedTitle: 'SEKCJA KODU: PRZEKLĘTY A WSKRZESZONY KOD',
-    resurrectedTitle: 'WSKRZESZONY KOD SRE (BEZPIECZNY WZORZEC)',
-    cursedBadge: 'BŁĄD KRYTYCZNY',
-    resurrectedBadge: 'WZORZEC: SRE RESILIENCE',
+    cursedTitle: 'SEKCJA ZWŁOK KODU: PRZEKLĘTY VS WSKRZESZONY KOD',
+    resurrectedTitle: 'WSKRZESZONY KOD SRE (WZORZEC ODPORNOŚCI)',
+    cursedBadge: 'AWARIA KRYTYCZNA',
+    resurrectedBadge: 'WZORZEC: ODPORNOŚĆ SRE',
     copyCta: 'Kopiuj Wskrzeszony Kod',
-    copied: 'Skopiowano do schowka!',
+    copied: 'Kod Skopiowany!',
   },
   stackTrace: {
-    title: '>_ SUROWY ŚLAD STOSU (STACK TRACE)',
+    title: 'SUROWY ZRZUT ŚLADU STOSU (STACK TRACE)',
   },
   timeline: {
-    title: '⏱ CHRONOLOGICZNA OŚ CZASU AWARII',
+    title: 'CHRONOLOGICZNA OŚ CZASU AWARII',
   },
   replayer: {
-    title: 'ODTWARZACZ ZAPAŚCI W CZASIE (INCIDENT REPLAYER)',
-    subtitle: 'Symuluj przebieg awarii sekunda po sekundzie i obserwuj degradację telemetrii',
-    play: 'Odtwórz Zapaść',
-    pause: 'Pauza',
-    reset: 'Resetuj',
+    title: 'ODTWARZACZ CZASU DO ZGONU AWARII (TIME-TO-DEATH)',
+    subtitle: 'Symuluj sekwencję awarii krok po kroku i obserwuj degradację telemetrii w czasie rzeczywistym',
+    play: 'Uruchom Symulację',
+    pause: 'Wstrzymaj Symulację',
+    reset: 'Resetuj Oś Czasu',
     speed: 'Prędkość',
     stepOf: 'Krok',
     telemetryLatency: 'Opóźnienie P99',
     telemetryErrors: 'Wskaźnik Błędów',
-    telemetryRps: 'Przepustowość RPS',
+    telemetryRps: 'Przepustowość',
   },
   fiveWhys: {
-    sectionTitle: 'DRZEWO PRZYCZYN ŹRÓDŁOWYCH (BLAMELESS 5-WHYS)',
-    sectionSubtitle: 'Systemowe śledztwo inżynieryjne od powierzchownego objawu do luki architektonicznej.',
+    sectionTitle: 'BEZSTRONNE DRZEWO PRZYCZYN 5-WHYS',
+    sectionSubtitle: 'Systemowe dochodzenie inżynieryjne od powierzchownego objawu po lukę architektoniczną.',
     levels: [
-      '1. Objaw Powierzchowny',
-      '2. Bezpośredni Wyzwalacz',
-      '3. Mechanizm Awarii',
-      '4. Luka Architektoniczna',
-      '5. Przyczyna Źródłowa',
+      '1. OBJAW POWIERZCHOWNY',
+      '2. BEZPOŚREDNI WYZWALACZ',
+      '3. MECHANIZM USZKODZENIA',
+      '4. WADA ARCHITEKTONICZNA',
+      '5. PRZYCZYNA SYSTEMOWA'
     ],
-    blamelessBadge: 'KULTURA BEZ OBWINIANIA (BLAMELESS SRE)',
-    rootCauseBadge: 'PRZYCZYNA ŹRÓDŁOWA (ROOT CAUSE)',
-    copyChain: 'Kopiuj Ścieżkę Dochodzenia',
-    copied: 'Skopiowano Ścieżkę!',
+    blamelessBadge: 'KULTURA BEZSTRONNEGO SRE',
+    rootCauseBadge: 'PRZYCZYNA ŹRÓDŁOWA',
+    copyChain: 'Kopiuj Ciąg Przyczyn',
+    copied: 'Ciąg Skopiowany!',
   },
   blastRadius: {
-    title: 'TOPOLOGIA SKAŻENIA ARCHITEKTURY (BLAST RADIUS)',
-    subtitle: 'Wizualizacja kaskadowego wektora awarii mikroserwisów i izolacja Pacjenta Zero.',
-    legendEpicenter: 'Pacjent Zero (Epicentrum P0)',
-    legendDegraded: 'Skażenie Kaskadowe (P1)',
+    title: 'TOPOLOGIA PROMIENIA RAŻENIA ARCHITEKTURY',
+    subtitle: 'Kaskadowe wektory awarii ponad granicami mikroserwisów i izolacja Pacjenta Zero.',
+    legendEpicenter: 'Pacjent Zero',
+    legendDegraded: 'Kaskada Zniszczeń',
     legendHealthy: 'Węzeł Zdrowy (200 OK)',
-    badgeEpicenter: 'EPICENTRUM P0',
-    badgeDegraded: 'DEGRADACJA P1',
-    badgeHealthy: 'ZDROWE WĘZŁY',
+    badgeEpicenter: 'Krytyczny',
+    badgeDegraded: 'Zdegradowany',
+    badgeHealthy: 'Zdrowy',
   },
   chaos: {
-    sectionTitle: 'PIASKOWNICA INŻYNIERII CHAOSU (LIVE CHAOS SANDBOX)',
-    sectionSubtitle: 'Wstrzykuj awarie w czasie rzeczywistym i obserwuj kaskadową reakcję telemetrii',
+    sectionTitle: 'PIASKOWNICA INŻYNIERII CHAOSU (LIVE TELEMETRY)',
+    sectionSubtitle: 'Wstrzykuj aktywne wektory awarii i obserwuj degradację telemetrii w czasie rzeczywistym',
     btnMitigate: 'Uruchom Samoleczenie',
     btnInject: 'Wstrzyknij awarię',
     statusNominal: 'SYSTEM NOMINALNY',
     metricRps: 'PRZEPUSTOWOŚĆ',
     metricLatency: 'OPÓŹNIENIE P99',
     metricErrorRate: 'WSKAŹNIK BŁĘDÓW',
-    scenarioLatencyTitle: 'Skok opóźnień brzegowych (Latency Spike)',
-    scenarioLatencyDesc: 'Sztuczne opóźnienie +2500ms na Edge Gateway, powodujące timeouty w UI',
-    scenarioDbPoolTitle: 'Nasycenie puli bazy danych (DB Pool Saturation)',
-    scenarioDbPoolDesc: '100% wykorzystania połączeń PostgreSQL, kaskada błędów 503',
-    scenarioMemoryTitle: 'Wyciek pamięci (Heap OOM Leak)',
-    scenarioMemoryDesc: 'Eksponencjalny wzrost zużycia RAM w puli workerów asynchronicznych',
+    scenarioLatencyTitle: 'Skok opóźnień brzegowych (+2500ms)',
+    scenarioLatencyDesc: 'Sztuczne opóźnienie na Edge Gateway powodujące przekroczenia limitu czasu w UI',
+    scenarioDbPoolTitle: 'Nasycenie puli połączeń bazy danych',
+    scenarioDbPoolDesc: '100% wykorzystania połączeń PostgreSQL prowadzące do kaskady błędów 503',
+    scenarioMemoryTitle: 'Wyciek pamięci sterty workera (OOM)',
+    scenarioMemoryDesc: 'Eksponencjalny wzrost zużycia RAM w puli workerów wyzwalający OOM Killera',
     scenarioAuthStormTitle: 'Burza unieważnienia sesji (Auth Storm)',
-    scenarioAuthStormDesc: 'Zmasowane odrzucenia tokenów JWT i lawina żądań ponownego logowania',
+    scenarioAuthStormDesc: 'Masowe odrzucenia tokenów JWT i lawina żądań ponownego logowania',
   },
   chaosSandbox: {
-    title: 'PIASKOWNICA INŻYNIERII CHAOSU (LIVE CHAOS SANDBOX)',
-    subtitle: 'Wstrzykuj awarie w czasie rzeczywistym i obserwuj kaskadową reakcję telemetrii',
+    title: 'PIASKOWNICA INŻYNIERII CHAOSU (LIVE TELEMETRY)',
+    subtitle: 'Wstrzykuj aktywne wektory awarii i obserwuj degradację telemetrii w czasie rzeczywistym',
     nominalStatus: 'SYSTEM NOMINALNY',
-    activeStatus: 'WSTRZYKIWANIE CHAOSU W TOKU',
+    activeStatus: 'AKTYWNA AWARIA KRYTYCZNA',
     metricThroughput: 'PRZEPUSTOWOŚĆ',
     metricP99: 'OPÓŹNIENIE P99',
     metricErrorRate: 'WSKAŹNIK BŁĘDÓW',
     injectCta: 'Wstrzyknij awarię',
-    recoveringCta: 'Samoleczenie...',
+    recoveringCta: 'Uruchom Samoleczenie',
+  },
+  prescription: {
+    modalTitle: 'Oficjalna Recepta SRE & Generator IaC',
+    resilienceBadge: 'TERAPIA ANTY-AWARIJNA',
+    doctorOrdersTitle: 'ZALECENIE LEKARZA SRE (DOCTOR’S ORDERS)',
+    rxNumberPrefix: 'Rx #',
+    dosageLabel: 'DAWKOWANIE / SLA',
+    preventionRuleLabel: 'REGUŁA ZAPOBIEGAWCZA',
+    copyFileCta: 'Kopiuj Plik',
+    copiedNotice: 'Skopiowano!',
+    downloadCta: 'Pobierz Plik',
+    verifiedFooter: 'Pliki zweryfikowane przez silnik SRE BugMortem',
+    closeCta: 'Zamknij Apteczkę',
+    items: {
+      'react-hydration': {
+        doctorOrder:
+          'Natychmiastowe wdrożenie dwufazowej hydratacji z flagą mounted oraz kwarantanna dynamicznych znaczników czasu w komponentach SSR.',
+        dosage:
+          'Wymusić 100% pokrycia testami E2E Playwright w pipeline CI/CD przed każdym wdrożeniem na produkcję.',
+        preventionRule:
+          'Reguła ESLint: zakaz stosowania new Date() i Math.random() w ciele renderowanych komponentów Server Components.',
+        files: [
+          {
+            filename: 'eslint.config.mjs',
+            language: 'javascript',
+            description: 'Reguła ESLint blokująca niestabilne SSR',
+            content: `// eslint.config.mjs - SRE Hydration Guard
+export default [
+  {
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "CallExpression[callee.name='Date'], NewExpression[callee.name='Date']",
+          message: 'SRE GUARD: Dynamic date instantiation forbidden during SSR. Use mounted guard or static seed.'
+        }
+      ]
+    }
+  }
+];`
+          },
+          {
+            filename: 'playwright-ssr.config.ts',
+            language: 'typescript',
+            description: 'Test dymny Playwright weryfikujący konsolę',
+            content: `// playwright-ssr.config.ts - Automated Console Error Catcher
+import { test, expect } from '@playwright/test';
+
+test('verify zero hydration mismatch errors in console', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('console', msg => {
+    if (msg.type() === 'error' && msg.text().includes('Hydration failed')) {
+      errors.push(msg.text());
+    }
+  });
+
+  await page.goto('/');
+  expect(errors).toHaveLength(0);
+});`
+          }
+        ]
+      },
+      'connection-pool': {
+        doctorOrder:
+          'Natychmiastowe wdrożenie proxy poolingowego PgBouncer w trybie transakcyjnym oraz rygorystyczny limit statement_timeout.',
+        dosage:
+          'Skonfigurować max_client_conn = 5000, default_pool_size = 50, statement_timeout = 2000ms.',
+        preventionRule:
+          'Bezwzględny zakaz wykonywania analitycznych zapytań bez limitu na węźle Primary bazy danych produkcyjnej.',
+        files: [
+          {
+            filename: 'pgbouncer.ini',
+            language: 'ini',
+            description: 'Konfiguracja PgBouncer dla ochrony puli połączeń',
+            content: `[databases]
+aurora_prod = host=aurora-cluster.internal port=5432 dbname=prod_db
+
+[pgbouncer]
+listen_port = 6432
+listen_addr = 0.0.0.0
+auth_type = md5
+auth_file = /etc/pgbouncer/userlist.txt
+pool_mode = transaction
+max_client_conn = 5000
+default_pool_size = 50
+reserve_pool_size = 10
+reserve_pool_timeout = 2
+server_idle_timeout = 60
+query_timeout = 3`
+          },
+          {
+            filename: '001_sre_pool_guard.sql',
+            language: 'sql',
+            description: 'Ochrona przed wiszącymi transakcjami w PostgreSQL',
+            content: `-- SRE Guard: Prevent connection exhaustion
+ALTER DATABASE prod_db SET statement_timeout = '2500ms';
+ALTER DATABASE prod_db SET idle_in_transaction_session_timeout = '5000ms';
+ALTER DATABASE prod_db SET lock_timeout = '1500ms';`
+          }
+        ]
+      },
+      'oom-reaper': {
+        doctorOrder:
+          'Przebudowa potoku eksportu z buforowania w pamięci RAM na strumieniowanie asynchroniczne (Stream Pipeline z backpressure).',
+        dosage:
+          'Wdrożyć hard-limit pamięci w Kubernetes: resources.limits.memory = 2Gi, alert przy 80% progu.',
+        preventionRule:
+          'Zakaz ładowania całych kolekcji danych do pojedynczych zmiennych tablicowych w procesach Node.js.',
+        files: [
+          {
+            filename: 'k8s-pod-resilience.yaml',
+            language: 'yaml',
+            description: 'Limity pamięci i CPU w manifeście Kubernetes',
+            content: `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: export-worker
+spec:
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: export-worker:stable
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2048Mi"
+            cpu: "1000m"`
+          },
+          {
+            filename: 'stream-export-pipeline.ts',
+            language: 'typescript',
+            description: 'Wzorzec bezpiecznego strumieniowania z backpressure',
+            content: `// stream-export-pipeline.ts - Memory-Bounded Data Exporter
+import { pipeline } from 'stream/promises';
+import { createReadStream, createWriteStream } from 'fs';
+import { Transform } from 'stream';
+
+export async function exportSafeCsv(inputCursor: AsyncIterable<any>, destPath: string) {
+  const transform = new Transform({
+    objectMode: true,
+    transform(chunk, _, callback) {
+      callback(null, \`\${chunk.id},\${chunk.total}\\n\`);
+    }
+  });
+
+  await pipeline(inputCursor, transform, createWriteStream(destPath));
+}`
+          }
+        ]
+      },
+      'retry-storm': {
+        doctorOrder:
+          'Wdrożenie algorytmu Exponential Backoff z pełnym szumem losowym (Full Jitter) oraz wyłącznika awaryjnego Circuit Breaker.',
+        dosage:
+          'Base Delay = 100ms, Max Delay = 2000ms, Jitter = 1.0, Max Retries = 3.',
+        preventionRule:
+          'Zakaz automatycznych, synchronicznych ponowień zapytań (Zero-Jitter Retries) w przypadku kodów błędów 5xx.',
+        files: [
+          {
+            filename: 'envoy-circuit-breaker.yaml',
+            language: 'yaml',
+            description: 'Definicja Circuit Breaker w konfiguracji Envoy Proxy',
+            content: `circuit_breakers:
+  thresholds:
+    - priority: DEFAULT
+      max_connections: 1024
+      max_pending_requests: 100
+      max_requests: 1024
+      max_retries: 3
+outlier_detection:
+  consecutive_5xx: 3
+  interval: 10s
+  base_ejection_time: 30s
+  max_ejection_percent: 50`
+          },
+          {
+            filename: 'resilience-retry.ts',
+            language: 'typescript',
+            description: 'Klient HTTP z algorytmem Full Jitter',
+            content: `// resilience-retry.ts - Full Jitter Exponential Backoff Client
+export async function fetchWithFullJitter<T>(
+  fn: () => Promise<T>,
+  retries = 3,
+  baseMs = 100,
+  maxMs = 2000
+): Promise<T> {
+  let attempt = 0;
+  while (attempt < retries) {
+    try {
+      return await fn();
+    } catch (err) {
+      attempt++;
+      if (attempt >= retries) throw err;
+      const cap = Math.min(maxMs, baseMs * 2 ** attempt);
+      const sleepMs = Math.random() * cap; // Full Jitter formula
+      await new Promise(r => setTimeout(r, sleepMs));
+    }
+  }
+  throw new Error('Unreachable');
+}`
+          }
+        ]
+      },
+      'cors-nightmare': {
+        doctorOrder:
+          'Wdrożenie buforowania zapytań OPTIONS (Access-Control-Max-Age) na bramie API oraz usunięcie wieloznaczników (*).',
+        dosage:
+          'Skonfigurować Access-Control-Max-Age = 86400 (24h) dla wszystkich odpowiedzi preflight OPTIONS.',
+        preventionRule:
+          'Bezwzględny zakaz dynamicznego odbijania nagłówka Origin jako dozwolonego dla żądań z credentials: true.',
+        files: [
+          {
+            filename: 'api-gateway-cors.tf',
+            language: 'terraform',
+            description: 'Konfiguracja Terraform dla bezpiecznego CORS z buforowaniem',
+            content: `resource "aws_api_gateway_method_response" "options_200" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.resource.id
+  http_method = "OPTIONS"
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+    "method.response.header.Access-Control-Max-Age"        = true
+  }
+}`
+          },
+          {
+            filename: 'nginx-cors.conf',
+            language: 'nginx',
+            description: 'Reguły NGINX dla preflight OPTIONS',
+            content: `if ($request_method = 'OPTIONS') {
+    add_header 'Access-Control-Allow-Origin' 'https://app.bugmortem.dev' always;
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
+    add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, X-Amz-Date' always;
+    add_header 'Access-Control-Max-Age' 86400;
+    add_header 'Content-Type' 'text/plain; charset=utf-8';
+    add_header 'Content-Length' 0;
+    return 204;
+}`
+          }
+        ]
+      },
+      's3-lambda-loop': {
+        doctorOrder:
+          'Natychmiastowa izolacja bucketów S3 wejścia i wyjścia Lambda oraz wdrożenie filtra prefiksu klucza i pułapu zarezerwowanej współbieżności w celu przerwania pętli rekurencyjnej.',
+        dosage:
+          'Zarezerwowana współbieżność image-processor: max 50 instancji. Filtr prefiksu S3: uploads/*. Oddzielny bucket wyjściowy: media-thumbnails.',
+        preventionRule:
+          'Bezwzględny zakaz konfigurowania wyzwalaczy S3 bez filtra prefiksu oraz zapisu wyników Lambdy do bucketa źródłowego zdarzenia. Włączyć AWS Recursive Loop Detection.',
+        files: [
+          {
+            filename: 's3-lambda-circuit-breaker.tf',
+            language: 'terraform',
+            description: 'Terraform: osobne buckety wejścia/wyjścia, filtr prefiksu S3, pułap współbieżności i SQS DLQ',
+            content: `# s3-lambda-circuit-breaker.tf
+# SRE Resilience: S3 ⇄ Lambda Recursive Loop Prevention
+
+# --- Isolated input bucket (originals) ---
+resource "aws_s3_bucket" "media_input" {
+  bucket = "media-assets-input"
+}
+
+# --- Separate, isolated output bucket (thumbnails) ---
+resource "aws_s3_bucket" "media_output" {
+  bucket = "media-assets-thumbnails"
+}
+
+# --- Dead-Letter Queue for runaway events ---
+resource "aws_sqs_queue" "lambda_dlq" {
+  name                      = "image-processor-dlq"
+  message_retention_seconds = 1209600 # 14 days
+}
+
+# --- Lambda with Reserved Concurrency limit (Circuit Breaker) ---
+resource "aws_lambda_function" "processor" {
+  function_name                  = "image-processor"
+  role                          = aws_iam_role.lambda_exec.arn
+  handler                       = "index.handler"
+  runtime                       = "nodejs20.x"
+  reserved_concurrent_executions = 50 # SRE ceiling: prevents account concurrency starvation (1000/1000)
+
+  dead_letter_config {
+    target_arn = aws_sqs_queue.lambda_dlq.arn
+  }
+
+  environment {
+    variables = {
+      INPUT_BUCKET   = aws_s3_bucket.media_input.id
+      OUTPUT_BUCKET  = aws_s3_bucket.media_output.id
+      RECURSION_GUARD = "ENABLED"
+    }
+  }
+}
+
+# --- S3 Trigger with MANDATORY prefix and suffix filters ---
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = aws_s3_bucket.media_input.id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.processor.arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_prefix       = "uploads/"      # MANDATORY: Only process raw uploads
+    filter_suffix       = ".jpg"
+  }
+
+  depends_on = [aws_lambda_permission.allow_s3]
+}
+
+resource "aws_lambda_permission" "allow_s3" {
+  statement_id  = "AllowExecutionFromS3"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.processor.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.media_input.arn
+}`
+          },
+          {
+            filename: 'aws-lambda-resilience.yaml',
+            language: 'yaml',
+            description: 'AWS SAM: Ochrona przed pętlami rekurencyjnymi, limit współbieżności i alarm CloudWatch',
+            content: `AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SRE Resilience Template: S3-Lambda Circuit Breaker
+  Terminates recursive invocation cascades automatically via AWS Recursive Loop Detection.
+
+Resources:
+  # Input Bucket (Trigger source)
+  InputMediaBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '\${AWS::AccountId}-media-uploads-input'
+
+  # Isolated Output Bucket (Destination - NEVER triggers the lambda)
+  OutputThumbnailsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '\${AWS::AccountId}-media-thumbnails-output'
+
+  # Image Processor Lambda Function
+  ImageProcessorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: index.handler
+      Runtime: nodejs20.x
+      Timeout: 30
+      MemorySize: 512
+      ReservedConcurrentExecutions: 50 # Caps concurrency to avoid whole-account starvation
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt RunawayDLQ.Arn
+      Environment:
+        Variables:
+          OUTPUT_BUCKET_NAME: !Ref OutputThumbnailsBucket
+          AWS_LAMBDA_RECURSIVE_LOOP: Terminate # Uses native AWS Lambda loop detection (Nov 2023)
+      Events:
+        NewImageUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref InputMediaBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: uploads/ # Crucial guard: only triggers on uploads/ prefix
+
+  RunawayDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: image-processor-runaway-dlq
+      MessageRetentionPeriod: 1209600
+
+  # CloudWatch Alarm for throttled executions (Early Warning System)
+  ThrottlesAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'Alarm if Lambda throttles exceed safe threshold (possible loop)'
+      Namespace: AWS/Lambda
+      MetricName: Throttles
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ImageProcessorFunction
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 100
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching`
+          }
+        ]
+      },
+      'serverless-timeout': {
+        doctorOrder:
+          'Przeniesienie inicjalizacji klienta bazy poza handler funkcji Lambda oraz wdrożenie AWS RDS Proxy.',
+        dosage:
+          'Skonfigurować RDS Proxy z pulą idle_client_timeout = 1800s oraz max_connections_percent = 90.',
+        preventionRule:
+          'Zakaz tworzenia nowych instancji połączenia do bazy danych wewnątrz ciała funkcji wykonawczej.',
+        files: [
+          {
+            filename: 'serverless-template.yaml',
+            language: 'yaml',
+            description: 'Szablon AWS SAM z optymalizacją inicjalizacji i pre-warmingiem',
+            content: `AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  OrdersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.handler
+      Runtime: nodejs20.x
+      Timeout: 15
+      MemorySize: 1024
+      Environment:
+        Variables:
+          DB_PROXY_ENDPOINT: !GetAtt RDSProxy.Endpoint`
+          },
+          {
+            filename: 'rds-proxy.tf',
+            language: 'terraform',
+            description: 'Definicja AWS RDS Proxy w Terraform',
+            content: `resource "aws_db_proxy" "proxy" {
+  name                   = "aurora-serverless-proxy"
+  debug_logging          = false
+  engine_family          = "POSTGRESQL"
+  idle_client_timeout    = 1800
+  require_tls            = true
+  role_arn               = aws_iam_role.proxy_role.arn
+  vpc_security_group_ids = [aws_security_group.proxy_sg.id]
+  vpc_subnet_ids         = aws_subnet.private[*].id
+}`
+          }
+        ]
+      }
+    }
   },
   postMortem: {
-    title: 'OFICJALNY RAPORT SEKCJI ZWŁOK INCYDENTU',
-    executiveSummary: 'PODSUMOWANIE WYKONAWCZE',
-    blastRadiusImpact: 'PROMIEŃ RAŻENIA I WPŁYW BIZNESOWY',
-    actionItems: 'DZIAŁANIA PREWENCYJNE I NAPRAWCZE',
-    escalateOnCall: 'Eskalacja On-Call',
-    listenCoroner: 'Odsłuchaj Werdykt Koronera',
+    title: 'OFICJALNY RAPORT Z SEKCJI ZWŁOK INCYDENTU',
+    executiveSummary: 'PODSUMOWANIE DLA KIEROWNICTWA (EXECUTIVE SUMMARY)',
+    blastRadiusImpact: 'PROMIEŃ RAŻENIA I WPŁYW NA BIZNES',
+    actionItems: 'DZIAŁANIA ZAPOBIEGAWCZE I NAPRAWCZE',
+    escalateOnCall: 'Eskaluj do Dyżurnego (On-Call)',
+    listenCoroner: 'Odtwórz Werdykt Koronera',
     exportMarkdown: 'Eksportuj Raport do Markdown',
-    downloadCertificate: 'Pobierz Kartę Zgonu (PDF)',
-    broadcastSlack: 'Nadaj na Slack',
-    slackCopiedNotice: '📋 Broadcast Slack skopiowany do schowka.',
+    downloadCertificate: 'Pobierz Akt Zgonu (PDF)',
+    broadcastSlack: 'Nadaj Komunikat na Slack',
+    slackCopiedNotice: 'Skopiowano Komunikat Awarii na Slacka do Schowka!',
   },
   dispatcher: {
-    openBtn: 'Eskalacja On-Call',
+    openBtn: 'Eskaluj do Dyżurnego',
+    modalTitle: 'DYSPONOWANIE INCYDENTEM I ESKALACJA',
+    modalSubtitle: 'Bezpośredni most do pokoju dowodzenia (War Room) i dyżurów SRE',
+    channelLabel: 'Docelowy Kanał Powiadomień',
+    severityLabel: 'Krytyczność Incydentu',
+    summaryLabel: 'Zautomatyzowane Podsumowanie Diagnostyczne',
+    copyBtn: 'Kopiuj Treść Powiadomienia',
+    copiedBtn: 'Skopiowano do Schowka!',
+    sendSlackBtn: 'Wyślij do Webhooka Slack',
+    dispatchSuccess: 'Incydent pomyślnie wysłany na kanał',
   },
   dispatcherModal: {
-    title: 'CENTRALA ESKALACJI INCYDENTU ON-CALL',
-    subtitle: 'Natychmiastowe powiadomienie inżynierów dyżurnych i utworzenie wojennego pokoju awarii',
-    severityLabel: 'PRIORYTET AWARII',
-    serviceLabel: 'DOTKNIĘTY KOMPONENT',
-    commanderLabel: 'DOWÓDCA INCYDENTU (INCIDENT COMMANDER)',
-    channelLabel: 'KANAŁ INCYDENTU SLACK',
-    zoomLinkLabel: 'POKÓJ WOJENNY (WAR ROOM)',
-    jiraTicketLabel: 'BILET SRE JIRA',
-    statusPageLabel: 'KOMUNIKAT STATUSPAGE',
-    copySummaryCta: 'Kopiuj Raport Eskalacji',
-    copiedNotice: 'Skopiowano do schowka!',
-    dispatchPagingCta: 'Wyślij PagerDuty Alarm (P0)',
+    title: 'DYSPONOWANIE INCYDENTEM I ESKALACJA',
+    subtitle: 'Bezpośredni most do War Roomu, PagerDuty i obsługi zgłoszeń GitHub.',
+    severityLabel: 'Krytyczność Incydentu',
+    serviceLabel: 'Dotknięta Usługa',
+    commanderLabel: 'Dowódca Incydentu',
+    channelLabel: 'Mostek Slack / Discord (War Room)',
+    zoomLinkLabel: 'Mostek Wideo (Zoom)',
+    jiraTicketLabel: 'Klucz Zgłoszenia Jira / Incydentu',
+    statusPageLabel: 'Publiczny URL Status Page',
+    copySummaryCta: 'Kopiuj Podsumowanie (Markdown)',
+    copiedNotice: 'Podsumowanie Incydentu Skopiowane do Schowka!',
+    dispatchPagingCta: 'Wyślij Syrenę do Dyżurnego (PagerDuty)',
     pagingTriggered: 'Syrena PagerDuty wysłana!',
     closeCta: 'Zamknij Konsolę',
   },
   legal: {
-    privacyTitle: 'Polityka Prywatności & Suwerenność Danych',
-    termsTitle: 'Regulamin Świadczenia Usług (Terms of Service)',
-    cookiesTitle: 'Polityka Ciasteczek & Pamięci Lokalnej',
+    privacyTitle: 'Polityka Prywatności i Suwerenność Danych',
+    termsTitle: 'Regulamin Świadczenia Usług',
+    cookiesTitle: 'Polityka Ciasteczek i Pamięć Lokalna',
     lastUpdated: 'Ostatnia aktualizacja: Listopad 2026 | Oficjalne Zgłoszenie Kiroween 2026',
-    privacyArchHeader: '1. Architektura Zero-Data Leakage (Przetwarzanie Lokalne)',
-    privacyArchText: 'BugMortem został zaprojektowany z myślą o bezwzględnej poufności danych telemetrycznych oraz kodu źródłowego. Wszelkie analizy sekcji zwłok awarii, parsowanie śladów stosu (stack trace), generowanie raportów post-mortem oraz synteza dźwięku telemetrycznego odbywają się w 100% po stronie Twojej przeglądarki.',
+    privacyArchHeader: '1. Architektura Zerowego Wycieku Danych (Wykonanie Lokalne)',
+    privacyArchText: 'BugMortem został zaprojektowany z myślą o bezwzględnej poufności telemetrii i kodu źródłowego. Wszystkie analizy awarii, parsowanie zrzutów stosu, generowanie raportów post-mortem oraz akustyczna synteza telemetrii wykonują się w 100% lokalnie w środowisku przeglądarki klienta.',
     privacyArchBullets: [
-      'Żadne wrażliwe logi produkcyjne, hasła ani fragmenty kodu nie opuszczają Twojego urządzenia.',
-      'Aplikacja nie posiada backendu bazodanowego zapisującego Twoje zgłoszenia.',
-      'Generowanie certyfikatów zgonu w formacie PDF oraz eksport Markdown zachodzi lokalnie w silniku przeglądarki.',
+      'Żadne poufne logi awarii, hasła ani fragmenty kodu nigdy nie opuszczają Twojego urządzenia.',
+      'Aplikacja nie posiada zdalnej bazy danych do przechowywania wprowadzonych logów.',
+      'Generowanie Aktu Zgonu PDF i eksport do Markdown kompilują się wyłącznie w silniku przeglądarki.',
     ],
-    privacyAdminHeader: '2. Administrator Danych i Projekt',
-    privacyAdminText: 'Aplikacja stanowi niezależny projekt inżynieryjny stworzony przez Adama Gierczaka (@AdamBabinicz) na hackathon Kiroween 2026 (organizowany przez AWS & Devpost).',
+    privacyAdminHeader: '2. Administrator Danych i Prawa Autorskie',
+    privacyAdminText: 'BugMortem jest niezależnym narzędziem deweloperskim stworzonym przez Adama Gierczaka (@AdamBabinicz) na hackathon Kiroween 2026 (organizowany przez AWS i Devpost).',
     privacyScopeHeader: '3. Zakres Przetwarzanych Informacji',
-    privacyScopeText: 'BugMortem nie gromadzi danych osobowych, adresów e-mail ani numerów IP. Jedyne informacje, które są zapisywane, to parametry sesji przechowywane w pamięci podręcznej Twojej przeglądarki (localStorage).',
-    privacyLocalStorageHeader: '4. Wykorzystanie Pamięci Przeglądarki (LocalStorage)',
+    privacyScopeText: 'BugMortem nie gromadzi danych osobowych, adresów e-mail ani adresów IP. Jedyny stan przechowywany przez aplikację to preferencje środowiska zapisywane lokalnie w pamięci localStorage Twojej przeglądarki.',
+    privacyLocalStorageHeader: '4. Wykorzystanie Pamięci Lokalnej Przeglądarki (localStorage)',
     privacyLocalStorageIntro: 'Poniższa tabela przedstawia wszystkie klucze wykorzystywane przez aplikację:',
     privacyLocalStorageKeys: [
-      { key: 'bugmortem_custom_incidents', desc: 'Zapisane przez Ciebie własne awarie i sekcje zwłok wprowadzone przez formularz.' },
-      { key: 'bugmortem_theme', desc: 'Wybrany motyw kolorystyczny (Dracula Morgue lub Clinical Daylight).' },
-      { key: 'bugmortem_locale', desc: 'Preferowany język interfejsu (Polski / English).' },
-      { key: 'bugmortem_audio_muted', desc: 'Ustawienie wyciszenia proceduralnej aparatury telemetrycznej EKG.' },
+      { key: 'bugmortem_custom_incidents', desc: 'Zapisane przez użytkownika sekcje zwłok własnych incydentów.' },
+      { key: 'bugmortem_theme', desc: 'Wybrany motyw wizualny (Dracula Morgue vs. Clinical Daylight).' },
+      { key: 'bugmortem_locale', desc: 'Aktywny język interfejsu (polski / angielski).' },
+      { key: 'bugmortem_audio_muted', desc: 'Stan wyciszenia proceduralnego syntezatora audio EKG.' },
     ],
-    privacyNoTrackingHeader: '5. Brak Ciasteczek Śledzących i Analityki',
-    privacyNoTrackingText: 'Aplikacja nie korzysta z żadnych zewnętrznych skryptów śledzących (brak Google Analytics 4, Hotjar, Facebook Pixel ani telemetrii marketingowej).',
-    privacyNoTrackingBullets: [
-      'Brak fingerprintingu przeglądarki.',
-      'Brak profilowania użytkowników.',
-      'Zgodność ze standardem Consent Mode v2 (domyślnie zablokowane wszystkie tagi śledzące).',
+    noTrackingHeader: '5. Brak Śledzących Ciasteczek i Zerowa Telemetria',
+    noTrackingText: 'Aplikacja nie korzysta z żadnych skryptów śledzących podmiotów trzecich (brak Google Analytics 4, Hotjar, pikseli reklamowych).',
+    noTrackingBullets: [
+      'Zero fingerprintingu przeglądarki.',
+      'Zero profilowania behawioralnego.',
+      'Pełna zgodność z Google Consent Mode v2 (wszystkie tagi domyślnie zablokowane).',
     ],
-    privacyUserRightsHeader: '6. Prawa Użytkownika',
-    privacyUserRightsText: 'Posiadasz pełną suwerenność nad swoimi danymi. Możesz w każdej chwili usunąć własne incydenty bezpośrednio z poziomu kafelków archiwum lub całkowicie wyczyścić pamięć podręczną aplikacji.',
-    privacyUserRightsBullets: [
-      'Prawo do natychmiastowego usunięcia wpisów przyciskiem kosza w archiwum.',
-      'Prawo do pobrania wygenerowanych raportów w otwartym formacie Markdown.',
+    userRightsHeader: '6. Prawa Użytkownika do Danych',
+    userRightsText: 'Zachowujesz całkowitą kontrolę nad swoimi danymi. Możesz w każdej chwili usunąć poszczególne zapisane awarie za pomocą ikony kosza w archiwum lub całkowicie wyczyścić pamięć.',
+    userRightsBullets: [
+      'Prawo do natychmiastowego usunięcia wprowadzonych incydentów za pomocą przycisku w UI.',
+      'Prawo do eksportu wszystkich wygenerowanych raportów w otwartym formacie Markdown.',
     ],
-    privacyPurgeHeader: '7. Całkowite Czyszczenie Danych',
-    privacyPurgeText: 'Wyczyszczenie pamięci podręcznej przeglądarki lub kliknięcie przycisku „Wyczyść własne awarie” bezpowrotnie i trwale usuwa wszelkie zapisane incydenty z Twojego urządzenia.',
-    termsScopeHeader: '1. Postanowienia Ogólne i Przeznaczenie',
-    termsScopeText: 'BugMortem jest interaktywnym narzędziem edukacyjno-diagnostycznym SRE, stworzonym w celu demonstracji zaawansowanych wzorców odporności systemów rozproszonych, analizy przyczyn źródłowych metodą 5-Whys oraz automatyzacji raportów post-mortem.',
-    termsGeneralHeader: '2. Warunki Korzystania',
-    termsGeneralText: 'Korzystanie z aplikacji jest całkowicie bezpłatne. Użytkownik ma prawo do wprowadzania własnych śladów stosu, symulowania scenariuszy chaosu oraz pobierania wygenerowanych skryptów infrastruktury jako kodu (IaC).',
-    termsDisclaimerHeader: '3. Klauzula Wyłączenia Odpowiedzialności SRE',
-    termsDisclaimerIntro: 'Mimo że generowane recepty SRE i szablony IaC (Terraform, Kubernetes, AWS SAM, PgBouncer, ESLint) bazują na sprawdzonych wzorcach produkcyjnych:',
+    purgeHeader: '7. Trwałe Wyczyszczenie Danych',
+    purgeText: 'Wyczyszczenie pamięci podręcznej przeglądarki lub kliknięcie przycisku usuwania trwale i bezpowrotnie usuwa wszystkie zapisane dane z Twojego urządzenia.',
+    termsScopeHeader: '1. Zakres i Cel Edukacyjny',
+    termsScopeText: 'BugMortem jest interaktywnym narzędziem analizy śledczej i symulacji SRE, zaprojektowanym do demonstracji wzorców odporności systemów rozproszonych, analizy przyczyn 5-Whys oraz automatyzacji dokumentacji incydentów.',
+    termsGeneralHeader: '2. Dozwolony Użytek',
+    termsGeneralText: 'Korzystanie z aplikacji jest bezpłatne. Użytkownicy mają prawo wprowadzać logi awarii, symulować scenariusze chaosu oraz pobierać szablony Infrastructure-as-Code (IaC) na potrzeby utwardzania własnych systemów.',
+    termsDisclaimerHeader: '3. Zastrzeżenie Dotyczące Wzorców SRE',
+    termsDisclaimerIntro: 'Chociaż recepty SRE i szablony IaC (Terraform, Kubernetes, AWS SAM, PgBouncer, ESLint) odzwierciedlają sprawdzone praktyki inżynieryjne:',
     termsDisclaimerPoints: [
-      'Wszelkie wygenerowane skrypty i recepty należy zweryfikować w środowisku testowym (staging) przed wdrożeniem na produkcję.',
-      'Autor aplikacji nie ponosi odpowiedzialności za ewentualne przerwy w działaniu zewnętrznych systemów wynikające z bezpośredniego wdrożenia generowanych szablonów.',
-      'Narzędzie służy celom szkoleniowym, symulacyjnym i forensicznym.',
+      'Wszystkie wygenerowane pliki muszą zostać przetestowane w środowisku stagingowym przed wdrożeniem produkcyjnym.',
+      'Autor projektu nie ponosi odpowiedzialności za zakłócenia operacyjne wynikające z bezpośredniego zastosowania szablonów.',
+      'Narzędzie ma charakter symulacyjny, edukacyjny i kryminalistyczny.',
     ],
-    termsLiabilityHeader: '4. Dostępność Usługi',
-    termsLiabilityText: 'Aplikacja jest hostowana statycznie na platformie Vercel Edge. Autor dokłada starań, aby narzędzie było dostępne nieprzerwanie, jednak nie udziela gwarancji SLA na dostępność interfejsu.',
-    licenseHeader: '5. Licencja i Prawa Autorskie',
-    licenseText: 'Kod źródłowy projektu BugMortem udostępniony jest na warunkach licencji open-source MIT.',
+    liabilityHeader: '4. Dostępność i Gwarancje (SLA)',
+    liabilityText: 'Aplikacja jest wdrażana statycznie na platformie Vercel Edge. Dokładane są wszelkie starania w celu zapewnienia ciągłości działania, jednak nie udziela się gwarancji SLA.',
+    licenseHeader: '5. Licencja Open-Source i Prawa Autorskie',
+    licenseText: 'Kod źródłowy BugMortem jest udostępniany na zasadach permisywnej licencji MIT.',
     licenseBullets: [
-      'Możesz swobodnie analizować, forkowywać i adaptować wzorce SRE zawarte w repozytorium.',
-      'Wszelkie prawa autorskie do projektu należą do Adama Gierczaka (@AdamBabinicz).',
+      'Możesz swobodnie przeglądać, forkiem powielać i adaptować wzorce odporności zawarte w repozytorium.',
+      'Wszelkie prawa autorskie do projektu zachowuje Adam Gierczak (@AdamBabinicz).',
     ],
-    cookiesUsageHeader: '1. Brak Ciasteczek Śledzących (Zero Tracking Cookies)',
-    cookiesUsageText: 'BugMortem nie zapisuje ani nie odczytuje żadnych ciasteczek (cookies) stron trzecich o charakterze marketingowym, reklamowym lub śledzącym. Jedynym mechanizmem zapisu danych sesyjnych jest lokalna pamięć przeglądarki (localStorage), która nigdy nie jest przesyłana przez sieć.',
+    cookiesUsageHeader: '1. Brak Ciasteczek Śledzących',
+    cookiesUsageText: 'BugMortem nie zapisuje żadnych ciasteczek śledzących ani reklamowych. Całość stanu opiera się wyłącznie na mechanizmie localStorage, który działa ściśle w piaskownicy przeglądarki.',
   },
   cookies: {
-    title: 'Ustawienia prywatności',
-    description: 'Używamy plików cookie i tagów analitycznych do analizy ruchu.',
+    title: 'Ustawienia Prywatności i Plików Cookie',
+    description: 'Wykorzystujemy pamięć lokalną i opcjonalną telemetrię do weryfikacji odporności systemowej.',
     essential: 'Niezbędne',
-    essentialDesc: 'Wymagane do działania serwisu',
+    essentialDesc: 'Wymagane do prawidłowego działania aplikacji i zachowania stanu sesji',
     alwaysActive: 'Zawsze aktywne',
     analytics: 'Analityka',
-    analyticsDesc: 'Google Analytics 4 & GTM',
+    analyticsDesc: 'Google Analytics 4 & GTM (Consent Mode v2)',
     marketing: 'Marketing',
-    marketingDesc: 'Personalizacja i kampanie',
-    acceptAll: 'Akceptuj wszystkie',
-    rejectNonEssential: 'Odrzuć opcjonalne',
-    savePreferences: 'Zapisz wybrane',
+    marketingDesc: 'Personalizacja i kampanie reklamowe',
+    acceptAll: 'Zaakceptuj Wszystkie',
+    rejectNonEssential: 'Odrzuć Opcjonalne',
+    savePreferences: 'Zapisz Preferencje',
     details: 'Dostosuj',
-    settings: 'Ustawienia prywatności i cookies',
+    settings: 'Ustawienia Ciasteczek',
     closeAndReject: 'Zamknij i odrzuć opcjonalne',
   },
   footer: {
-    disclaimer: '© 2026 BugMortem. Wszelkie prawa zastrzeżone. Stworzone przez Adama Gierczaka (@AdamBabinicz) na hackathon Kiroween 2026 (AWS & Devpost).',
+    disclaimer: '© 2026 BugMortem. Wszelkie prawa zastrzeżone. Autor: Adam Gierczak (@AdamBabinicz) na hackathon Kiroween 2026 (AWS & Devpost).',
     privacy: 'Polityka Prywatności',
     terms: 'Regulamin',
-    cookieSettings: 'Ustawienia Cookies',
+    cookieSettings: 'Ustawienia Cookie',
   },
 };
