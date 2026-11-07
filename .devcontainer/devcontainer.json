@@ -21,7 +21,7 @@
       }
     }
   },
-  "postCreateCommand": "pnpm install",
+  "postCreateCommand": "pnpm install && curl -fsSL https://cli.kiro.dev/install | bash",
   "forwardPorts": [3000],
   "portsAttributes": {
     "3000": {
