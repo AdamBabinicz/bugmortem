@@ -10,20 +10,21 @@ import {
   Stethoscope,
   FileCheck2
 } from 'lucide-react';
-import { IncidentPreset, TranslationDictionary } from '@/i18n/types';
+import { IncidentPreset, TranslationDictionary, Locale, SreConfigFile } from '@/i18n/types';
+import { useI18n } from '@/i18n/context';
 
-interface SreConfigFile {
-  filename: string;
-  language: string;
-  description: string;
-  content: string;
+// Eliminacja sierotek typograficznych w tekstach recepty
+function fixOrphans(text?: string | null): string {
+  if (!text || typeof text !== 'string') return text || '';
+  return text.replace(/(^|\s)([aiouwz]|do|na|od|po|ze|we|za|co|że|to)(\s+)/gi, '$1$2\u00A0');
 }
 
 interface SrePrescriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
   incident: IncidentPreset;
-  t: TranslationDictionary | any;
+  t?: TranslationDictionary | any;
+  locale?: Locale;
 }
 
 function getPrescriptionData(incidentId: string, locale: string): {
@@ -93,47 +94,45 @@ test('verify zero hydration mismatch errors in console', async ({ page }) => {
       return {
         doctorOrder:
           locale === 'pl'
-            ? 'Wdrożenie pośrednika PgBouncer w trybie poolingu transakcyjnego oraz twarde odcięcie długich zapytań statement_timeout.'
-            : 'Deploy PgBouncer transaction pooling proxy and enforce hard query statement_timeout ceilings.',
+            ? 'Natychmiastowe wdrożenie proxy poolingowego PgBouncer w trybie transakcyjnym oraz rygorystyczny limit statement_timeout.'
+            : 'Immediate deployment of PgBouncer in transaction pooling mode with aggressive statement timeout enforcement.',
         dosage:
           locale === 'pl'
-            ? 'Pool size: 25 połączeń na kontener aplikacyjny, timeout zapytania: 2000ms.'
-            : 'Pool size: 25 connections per application replica, statement timeout: 2000ms.',
+            ? 'Skonfigurować max_client_conn = 5000, default_pool_size = 50, statement_timeout = 2000ms.'
+            : 'Configure max_client_conn = 5000, default_pool_size = 50, statement_timeout = 2000ms.',
         preventionRule:
           locale === 'pl'
-            ? 'Architektura: całkowity zakaz kierowania zapytań analitycznych i raportowych na instancję główną (Primary Writer).'
-            : 'Architecture: complete prohibition of analytical batch queries against the primary writer instance.',
+            ? 'Bezwzględny zakaz wykonywania analitycznych zapytań bez limitu na węźle Primary bazy danych produkcyjnej.'
+            : 'Zero-tolerance ban on unindexed analytical queries targeting primary production writer instances.',
         files: [
           {
             filename: 'pgbouncer.ini',
             language: 'ini',
-            description: locale === 'pl' ? 'Konfiguracja poolingu transakcyjnego' : 'Transaction pooling configuration',
+            description: locale === 'pl' ? 'Konfiguracja PgBouncer dla ochrony puli połączeń' : 'PgBouncer connection pool protection configuration',
             content: `[databases]
-orders_db = host=aurora-cluster-ro.internal port=5432 dbname=orders_prod pool_mode=transaction
+aurora_prod = host=aurora-cluster.internal port=5432 dbname=prod_db
 
 [pgbouncer]
 listen_port = 6432
-listen_addr = *
-auth_type = scram-sha-256
+listen_addr = 0.0.0.0
+auth_type = md5
+auth_file = /etc/pgbouncer/userlist.txt
+pool_mode = transaction
 max_client_conn = 5000
 default_pool_size = 50
-min_pool_size = 10
-reserve_pool_size = 5
-reserve_pool_timeout = 3
+reserve_pool_size = 10
+reserve_pool_timeout = 2
 server_idle_timeout = 60
-query_timeout = 2`
+query_timeout = 3`
           },
           {
             filename: '001_sre_pool_guard.sql',
             language: 'sql',
-            description: locale === 'pl' ? 'Migracja SQL wymuszająca twarde timeouty' : 'SQL migration enforcing hard statement timeouts',
-            content: `-- 001_sre_pool_guard.sql
-ALTER ROLE app_checkout_user SET statement_timeout = '2000ms';
-ALTER ROLE app_checkout_user SET idle_in_transaction_session_timeout = '3000ms';
-
-CREATE ROLE analytics_ro WITH LOGIN PASSWORD 'vault_secret_placeholder';
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO analytics_ro;
-ALTER ROLE analytics_ro SET statement_timeout = '15000ms';`
+            description: locale === 'pl' ? 'Ochrona przed wiszącymi transakcjami w PostgreSQL' : 'PostgreSQL statement timeout and idle transaction guard',
+            content: `-- SRE Guard: Prevent connection exhaustion
+ALTER DATABASE prod_db SET statement_timeout = '2500ms';
+ALTER DATABASE prod_db SET idle_in_transaction_session_timeout = '5000ms';
+ALTER DATABASE prod_db SET lock_timeout = '1500ms';`
           }
         ]
       };
@@ -142,60 +141,57 @@ ALTER ROLE analytics_ro SET statement_timeout = '15000ms';`
       return {
         doctorOrder:
           locale === 'pl'
-            ? 'Konwersja synchronicznego buforowania do pamięci RAM na strumienie potokowe (Node.js Streams Pipeline) oraz asynchroniczne kolejki zadań.'
-            : 'Convert all synchronous in-memory buffering to Node.js stream pipelines and asynchronous background worker queues.',
+            ? 'Przebudowa potoku eksportu z buforowania w pamięci RAM na strumieniowanie asynchroniczne (Stream Pipeline z backpressure).'
+            : 'Refactor bulk export pipeline from in-memory buffering to Node.js streams with backpressure controls.',
         dosage:
           locale === 'pl'
-            ? 'Twardy limit pamięci kontenera: requests: 256Mi, limits: 512Mi. Flaga V8: --max-old-space-size=460.'
-            : 'Hard container quota: requests: 256Mi, limits: 512Mi. V8 flag: --max-old-space-size=460.',
+            ? 'Wdrożyć hard-limit pamięci w Kubernetes: resources.limits.memory = 2Gi, alert przy 80% progu.'
+            : 'Enforce Kubernetes pod limits: resources.limits.memory = 2Gi with alert threshold at 80%.',
         preventionRule:
           locale === 'pl'
-            ? 'Zakaz synchronicznego generowania raportów przekraczających 1000 wierszy w żądaniach HTTP serwera webowego.'
-            : 'Prohibition of synchronous report generation exceeding 1,000 rows in synchronous HTTP web request cycles.',
+            ? 'Zakaz ładowania całych kolekcji danych do pojedynczych zmiennych tablicowych w procesach Node.js.'
+            : 'Strict prohibition of loading unbounded datasets into single JavaScript array primitives.',
         files: [
           {
             filename: 'k8s-pod-resilience.yaml',
             language: 'yaml',
-            description: locale === 'pl' ? 'Manifest Kubernetes z limitami RAM' : 'Kubernetes manifest with strict RAM quotas',
+            description: locale === 'pl' ? 'Limity pamięci i CPU w manifeście Kubernetes' : 'Kubernetes Pod resource limits and OOM guard',
             content: `apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reporting-worker
+  name: export-worker
 spec:
-  replicas: 3
   template:
     spec:
       containers:
       - name: worker
-        image: bugmortem/worker:v2.1
-        env:
-        - name: NODE_OPTIONS
-          value: "--max-old-space-size=460"
+        image: export-worker:stable
         resources:
           requests:
-            memory: "256Mi"
+            memory: "512Mi"
             cpu: "250m"
           limits:
-            memory: "512Mi"
+            memory: "2048Mi"
             cpu: "1000m"`
           },
           {
             filename: 'stream-export-pipeline.ts',
             language: 'typescript',
-            description: locale === 'pl' ? 'Wzorzec strumieniowania ze stałym buforem RAM' : 'Streaming pattern with constant RAM buffer',
-            content: `// stream-export-pipeline.ts
+            description: locale === 'pl' ? 'Wzorzec bezpiecznego strumieniowania z backpressure' : 'Safe streaming pipeline pattern with backpressure',
+            content: `// stream-export-pipeline.ts - Memory-Bounded Data Exporter
 import { pipeline } from 'stream/promises';
+import { createReadStream, createWriteStream } from 'fs';
 import { Transform } from 'stream';
 
-export async function exportToCsvStream(cursorStream: any, destinationStream: any) {
-  const csvFormat = new Transform({
+export async function exportSafeCsv(inputCursor: AsyncIterable<any>, destPath: string) {
+  const transform = new Transform({
     objectMode: true,
-    transform(record, encoding, callback) {
-      callback(null, \`\${record.id},\${record.amount},\${record.timestamp}\\n\`);
+    transform(chunk, _, callback) {
+      callback(null, \`\${chunk.id},\${chunk.total}\\n\`);
     }
   });
 
-  await pipeline(cursorStream, csvFormat, destinationStream);
+  await pipeline(inputCursor, transform, createWriteStream(destPath));
 }`
           }
         ]
@@ -205,51 +201,55 @@ export async function exportToCsvStream(cursorStream: any, destinationStream: an
       return {
         doctorOrder:
           locale === 'pl'
-            ? 'Wdrożenie algorytmu Full Jitter z wykładniczym wycofywaniem we wszystkich klientach HTTP oraz aktywacja Circuit Breakera na bramce Envoy.'
-            : 'Enforce Full Jitter Exponential Backoff on all HTTP clients and activate Envoy circuit breaker policies.',
+            ? 'Wdrożenie algorytmu Exponential Backoff z pełnym szumem losowym (Full Jitter) oraz wyłącznika awaryjnego Circuit Breaker.'
+            : 'Implement Exponential Backoff with Full Jitter and configure circuit breaking in service mesh.',
         dosage:
           locale === 'pl'
-            ? 'Maksymalnie 3 ponowienia, baza 100ms z losowym rozproszeniem do 2000ms. Odcięcie przy 20% błędów 5xx.'
-            : 'Max 3 retries, base 100ms with randomized jitter up to 2000ms. Ejection at 20% consecutive 5xx errors.',
+            ? 'Base Delay = 100ms, Max Delay = 2000ms, Jitter = 1.0, Max Retries = 3.'
+            : 'Base Delay = 100ms, Max Delay = 2000ms, Jitter = 1.0, Max Retries = 3.',
         preventionRule:
           locale === 'pl'
-            ? 'Nigdy nie ponawiać żądań bez losowego opóźnienia; wdrożyć nagłówek Retry-After z losowym jitterem.'
-            : 'Never retry failed requests synchronously; mandate jittered Retry-After response headers.',
+            ? 'Zakaz automatycznych, synchronicznych ponowień zapytań (Zero-Jitter Retries) w przypadku kodów błędów 5xx.'
+            : 'Ban instantaneous, unjittered automated retries on receiving 5xx server responses.',
         files: [
           {
             filename: 'envoy-circuit-breaker.yaml',
             language: 'yaml',
-            description: locale === 'pl' ? 'Polityka Circuit Breaker dla Envoy Gateway' : 'Envoy Gateway Circuit Breaker Policy',
-            content: `static_resources:
-  clusters:
-  - name: profile_service
-    connect_timeout: 0.25s
-    circuit_breakers:
-      thresholds:
-      - priority: DEFAULT
-        max_connections: 1024
-        max_pending_requests: 100
-        max_retries: 3
-    outlier_detection:
-      consecutive_5xx: 5
-      interval: 10s
-      base_ejection_time: 30s`
+            description: locale === 'pl' ? 'Definicja Circuit Breaker w konfiguracji Envoy Proxy' : 'Envoy Proxy circuit breaker and connection limits',
+            content: `circuit_breakers:
+  thresholds:
+    - priority: DEFAULT
+      max_connections: 1024
+      max_pending_requests: 100
+      max_requests: 1024
+      max_retries: 3
+outlier_detection:
+  consecutive_5xx: 3
+  interval: 10s
+  base_ejection_time: 30s
+  max_ejection_percent: 50`
           },
           {
             filename: 'resilience-retry.ts',
             language: 'typescript',
-            description: locale === 'pl' ? 'Klient z wykładniczym wycofywaniem i jitterem' : 'HTTP client with Exponential Backoff & Jitter',
-            content: `export async function resilientFetch(url: string, retries = 3, baseDelayMs = 100): Promise<Response> {
-  for (let attempt = 0; attempt < retries; attempt++) {
+            description: locale === 'pl' ? 'Klient HTTP z algorytmem Full Jitter' : 'Resilient HTTP client with Full Jitter backoff',
+            content: `// resilience-retry.ts - Full Jitter Exponential Backoff Client
+export async function fetchWithFullJitter<T>(
+  fn: () => Promise<T>,
+  retries = 3,
+  baseMs = 100,
+  maxMs = 2000
+): Promise<T> {
+  let attempt = 0;
+  while (attempt < retries) {
     try {
-      const res = await fetch(url);
-      if (res.ok || res.status < 500) return res;
-      throw new Error(\`Server error \${res.status}\`);
+      return await fn();
     } catch (err) {
-      if (attempt === retries - 1) throw err;
-      const exponentialCeiling = baseDelayMs * Math.pow(2, attempt);
-      const fullJitter = Math.floor(Math.random() * exponentialCeiling);
-      await new Promise(resolve => setTimeout(resolve, fullJitter));
+      attempt++;
+      if (attempt >= retries) throw err;
+      const cap = Math.min(maxMs, baseMs * 2 ** attempt);
+      const sleepMs = Math.random() * cap; // Full Jitter formula
+      await new Promise(r => setTimeout(r, sleepMs));
     }
   }
   throw new Error('Unreachable');
@@ -262,46 +262,46 @@ export async function exportToCsvStream(cursorStream: any, destinationStream: an
       return {
         doctorOrder:
           locale === 'pl'
-            ? 'Scentralizowanie konfiguracji CORS na bramce API Gateway z buforowaniem preflight OPTIONS przez 24 godziny.'
-            : 'Centralize CORS policies at API Gateway with 24-hour preflight OPTIONS caching.',
+            ? 'Wdrożenie buforowania zapytań OPTIONS (Access-Control-Max-Age) na bramie API oraz usunięcie wieloznaczników (*).'
+            : 'Implement Access-Control-Max-Age caching on API Gateway and eliminate insecure wildcard origins.',
         dosage:
           locale === 'pl'
-            ? 'Nagłówek Access-Control-Max-Age: 86400, odpowiedź 204 No Content dla OPTIONS.'
-            : 'Header Access-Control-Max-Age: 86400, HTTP 204 No Content response for OPTIONS.',
+            ? 'Skonfigurować Access-Control-Max-Age = 86400 (24h) dla wszystkich odpowiedzi preflight OPTIONS.'
+            : 'Set Access-Control-Max-Age = 86400 (24h) on all preflight OPTIONS gateway responses.',
         preventionRule:
           locale === 'pl'
-            ? 'Wymusić automatyczny test dymny curl -X OPTIONS w pipeline CI/CD przed przełączeniem rekordów DNS.'
-            : 'Mandate automated curl -X OPTIONS preflight smoke verification in release pipeline before DNS switch.',
+            ? 'Bezwzględny zakaz dynamicznego odbijania nagłówka Origin jako dozwolonego dla żądań z credentials: true.'
+            : 'Ban dynamic origin reflection for requests authenticated with credentials.',
         files: [
           {
             filename: 'api-gateway-cors.tf',
-            language: 'hcl',
-            description: locale === 'pl' ? 'Moduł Terraform dla preflight CORS' : 'Terraform module for API Gateway CORS preflight',
-            content: `resource "aws_api_gateway_method" "cors_options" {
-  rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.resource.id
-  http_method   = "OPTIONS"
-  authorization = "NONE"
-}
-
-resource "aws_api_gateway_integration" "cors_mock" {
+            language: 'terraform',
+            description: locale === 'pl' ? 'Konfiguracja Terraform dla bezpiecznego CORS z buforowaniem' : 'Terraform configuration for cached and scoped CORS',
+            content: `resource "aws_api_gateway_method_response" "options_200" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   resource_id = aws_api_gateway_resource.resource.id
-  http_method = aws_api_gateway_method.cors_options.http_method
-  type        = "MOCK"
-  request_templates = {
-    "application/json" = "{\\"statusCode\\": 204}"
+  http_method = "OPTIONS"
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+    "method.response.header.Access-Control-Max-Age"        = true
   }
 }`
           },
           {
             filename: 'nginx-cors.conf',
             language: 'nginx',
-            description: locale === 'pl' ? 'Wzorzec konfiguracyjny NGINX' : 'Hardened NGINX CORS pattern',
+            description: locale === 'pl' ? 'Reguły NGINX dla preflight OPTIONS' : 'NGINX reverse proxy cached preflight rules',
             content: `if ($request_method = 'OPTIONS') {
-    add_header 'Access-Control-Allow-Origin' 'https://bugmortem.vercel.app' always;
-    add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+    add_header 'Access-Control-Allow-Origin' 'https://app.bugmortem.dev' always;
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
+    add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, X-Amz-Date' always;
     add_header 'Access-Control-Max-Age' 86400;
+    add_header 'Content-Type' 'text/plain; charset=utf-8';
+    add_header 'Content-Length' 0;
     return 204;
 }`
           }
@@ -312,178 +312,152 @@ resource "aws_api_gateway_integration" "cors_mock" {
       return {
         doctorOrder:
           locale === 'pl'
-            ? 'Natychmiastowa izolacja bucketów S3 wejścia i wyjścia Lambdy oraz wdrożenie filtra prefiksu klucza i pułapu zarezerwowanej współbieżności w celu przerwania pętli rekurencyjnej.'
-            : 'Immediately isolate S3 input and output buckets, enforce a key prefix filter on the event notification, and set a reserved-concurrency ceiling to break the recursive invocation loop.',
+            ? 'Natychmiastowa izolacja bucketów S3 wejścia i wyjścia Lambda oraz wdrożenie filtra prefiksu klucza i pułapu zarezerwowanej współbieżności w celu przerwania pętli rekurencyjnej.'
+            : 'Immediately isolate S3 input and output buckets, enforce strict S3 key prefix filters on Lambda triggers, and cap reserved concurrency to terminate the recursive loop.',
         dosage:
           locale === 'pl'
             ? 'Zarezerwowana współbieżność image-processor: max 50 instancji. Filtr prefiksu S3: uploads/*. Oddzielny bucket wyjściowy: media-thumbnails.'
-            : 'Reserved concurrency for image-processor: max 50 instances. S3 prefix filter: uploads/*. Separate output bucket: media-thumbnails.',
+            : 'Reserved concurrency on image-processor: max 50 instances. S3 prefix filter: uploads/*. Separate output bucket: media-thumbnails.',
         preventionRule:
           locale === 'pl'
             ? 'Bezwzględny zakaz konfigurowania wyzwalaczy S3 bez filtra prefiksu oraz zapisu wyników Lambdy do bucketa źródłowego zdarzenia. Włączyć AWS Recursive Loop Detection.'
-            : 'Strict prohibition of S3 triggers without prefix filters and writing Lambda output to the event-source bucket. Enable AWS Recursive Loop Detection on all event-driven functions.',
+            : 'Strictly prohibit configuring S3 triggers without prefix filters or writing Lambda results back into the trigger source bucket. Enable AWS Recursive Loop Detection.',
         files: [
           {
             filename: 's3-lambda-circuit-breaker.tf',
-            language: 'hcl',
+            language: 'terraform',
             description:
               locale === 'pl'
                 ? 'Terraform: osobne buckety wejścia/wyjścia, filtr prefiksu S3, pułap współbieżności i SQS DLQ'
-                : 'Terraform: separate input/output buckets, S3 prefix filter, concurrency ceiling, and SQS DLQ',
+                : 'Terraform: separate input/output buckets, S3 prefix filter, concurrency ceiling & SQS DLQ',
             content: `# s3-lambda-circuit-breaker.tf
 # SRE Resilience: S3 ⇄ Lambda Recursive Loop Prevention
 
-# ── Isolated input bucket (originals) ──────────────────────────────────────
+# --- Isolated input bucket (originals) ---
 resource "aws_s3_bucket" "media_input" {
   bucket = "media-assets-input"
 }
 
-# ── Isolated output bucket (thumbnails) ────────────────────────────────────
+# --- Separate, isolated output bucket (thumbnails) ---
 resource "aws_s3_bucket" "media_output" {
-  bucket = "media-thumbnails-output"
+  bucket = "media-assets-thumbnails"
 }
 
-# ── S3 event notification with mandatory prefix filter ─────────────────────
-resource "aws_s3_bucket_notification" "media_input_trigger" {
+# --- Dead-Letter Queue for runaway events ---
+resource "aws_sqs_queue" "lambda_dlq" {
+  name                      = "image-processor-dlq"
+  message_retention_seconds = 1209600 # 14 days
+}
+
+# --- Lambda with Reserved Concurrency limit (Circuit Breaker) ---
+resource "aws_lambda_function" "processor" {
+  function_name                  = "image-processor"
+  role                          = aws_iam_role.lambda_exec.arn
+  handler                       = "index.handler"
+  runtime                       = "nodejs20.x"
+  reserved_concurrent_executions = 50 # SRE ceiling: prevents account concurrency starvation (1000/1000)
+
+  dead_letter_config {
+    target_arn = aws_sqs_queue.lambda_dlq.arn
+  }
+
+  environment {
+    variables = {
+      INPUT_BUCKET   = aws_s3_bucket.media_input.id
+      OUTPUT_BUCKET  = aws_s3_bucket.media_output.id
+      RECURSION_GUARD = "ENABLED"
+    }
+  }
+}
+
+# --- S3 Trigger with MANDATORY prefix and suffix filters ---
+resource "aws_s3_bucket_notification" "bucket_notification" {
   bucket = aws_s3_bucket.media_input.id
 
   lambda_function {
-    lambda_function_arn = aws_lambda_function.image_processor.arn
+    lambda_function_arn = aws_lambda_function.processor.arn
     events              = ["s3:ObjectCreated:*"]
-
-    # SRE GUARD: only fire on original uploads — never on thumbnails
-    filter_prefix = "uploads/"
-    filter_suffix = ""
+    filter_prefix       = "uploads/"      # MANDATORY: Only process raw uploads
+    filter_suffix       = ".jpg"
   }
 
   depends_on = [aws_lambda_permission.allow_s3]
 }
 
-# ── Reserved concurrency ceiling — blast-radius limiter ─────────────────────
-resource "aws_lambda_function_event_invoke_config" "image_processor_guard" {
-  function_name = aws_lambda_function.image_processor.function_name
-
-  maximum_retry_attempts = 0   # no retries on recursive failures
-}
-
-resource "aws_lambda_provisioned_concurrency_config" "image_processor_cap" {
-  function_name                  = aws_lambda_function.image_processor.function_name
-  qualifier                      = aws_lambda_alias.image_processor_live.name
-  provisioned_concurrent_executions = 10
-}
-
-# Reserve concurrency to cap account-wide blast radius
-resource "aws_lambda_function" "image_processor" {
-  function_name = "image-processor"
-  runtime       = "nodejs20.x"
-  handler       = "index.handler"
-  role          = aws_iam_role.lambda_exec.arn
-  timeout       = 30
-  memory_size   = 512
-
-  reserved_concurrent_executions = 50   # ← hard ceiling; protects rest of account
-
-  environment {
-    variables = {
-      THUMBNAIL_BUCKET = aws_s3_bucket.media_output.bucket
-    }
-  }
-}
-
-# ── SQS Dead Letter Queue for failed invocations ────────────────────────────
-resource "aws_sqs_queue" "image_processor_dlq" {
-  name                       = "image-processor-dlq"
-  message_retention_seconds  = 1209600  # 14 days
-  visibility_timeout_seconds = 60
-}
-
-resource "aws_lambda_event_source_mapping" "image_processor_dlq_mapping" {
-  event_source_arn = aws_sqs_queue.image_processor_dlq.arn
-  function_name    = aws_lambda_function.image_processor.function_name
-  batch_size       = 1
-  enabled          = false   # manual drain — activated only during incident review
-}`,
+resource "aws_lambda_permission" "allow_s3" {
+  statement_id  = "AllowExecutionFromS3"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.processor.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.media_input.arn
+}`
           },
           {
             filename: 'aws-lambda-resilience.yaml',
             language: 'yaml',
             description:
               locale === 'pl'
-                ? 'AWS SAM: konfiguracja ochrony przed pętlą rekurencyjną, DLQ i CloudWatch Alarm'
-                : 'AWS SAM: recursive loop protection, DLQ configuration, and CloudWatch throttle alarm',
-            content: `# aws-lambda-resilience.yaml
-# AWS SAM template — S3⇄Lambda Recursive Loop Prevention
-
-AWSTemplateFormatVersion: '2010-09-09'
+                ? 'AWS SAM: Ochrona przed pętlami rekurencyjnymi, limit współbieżności i alarm CloudWatch'
+                : 'AWS SAM: Recursive loop prevention, concurrency guard & CloudWatch alarm',
+            content: `AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  BugMortem SRE — S3⇄Lambda Recursive Loop Circuit Breaker
-  Ref: https://docs.aws.amazon.com/lambda/latest/dg/invocation-recursion.html
-
-Globals:
-  Function:
-    Runtime: nodejs20.x
-    Timeout: 30
-    MemorySize: 512
-    Environment:
-      Variables:
-        THUMBNAIL_BUCKET: !Ref ThumbnailOutputBucket
+  SRE Resilience Template: S3-Lambda Circuit Breaker
+  Terminates recursive invocation cascades automatically via AWS Recursive Loop Detection.
 
 Resources:
-
-  # ── Isolated input bucket (originals only) ────────────────────────────────
-  MediaInputBucket:
+  # Input Bucket (Trigger source)
+  InputMediaBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: media-assets-input
-      NotificationConfiguration:
-        LambdaConfigurations:
-          - Event: s3:ObjectCreated:*
+      BucketName: !Sub '\${AWS::AccountId}-media-uploads-input'
+
+  # Isolated Output Bucket (Destination - NEVER triggers the lambda)
+  OutputThumbnailsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '\${AWS::AccountId}-media-thumbnails-output'
+
+  # Image Processor Lambda Function
+  ImageProcessorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: index.handler
+      Runtime: nodejs20.x
+      Timeout: 30
+      MemorySize: 512
+      ReservedConcurrentExecutions: 50 # Caps concurrency to avoid whole-account starvation
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt RunawayDLQ.Arn
+      Environment:
+        Variables:
+          OUTPUT_BUCKET_NAME: !Ref OutputThumbnailsBucket
+          AWS_LAMBDA_RECURSIVE_LOOP: Terminate # Uses native AWS Lambda loop detection (Nov 2023)
+      Events:
+        NewImageUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref InputMediaBucket
+            Events: s3:ObjectCreated:*
             Filter:
               S3Key:
                 Rules:
                   - Name: prefix
-                    Value: uploads/    # SRE GUARD: only fire on originals
-            Function: !GetAtt ImageProcessorFunction.Arn
+                    Value: uploads/ # Crucial guard: only triggers on uploads/ prefix
 
-  # ── Isolated output bucket (thumbnails only) ─────────────────────────────
-  ThumbnailOutputBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: media-thumbnails-output
-
-  # ── Dead Letter Queue for failed Lambda invocations ───────────────────────
-  ImageProcessorDLQ:
+  RunawayDLQ:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: image-processor-dlq
-      MessageRetentionPeriod: 1209600   # 14 days
-      VisibilityTimeout: 60
+      QueueName: image-processor-runaway-dlq
+      MessageRetentionPeriod: 1209600
 
-  # ── Image Processor Lambda with reserved concurrency ceiling ─────────────
-  ImageProcessorFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: image-processor
-      CodeUri: dist/
-      Handler: index.handler
-      ReservedConcurrentExecutions: 50    # hard ceiling — account blast-radius limiter
-      DeadLetterQueue:
-        Type: SQS
-        TargetArn: !GetAtt ImageProcessorDLQ.Arn
-      RecursiveLoop: Terminate              # AWS Recursive Loop Detection (Nov 2023+)
-      Events:
-        # S3 trigger defined on MediaInputBucket above — no additional event here
-        # to avoid duplicate notification configuration
-
-  # ── CloudWatch Alarm: throttle spike detector ─────────────────────────────
-  LambdaThrottleAlarm:
+  # CloudWatch Alarm for throttled executions (Early Warning System)
+  ThrottlesAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
-      AlarmName: ImageProcessorThrottleSpike
-      AlarmDescription: >
-        SRE GUARD: image-processor throttle count exceeded 100 in 60s.
-        Possible recursive loop — investigate S3 event notification config.
+      AlarmDescription: 'Alarm if Lambda throttles exceed safe threshold (possible loop)'
       Namespace: AWS/Lambda
       MetricName: Throttles
       Dimensions:
@@ -494,11 +468,9 @@ Resources:
       EvaluationPeriods: 1
       Threshold: 100
       ComparisonOperator: GreaterThanThreshold
-      TreatMissingData: notBreaching
-      AlarmActions:
-        - !Sub arn:aws:sns:\${AWS::Region}:\${AWS::AccountId}:sre-oncall-alerts`,
-          },
-        ],
+      TreatMissingData: notBreaching`
+          }
+        ]
       };
 
     case 'serverless-timeout':
@@ -506,46 +478,44 @@ Resources:
       return {
         doctorOrder:
           locale === 'pl'
-            ? 'Wyprowadzenie inicjalizacji puli połączeń poza ciało handlera Lambda oraz wdrożenie Amazon RDS Proxy do agregacji socketów TLS.'
-            : 'Extract database client connection pool outside Lambda handler and provision Amazon RDS Proxy.',
+            ? 'Przeniesienie inicjalizacji klienta bazy poza handler funkcji Lambda oraz wdrożenie AWS RDS Proxy.'
+            : 'Extract database connection initialization outside Lambda handler and provision AWS RDS Proxy.',
         dosage:
           locale === 'pl'
-            ? 'Provisioned Concurrency: min. 20 instancji na wypadek kampanii marketingowych. Connection timeout: 2000ms.'
-            : 'Provisioned Concurrency: min 20 warm instances during sales spikes. Connection timeout: 2000ms.',
+            ? 'Skonfigurować RDS Proxy z pulą idle_client_timeout = 1800s oraz max_connections_percent = 90.'
+            : 'Configure RDS Proxy with idle_client_timeout = 1800s and max_connections_percent = 90.',
         preventionRule:
           locale === 'pl'
-            ? 'Całkowity zakaz otwierania bezpośrednich połączeń do bazy PostgreSQL z funkcji serverless bez pośrednika RDS Proxy.'
-            : 'Strict prohibition of direct database socket connections from serverless handlers without RDS Proxy.',
+            ? 'Zakaz tworzenia nowych instancji połączenia do bazy danych wewnątrz ciała funkcji wykonawczej.'
+            : 'Prohibit initializing fresh relational database connection pools inside the execution handler.',
         files: [
           {
             filename: 'serverless-template.yaml',
             language: 'yaml',
-            description: locale === 'pl' ? 'Szablon AWS SAM z RDS Proxy i Provisioned Concurrency' : 'AWS SAM template with RDS Proxy & Warm Instances',
+            description: locale === 'pl' ? 'Szablon AWS SAM z optymalizacją inicjalizacji i pre-warmingiem' : 'AWS SAM template with handler pre-warming',
             content: `AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: BugMortem SRE Resilient Serverless Architecture
-
 Resources:
-  InventoryFunction:
+  OrdersFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: dist/
-      Handler: index.handler
+      Handler: app.handler
       Runtime: nodejs20.x
-      Timeout: 10
-      MemorySize: 512
-      AutoPublishAlias: live
-      ProvisionedConcurrencyConfig:
-        ProvisionedConcurrentExecutions: 20`
+      Timeout: 15
+      MemorySize: 1024
+      Environment:
+        Variables:
+          DB_PROXY_ENDPOINT: !GetAtt RDSProxy.Endpoint`
           },
           {
             filename: 'rds-proxy.tf',
-            language: 'hcl',
-            description: locale === 'pl' ? 'Infrastruktura Terraform dla RDS Proxy' : 'Terraform IaC for Amazon RDS Proxy',
-            content: `resource "aws_db_proxy" "db_proxy" {
-  name                   = "inventory-rds-proxy"
+            language: 'terraform',
+            description: locale === 'pl' ? 'Definicja AWS RDS Proxy w Terraform' : 'AWS RDS Proxy Terraform definition',
+            content: `resource "aws_db_proxy" "proxy" {
+  name                   = "aurora-serverless-proxy"
+  debug_logging          = false
   engine_family          = "POSTGRESQL"
-  idle_client_timeout    = 120
+  idle_client_timeout    = 1800
   require_tls            = true
   role_arn               = aws_iam_role.proxy_role.arn
   vpc_security_group_ids = [aws_security_group.proxy_sg.id]
@@ -561,14 +531,22 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
   isOpen,
   onClose,
   incident,
-  t
+  t: propT,
+  locale: propLocale
 }) => {
   const [activeFileIndex, setActiveFileIndex] = useState<number>(0);
   const [copiedFile, setCopiedFile] = useState<boolean>(false);
 
+  const i18n = useI18n();
   if (!isOpen) return null;
 
-  const locale = t?.navigation?.langPl === 'Polski (PL)' ? 'pl' : 'en';
+  const t = propT || i18n?.t;
+  const locale: Locale =
+    propLocale ||
+    i18n?.locale ||
+    (t?.common?.close === 'Close' ? 'en' : 'pl');
+
+  const p = t?.prescription;
   const prescription = getPrescriptionData(incident?.id || 'react-hydration', locale);
   const activeFile = prescription.files[activeFileIndex] || prescription.files[0];
 
@@ -619,10 +597,10 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-sm sm:text-base font-bold text-stone-900 dark:text-white">
-                  {locale === 'pl' ? 'Oficjalna Recepta SRE & Generator IaC' : 'Official SRE Prescription & IaC Generator'}
+                  {p?.modalTitle || (locale === 'pl' ? 'Oficjalna Recepta SRE & Generator IaC' : 'Official SRE Prescription & IaC Generator')}
                 </h3>
                 <span className="text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                  {locale === 'pl' ? 'TERAPIA ANTY-AWARIJNA' : 'RESILIENCE THERAPY'}
+                  {p?.resilienceBadge || (locale === 'pl' ? 'TERAPIA ANTY-AWARIJNA' : 'RESILIENCE THERAPY')}
                 </span>
               </div>
               <p className="text-[11px] text-stone-600 dark:text-stone-400 mt-0.5 truncate max-w-xl">
@@ -647,29 +625,29 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
             <div className="flex items-center justify-between text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400 border-b border-emerald-200/60 dark:border-emerald-900/60 pb-2">
               <span className="flex items-center gap-1.5">
                 <Stethoscope className="w-4 h-4" />
-                {locale === 'pl' ? 'ZALECENIE LEKARZA SRE (DOCTOR’S ORDERS)' : 'SRE DOCTOR’S ORDERS'}
+                {p?.doctorOrdersTitle || (locale === 'pl' ? 'ZALECENIE LEKARZA SRE (DOCTOR’S ORDERS)' : 'SRE DOCTOR’S ORDERS')}
               </span>
               <span className="text-[10px] uppercase tracking-wider bg-emerald-200 text-emerald-900 dark:bg-emerald-900/60 dark:text-emerald-200 px-2 py-0.5 rounded">
-                Rx #{incident?.id?.toUpperCase() || 'SRE-RX'}
+                {p?.rxNumberPrefix || 'Rx #'}{incident?.id?.toUpperCase() || 'SRE-RX'}
               </span>
             </div>
 
             <p className="text-xs sm:text-sm font-medium text-emerald-950 dark:text-emerald-100 leading-relaxed">
-              {prescription.doctorOrder}
+              {fixOrphans(prescription.doctorOrder)}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
               <div className="p-2.5 rounded-lg bg-white/90 dark:bg-stone-900/80 border border-emerald-200 dark:border-emerald-900/50">
                 <span className="block text-[10px] font-mono uppercase font-bold text-stone-500 dark:text-stone-400">
-                  {locale === 'pl' ? 'DAWKOWANIE / SLA' : 'DOSAGE / SLA'}
+                  {p?.dosageLabel || (locale === 'pl' ? 'DAWKOWANIE / SLA' : 'DOSAGE / SLA')}
                 </span>
-                <span className="font-semibold text-stone-900 dark:text-stone-100">{prescription.dosage}</span>
+                <span className="font-semibold text-stone-900 dark:text-stone-100">{fixOrphans(prescription.dosage)}</span>
               </div>
               <div className="p-2.5 rounded-lg bg-white/90 dark:bg-stone-900/80 border border-emerald-200 dark:border-emerald-900/50">
                 <span className="block text-[10px] font-mono uppercase font-bold text-stone-500 dark:text-stone-400">
-                  {locale === 'pl' ? 'REGUŁA ZAPOBIEGAWCZA' : 'PREVENTION RULE'}
+                  {p?.preventionRuleLabel || (locale === 'pl' ? 'REGUŁA ZAPOBIEGAWCZA' : 'PREVENTION RULE')}
                 </span>
-                <span className="font-semibold text-stone-900 dark:text-stone-100">{prescription.preventionRule}</span>
+                <span className="font-semibold text-stone-900 dark:text-stone-100">{fixOrphans(prescription.preventionRule)}</span>
               </div>
             </div>
           </div>
@@ -702,22 +680,21 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
                   className="px-2.5 py-1.5 rounded-lg text-xs font-mono font-semibold bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border border-stone-300 dark:border-stone-700 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
                 >
                   {copiedFile ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedFile ? (locale === 'pl' ? 'Skopiowano!' : 'Copied!') : (locale === 'pl' ? 'Kopiuj Plik' : 'Copy')}</span>
+                  <span>{copiedFile ? (p?.copiedNotice || (locale === 'pl' ? 'Skopiowano!' : 'Copied!')) : (p?.copyFileCta || (locale === 'pl' ? 'Kopiuj Plik' : 'Copy'))}</span>
                 </button>
-
                 <button
                   type="button"
                   onClick={handleDownloadFile}
                   className="px-2.5 py-1.5 rounded-lg text-xs font-mono font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>{locale === 'pl' ? 'Pobierz Plik' : 'Download'}</span>
+                  <span>{p?.downloadCta || (locale === 'pl' ? 'Pobierz Plik' : 'Download')}</span>
                 </button>
               </div>
             </div>
 
             <p className="text-[11px] text-stone-600 dark:text-stone-400 italic">
-              ℹ️ {activeFile.description}
+              ℹ️ {fixOrphans(activeFile.description)}
             </p>
 
             {/* Blok z kodem źródłowym */}
@@ -734,7 +711,7 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
           <div className="flex items-center gap-1.5">
             <FileCheck2 className="w-4 h-4 text-emerald-500" />
             <span className="hidden sm:inline">
-              {locale === 'pl' ? 'Pliki zweryfikowane przez silnik SRE BugMortem' : 'Configs verified by BugMortem SRE Engine'}
+              {p?.verifiedFooter || (locale === 'pl' ? 'Pliki zweryfikowane przez silnik SRE BugMortem' : 'Configs verified by BugMortem SRE Engine')}
             </span>
           </div>
           <button
@@ -742,7 +719,7 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 rounded-xl text-xs font-bold bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
           >
-            {locale === 'pl' ? 'Zamknij Apteczkę' : 'Close Prescription'}
+            {p?.closeCta || (locale === 'pl' ? 'Zamknij Apteczkę' : 'Close Prescription')}
           </button>
         </div>
       </div>
