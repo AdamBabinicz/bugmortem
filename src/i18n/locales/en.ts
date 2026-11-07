@@ -831,7 +831,7 @@ export const handler = async (event: S3Event): Promise<void> => {
 
     // Guard: only process objects under the uploads/ prefix
     if (!srcKey.startsWith(INPUT_PREFIX)) {
-      console.info('[SRE GUARD: skipping \\${srcKey} — outside uploads/ prefix]');
+      console.info('[SRE GUARD: skipping \${srcKey} — outside uploads/ prefix]');
       continue;
     }
 
