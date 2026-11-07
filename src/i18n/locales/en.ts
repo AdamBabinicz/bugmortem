@@ -70,11 +70,11 @@ hydrateRoot(
           { time: 'T-00:04:12', desc: 'React 19 root container unmounts upon layout divergence; white-screen asystole.', isFatal: true }
         ],
         fiveWhys: [
-          { whyNumber: 1, question: 'Why did the storefront render a blank white screen?', answer: 'React 19 discarded the entire DOM tree and crashed client-side execution.' },
-          { whyNumber: 2, question: 'Why did React discard the DOM hierarchy?', answer: 'A fatal hydration mismatch error was thrown during root node reconciliation.' },
-          { whyNumber: 3, question: 'Why was there a mismatch between server and client?', answer: 'The server rendered a timestamp using UTC while the client hydrated in local browser timezone.' },
-          { whyNumber: 4, question: 'Why was time rendered directly in the shared SSR tree?', answer: 'The developer assumed renderToString and hydrateRoot execute simultaneously.' },
-          { whyNumber: 5, question: 'Why was this not detected in CI/CD pipeline?', answer: 'End-to-end synthetic tests executed with JavaScript disabled, masking client-side hydration crashes.' }
+          'Why did the storefront render a blank white screen? React 19 discarded the entire DOM tree and crashed client-side execution.',
+          'Why did React discard the DOM hierarchy? A fatal hydration mismatch error was thrown during root node reconciliation.',
+          'Why was there a mismatch between server and client? The server rendered a timestamp using UTC while the client hydrated in local browser timezone.',
+          'Why was time rendered directly in the shared SSR tree? The developer assumed renderToString and hydrateRoot execute simultaneously.',
+          'Why was this not detected in CI/CD pipeline? End-to-end synthetic tests executed with JavaScript disabled, masking client-side hydration crashes.'
         ]
       },
       'connection-pool': {
@@ -124,11 +124,11 @@ async function checkout(order) {
           { time: 'T-00:03:00', desc: 'Pool exhausted: FATAL: remaining connection slots are reserved for superusers.', isFatal: true }
         ],
         fiveWhys: [
-          { whyNumber: 1, question: 'Why did the API return HTTP 503 across all routes?', answer: 'Microservices could not establish database connections to verify user sessions.' },
-          { whyNumber: 2, question: 'Why were no database connections available?', answer: 'The PostgreSQL server rejected new connections with max_connections ceiling breach.' },
-          { whyNumber: 3, question: 'Why were 500 connections open with zero CPU utilization?', answer: 'Leaked client sockets remained in idle-in-transaction state indefinitely.' },
-          { whyNumber: 4, question: 'Why were sockets not closed upon transaction errors?', answer: 'The catch block threw an exception before calling client.release().' },
-          { whyNumber: 5, question: 'Why was connection pooling left unmanaged at the application layer?', answer: 'Architectural debt: the service connected directly to raw RDS instead of PgBouncer proxy.' }
+          'Why did the API return HTTP 503 across all routes? Microservices could not establish database connections to verify user sessions.',
+          'Why were no database connections available? The PostgreSQL server rejected new connections with max_connections ceiling breach.',
+          'Why were 500 connections open with zero CPU utilization? Leaked client sockets remained in idle-in-transaction state indefinitely.',
+          'Why were sockets not closed upon transaction errors? The catch block threw an exception before calling client.release().',
+          'Why was connection pooling left unmanaged at the application layer? Architectural debt: the service connected directly to raw RDS instead of PgBouncer proxy.'
         ]
       },
       'oom-reaper': {
@@ -170,11 +170,11 @@ Killed (SIGKILL, exit code 137)`,
           { time: 'T-00:03:10', desc: 'Container cgroup hard limit (2048MB) breached; kernel sends SIGKILL 137.', isFatal: true }
         ],
         fiveWhys: [
-          { whyNumber: 1, question: 'Why did the background worker Pod restart continuously?', answer: 'Kubernetes detected exit code 137 and put the container in CrashLoopBackOff.' },
-          { whyNumber: 2, question: 'Why did the container exit with code 137?', answer: 'The Linux kernel sent SIGKILL because the container exceeded its cgroup memory limit.' },
-          { whyNumber: 3, question: 'Why did the Node.js process consume over 2GB of RAM?', answer: 'It loaded 1.4 million database records into a single in-memory JavaScript array.' },
-          { whyNumber: 4, question: 'Why was data accumulated in memory instead of streamed?', answer: 'The export endpoint was implemented using Array.map() rather than Node.js stream.pipeline.' },
-          { whyNumber: 5, question: 'Why were memory limits configured without a swap/headroom buffer?', answer: 'The V8 heap size limit (--max-old-space-size) was set higher than the Kubernetes pod limit.' }
+          'Why did the background worker Pod restart continuously? Kubernetes detected exit code 137 and put the container in CrashLoopBackOff.',
+          'Why did the container exit with code 137? The Linux kernel sent SIGKILL because the container exceeded its cgroup memory limit.',
+          'Why did the Node.js process consume over 2GB of RAM? It loaded 1.4 million database records into a single in-memory JavaScript array.',
+          'Why was data accumulated in memory instead of streamed? The export endpoint was implemented using Array.map() rather than Node.js stream.pipeline.',
+          'Why were memory limits configured without a swap/headroom buffer? The V8 heap size limit (--max-old-space-size) was set higher than the Kubernetes pod limit.'
         ]
       },
       'retry-storm': {
@@ -220,11 +220,11 @@ for (let i = 0; i < 10; i++) {
           { time: 'T-00:01:05', desc: 'Connection queues overflow; SYN flood protection drops gateway pods into asystole.', isFatal: true }
         ],
         fiveWhys: [
-          { whyNumber: 1, question: 'Why did the payment service stop responding?', answer: 'Ingress proxies dropped all connections due to CPU saturation and connection backlog overflow.' },
-          { whyNumber: 2, question: 'Why did traffic spike to 140,000 requests per second?', answer: 'Thousands of web and mobile clients fired retries simultaneously.' },
-          { whyNumber: 3, question: 'Why were the retries synchronized in a resonant wave?', answer: 'The retry logic used a static 100ms delay with zero random jitter.' },
-          { whyNumber: 4, question: 'Why did clients retry 10 times consecutively?', answer: 'The SDK retry count was configured to 10 to mask intermittent network jitter.' },
-          { whyNumber: 5, question: 'Why was there no circuit breaker to protect the upstream service?', answer: 'Circuit breaking was disabled during a recent service mesh migration and never re-enabled.' }
+          'Why did the payment service stop responding? Ingress proxies dropped all connections due to CPU saturation and connection backlog overflow.',
+          'Why did traffic spike to 140,000 requests per second? Thousands of web and mobile clients fired retries simultaneously.',
+          'Why were the retries synchronized in a resonant wave? The retry logic used a static 100ms delay with zero random jitter.',
+          'Why did clients retry 10 times consecutively? The SDK retry count was configured to 10 to mask intermittent network jitter.',
+          'Why was there no circuit breaker to protect the upstream service? Circuit breaking was disabled during a recent service mesh migration and never re-enabled.'
         ]
       },
       'cors-nightmare': {
@@ -270,11 +270,11 @@ The 'Access-Control-Allow-Origin' header has a value 'https://staging.app' that 
           { time: 'T-00:05:30', desc: '100% of browser OPTIONS preflight requests fail; client authentication asystole.', isFatal: true }
         ],
         fiveWhys: [
-          { whyNumber: 1, question: 'Why could users not log in to the production app?', answer: 'The browser blocked all fetch requests with a CORS policy violation error.' },
-          { whyNumber: 2, question: 'Why did the browser reject the preflight request?', answer: 'The Access-Control-Allow-Origin header returned https://staging.app instead of production.' },
-          { whyNumber: 3, question: 'Why did production return staging CORS headers?', answer: 'The edge CDN served a cached OPTIONS response that had been primed by staging verification tests.' },
-          { whyNumber: 4, question: 'Why did the CDN cache the OPTIONS response across origins?', answer: 'The API server was missing the Vary: Origin response header.' },
-          { whyNumber: 5, question: 'Why was the origin hardcoded in configuration?', answer: 'A developer used a static string instead of an environment variable lookup.' }
+          'Why could users not log in to the production app? The browser blocked all fetch requests with a CORS policy violation error.',
+          'Why did the browser reject the preflight request? The Access-Control-Allow-Origin header returned https://staging.app instead of production.',
+          'Why did production return staging CORS headers? The edge CDN served a cached OPTIONS response that had been primed by staging verification tests.',
+          'Why did the CDN cache the OPTIONS response across origins? The API server was missing the Vary: Origin response header.',
+          'Why was the origin hardcoded in configuration? A developer used a static string instead of an environment variable lookup.'
         ]
       },
       's3-lambda-loop': {
@@ -319,11 +319,11 @@ CloudWatch Billing Alarm: Estimated monthly charge: $48,219.42 USD.`,
           { time: 'T-00:04:12', desc: '10,000 concurrent Lambdas saturate account quota; all cloud operations flatline.', isFatal: true }
         ],
         fiveWhys: [
-          { whyNumber: 1, question: 'Why did all serverless APIs stop responding globally?', answer: 'The AWS account hit its hard concurrency limit of 10,000 simultaneous Lambda executions.' },
-          { whyNumber: 2, question: 'Why were 10,000 Lambdas executing simultaneously?', answer: 'A single image upload spawned an exponential recursive loop of executions.' },
-          { whyNumber: 3, question: 'Why did the Lambda function trigger itself recursively?', answer: 'It saved its output thumbnail into the exact same S3 bucket that listened for new uploads.' },
-          { whyNumber: 4, question: 'Why did the S3 event trigger not filter out thumbnail files?', answer: 'The S3 notification rule lacked a prefix filter (e.g., uploads/) and listened to all ObjectCreated events.' },
-          { whyNumber: 5, question: 'Why were there no safety guardrails or circuit breakers?', answer: 'The Lambda function had no reserved concurrency limit or execution budget ceiling configured.' }
+          'Why did all serverless APIs stop responding globally? The AWS account hit its hard concurrency limit of 10,000 simultaneous Lambda executions.',
+          'Why were 10,000 Lambdas executing simultaneously? A single image upload spawned an exponential recursive loop of executions.',
+          'Why did the Lambda function trigger itself recursively? It saved its output thumbnail into the exact same S3 bucket that listened for new uploads.',
+          'Why did the S3 event trigger not filter out thumbnail files? The S3 notification rule lacked a prefix filter (e.g., uploads/) and listened to all ObjectCreated events.',
+          'Why were there no safety guardrails or circuit breakers? The Lambda function had no reserved concurrency limit or execution budget ceiling configured.'
         ]
       },
       'serverless-timeout': {
@@ -370,11 +370,11 @@ Execution time: 30,002 ms exceeding function timeout of 30,000 ms.`,
           { time: 'T-00:00:31', desc: 'API Gateway 30s hard limit reached; 504 Gateway Timeout flatline triggered.', isFatal: true }
         ],
         fiveWhys: [
-          { whyNumber: 1, question: 'Why did users see 504 Gateway Timeout errors?', answer: 'The API Gateway closed the connection after waiting 30 seconds for the backend.' },
-          { whyNumber: 2, question: 'Why did the backend take longer than 30 seconds to reply?', answer: 'The Lambda function cold start combined with the database query took 32 seconds.' },
-          { whyNumber: 3, question: 'Why did the cold start take 14 seconds?', answer: 'The function loaded a monolithic ORM and opened a new SSL connection to a distant RDS instance.' },
-          { whyNumber: 4, question: 'Why was a heavy analytical query executed synchronously in a web request?', answer: 'The endpoint was designed for MVP without an asynchronous job queue architecture.' },
-          { whyNumber: 5, question: 'Why was there no caching or read-replica for this analytics query?', answer: 'The dashboard feature was shipped directly to production without load testing or database optimization.' }
+          'Why did users see 504 Gateway Timeout errors? The API Gateway closed the connection after waiting 30 seconds for the backend.',
+          'Why did the backend take longer than 30 seconds to reply? The Lambda function cold start combined with the database query took 32 seconds.',
+          'Why did the cold start take 14 seconds? The function loaded a monolithic ORM and opened a new SSL connection to a distant RDS instance.',
+          'Why was a heavy analytical query executed synchronously in a web request? The endpoint was designed for MVP without an asynchronous job queue architecture.',
+          'Why was there no caching or read-replica for this analytics query? The dashboard feature was shipped directly to production without load testing or database optimization.'
         ]
       }
     }
