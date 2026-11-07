@@ -139,7 +139,7 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
                 </span>
               </div>
               <h2 id="modal-headline" className="text-lg font-bold text-stone-100 flex items-center gap-2 mt-0.5">
-                {activePrescription?.title || dict.title}
+                {incident.title || dict.modalTitle}
               </h2>
             </div>
           </div>
@@ -159,7 +159,7 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
             <ShieldAlert className="w-4 h-4 text-amber-500 shrink-0" />
             <span>
               <strong className="text-stone-300">{dict.diagnosisLabel || 'Diagnosis'}: </strong>
-              {activePrescription?.diagnosis || incident.title}
+              {activePrescription?.doctorOrder || incident.title}
             </span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
