@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { 
   X, 
@@ -7,29 +9,30 @@ import {
   FileCode, 
   ShieldAlert, 
   Cpu, 
-  ExternalLink,
   Download,
   Flame,
   CheckCircle2,
   AlertTriangle,
   Stethoscope
 } from 'lucide-react';
-import { useI18n } from '../i18n';
-import type { Incident } from '../types';
-import type { SreConfigFile, PrescriptionItem } from '../i18n/types';
+import { useI18n } from '@/i18n/context';
+import type { IncidentPreset, SreConfigFile, PrescriptionItem, Dictionary } from '@/i18n/types';
 
 interface SrePrescriptionModalProps {
-  incident: Incident | null;
+  incident: IncidentPreset | null;
   isOpen: boolean;
   onClose: () => void;
+  t?: Dictionary | any;
 }
 
 export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
   incident,
   isOpen,
-  onClose
+  onClose,
+  t: propT,
 }) => {
-  const { t } = useI18n();
+  const contextI18n = useI18n();
+  const t = propT || contextI18n?.t;
   const dict = t?.prescription;
 
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -129,10 +132,10 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-mono uppercase tracking-wider text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
-                  {dict.badge}
+                  {dict.badge || 'SRE PRESCRIPTION (RX)'}
                 </span>
                 <span className="text-xs font-mono text-stone-300">
-                  {incident.code || incident.id}
+                  {incident.id.toUpperCase()}
                 </span>
               </div>
               <h2 id="modal-headline" className="text-lg font-bold text-stone-100 flex items-center gap-2 mt-0.5">
@@ -143,7 +146,7 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
 
           <button
             onClick={onClose}
-            aria-label={dict.close}
+            aria-label={dict.close || 'Close'}
             className="p-1.5 rounded-lg text-stone-300 hover:text-stone-200 hover:bg-stone-800 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -155,13 +158,13 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
           <div className="flex items-center gap-2">
             <ShieldAlert className="w-4 h-4 text-amber-500 shrink-0" />
             <span>
-              <strong className="text-stone-300">{dict.diagnosisLabel}: </strong>
+              <strong className="text-stone-300">{dict.diagnosisLabel || 'Diagnosis'}: </strong>
               {activePrescription?.diagnosis || incident.title}
             </span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <Cpu className="w-4 h-4 text-emerald-500" />
-            <span className="text-stone-300">{dict.readyToApply}</span>
+            <span className="text-stone-300">{dict.readyToApply || 'Ready to apply'}</span>
           </div>
         </div>
 
@@ -170,7 +173,7 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
           {/* PASEK BOCZNY / LISTA PLIKÓW */}
           <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-stone-800 bg-stone-950/60 p-3 flex md:flex-col gap-1.5 overflow-x-auto md:overflow-y-auto">
             <div className="hidden md:flex items-center justify-between px-2 py-1 text-[11px] font-mono text-stone-300 uppercase tracking-wider">
-              <span>{dict.fileListTitle}</span>
+              <span>{dict.fileListTitle || 'Prescription Files'}</span>
               <span className="bg-stone-800 text-stone-300 px-1.5 py-0.2 rounded text-[10px]">
                 {files.length}
               </span>
@@ -197,7 +200,7 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
             {files.length === 0 && (
               <div className="p-4 text-center text-xs text-stone-300 flex flex-col items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-amber-500/60" />
-                <span>{dict.noFilesAvailable}</span>
+                <span>{dict.noFilesAvailable || 'No files available'}</span>
               </div>
             )}
           </div>
@@ -225,12 +228,12 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
                     {copiedFileIndex === activeTab ? (
                       <>
                         <Check className="w-3.5 h-3.5 text-emerald-400" />
-                        <span className="text-emerald-400">{dict.copied}</span>
+                        <span className="text-emerald-400">{dict.copied || 'Copied!'}</span>
                       </>
                     ) : (
                       <>
                         <Copy className="w-3.5 h-3.5 text-stone-400" />
-                        <span>{dict.copyCode}</span>
+                        <span>{dict.copyCode || 'Copy Code'}</span>
                       </>
                     )}
                   </button>
@@ -253,7 +256,7 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center text-xs text-stone-300">
-                {dict.selectFile}
+                {dict.selectFile || 'Select a file to inspect'}
               </div>
             )}
           </div>
@@ -263,7 +266,7 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
         <div className="px-6 py-3.5 bg-stone-900/70 border-t border-stone-800 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs text-stone-400">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-            <span>{dict.testedWithEngines}</span>
+            <span>{dict.testedWithEngines || 'Tested with SRE engines'}</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -272,7 +275,7 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-medium transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-stone-400" />
-              <span>{dict.downloadAll}</span>
+              <span>{dict.downloadAll || 'Download All'}</span>
             </button>
 
             <button
@@ -282,12 +285,12 @@ export const SrePrescriptionModal: React.FC<SrePrescriptionModalProps> = ({
               {copiedAll ? (
                 <>
                   <Check className="w-3.5 h-3.5" />
-                  <span>{dict.allCopied}</span>
+                  <span>{dict.allCopied || 'All Copied!'}</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-3.5 h-3.5" />
-                  <span>{dict.copyAll}</span>
+                  <span>{dict.copyAll || 'Copy All'}</span>
                 </>
               )}
             </button>
