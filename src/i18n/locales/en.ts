@@ -1,60 +1,397 @@
 import type { TranslationDictionary } from '../types';
 
 export const en: TranslationDictionary = {
-  navigation: {
-    title: 'BugMortem',
-    tagline: 'Cyber-Gothic Digital Morgue & Automated Post-Mortem Forensic Unit',
-    themeToggle: 'Toggle Theme',
-    langToggle: 'Switch Language',
-    langPl: 'Polski (PL)',
-    langEn: 'English (EN)',
-    githubLink: 'Source Code on GitHub',
-    liveBadge: 'LIVE TELEMETRY',
-    systemStatusNominal: 'SYSTEM NOMINAL',
-    systemStatusFatal: 'CRITICAL FLATLINE',
+  common: {
+    loading: 'Loading diagnostic telemetry...',
+    error: 'Fatal forensic error encountered',
   },
   hero: {
-    statusBadge: 'CRITICAL OUTAGE DETECTED',
-    headingMain: 'CYBER-GOTHIC DIGITAL MORGUE',
-    headingSub: 'Automated Post-Mortem Engine & SRE Forensic Unit',
-    description: 'When production flatlines at 3 AM on Black Friday, BugMortem performs real-time autopsies on catastrophic crashes: reactive ECG biometrics, interactive audio flatline alarms, 5-Whys diagnostic trees, chaos sandbox testing, and official PDF Death Certificates.',
-    btnFlatline: 'Trigger Flatline Simulation',
-    btnResurrect: 'Charge Defibrillator & Resurrect',
-    btnDocs: 'Inspect Forensic Records',
-    btnSandbox: 'Launch Chaos Engineering Sandbox',
-    incidentSelectorLabel: 'Autopsy Specimen (Select Incident)',
+    badge: 'KIROWEEN 2026 HACKATHON EDITION',
+    title: 'BugMortem',
+    subtitle: 'Production Incident Forensic Studio & Digital Morgue',
+    tagline: 'When production flatlines at 3 AM, we perform the autopsy.',
+    ctaAutopsy: 'Begin Forensic Autopsy',
+    ctaReplay: 'Replay Incident Chronology',
   },
-  ecg: {
-    bpmLabel: 'CARDIAC FREQUENCY',
-    bpmUnit: 'BPM',
-    statusLabel: 'SYSTEM VITALS',
-    statusNominal: 'SINUS RHYTHM',
-    statusArrhythmia: 'VENTRICULAR TACHYCARDIA',
-    statusFlatline: 'VENTRICULAR ASYSTOLE (FLATLINE)',
-    statusResurrected: 'STABILIZED (POST-RESUSCITATION)',
-    leadConfig: 'LEAD II • 25 mm/s • 10 mm/mV • FILTER 0.05-150Hz',
-    btnMute: 'Mute Audio Synthesizer',
-    btnUnmute: 'Engage Web Audio Monitor',
-    btnDefibrillate: 'CHARGE & DELIVER 360J SHOCK',
-    defibCharging: 'CHARGING CAPACITORS (360 JOULES)...',
-    defibReady: 'STAND CLEAR! DISCHARGING SHOCK...',
-    audioWarning: 'Real-time Web Audio Synthesizer: 880Hz alert beeps & 440Hz continuous flatline tone.',
+  navigation: {
+    brand: 'BugMortem',
+    morgue: 'Digital Morgue',
+    sandbox: 'Chaos Sandbox',
+    docs: 'Forensic Protocol',
   },
-  audio: {
-    synthesizerTitle: 'BIONIC AUDITORY MONITOR (WEB AUDIO API)',
-    stateLabel: 'Synthesizer State',
-    stateActive: 'ENGAGED & OSCILLATING',
-    stateMuted: 'MUTED BY OPERATOR',
-    sineWaveform: 'Custom dual-oscillator carrier (440Hz/880Hz) with exponential gain decay.',
-    volumeLabel: 'Output Gain',
+  presets: {
+    title: 'CANONICAL PRODUCTION AUTOPSY ARCHIVES',
+    subtitle: '7 real-world architectural failures cataloged for forensic investigation',
+    badge: 'SPECIMEN',
+    items: {
+      'react-hydration': {
+        id: 'react-hydration',
+        name: 'React 19 SSR Hydration Mismatch',
+        category: 'Frontend & SSR Architecture',
+        severity: 'P0',
+        badge: 'REACT 19 / SSR',
+        service: 'storefront-edge-ssr',
+        domain: 'frontend',
+        status: 'ASPHYXIATED',
+        timestamp: '03:14:22 UTC',
+        summary: 'Non-deterministic server/client HTML divergence caused immediate client-side DOM root collapse, blinding 100% of e-commerce checkout traffic during peak load.',
+        fatalEvent: 'Fatal Event: Asystole flatline detected across telemetry monitors.',
+        pathology: 'Unsynchronized temporal state rendering in root SSR tree',
+        codeSnippet: `// Server: renderToString with timestamp
+const html = renderToString(
+  <Clock now={new Date()} />
+);
+
+// Client: hydrateRoot executes 120ms later
+hydrateRoot(
+  document.getElementById('root'),
+  <Clock now={new Date()} /> // MISMATCH!
+);`,
+        stackTrace: `Error: Hydration failed because the initial UI does not match what was rendered on the server.
+    at throwOnHydrationMismatch (react-dom-client.development.js:12480:11)
+    at tryToClaimNextHydratableInstance (react-dom-client.development.js:12602:9)
+    at updateHostComponent$1 (react-dom-client.development.js:14562:17)
+    at beginWork (react-dom-client.development.js:18942:14)`,
+        coronerVerdict: 'The client-side DOM violently disintegrated during hydration due to non-deterministic temporal rendering. Server and client drifted by 124 milliseconds, causing React 19 to discard the root hierarchy and trigger unrecoverable blank-screen death.',
+        postMortem: {
+          summary: 'High-severity client-side hydration collapse triggered by un-synchronized Date objects rendered during SSR, completely blinding 100% of incoming checkout traffic.',
+          impact: '100% bounce rate on storefront checkout route for 18 minutes; estimated revenue disruption of $142,000.',
+          rootCause: 'Direct invocation of new Date() inside the SSR component tree without a two-pass hydration boundary or client-only mounting guard.',
+          actionItems: [
+            'Introduce SafeClientOnly mounting boundary for temporal components',
+            'Enforce ESLint AST rule banning window/localStorage/Date directly in SSR render tree',
+            'Add automated Playwright visual regression assertions against hydration console warnings'
+          ]
+        },
+        timeline: [
+          { time: 'T-00:00:00', desc: 'Canary rollout of SSR Storefront v3.12.0 reaches 10% traffic.', isFatal: false },
+          { time: 'T-00:01:15', desc: 'Initial client telemetry records benign 12ms DOM variance warnings.', isFatal: false },
+          { time: 'T-00:02:40', desc: 'Traffic shifted to 100%. Client hydration mismatch errors spike to 45,000/min.', isFatal: false },
+          { time: 'T-00:04:12', desc: 'React 19 root container unmounts upon layout divergence; white-screen asystole.', isFatal: true }
+        ],
+        fiveWhys: [
+          { whyNumber: 1, question: 'Why did the storefront render a blank white screen?', answer: 'React 19 discarded the entire DOM tree and crashed client-side execution.' },
+          { whyNumber: 2, question: 'Why did React discard the DOM hierarchy?', answer: 'A fatal hydration mismatch error was thrown during root node reconciliation.' },
+          { whyNumber: 3, question: 'Why was there a mismatch between server and client?', answer: 'The server rendered a timestamp using UTC while the client hydrated in local browser timezone.' },
+          { whyNumber: 4, question: 'Why was time rendered directly in the shared SSR tree?', answer: 'The developer assumed renderToString and hydrateRoot execute simultaneously.' },
+          { whyNumber: 5, question: 'Why was this not detected in CI/CD pipeline?', answer: 'End-to-end synthetic tests executed with JavaScript disabled, masking client-side hydration crashes.' }
+        ]
+      },
+      'connection-pool': {
+        id: 'connection-pool',
+        name: 'PostgreSQL Connection Starvation & Pool Exhaustion',
+        category: 'Database & Infrastructure',
+        severity: 'P0',
+        badge: 'POSTGRES / INFRA',
+        service: 'auth-billing-cluster',
+        domain: 'database',
+        status: 'CARDIAC ARREST',
+        timestamp: '19:42:01 UTC',
+        summary: 'Unhandled payment gateway timeouts leaked database connection handles during error rollback, saturating max_connections and deadlocking all transactional services globally.',
+        fatalEvent: 'Fatal Event: Pool exhaustion caused cascading connection refusal (503 Service Unavailable).',
+        pathology: 'Missing client.release() invocation inside catch block exception branches',
+        codeSnippet: `// Missing client.release() in error catch block
+async function checkout(order) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await processOrder(client, order);
+    await client.query('COMMIT');
+  } catch (err) {
+    // BUG: Connection never released back to pool on failure!
+    throw err;
+  }
+}`,
+        stackTrace: `error: remaining connection slots are reserved for non-replication superuser connections
+    at Parser.parseErrorMessage (pg-protocol/dist/parser.js:287:98)
+    at Connection.handlePacket (pg/lib/connection.js:128:19)
+    at Socket.emit (node:events:517:28)`,
+        coronerVerdict: 'PostgreSQL max_connections ceiling of 500 was breached after an unhandled payment gateway error leaked connection handles. Starved workers deadlocked in connection-acquisition queues, terminating all database transactions globally.',
+        postMortem: {
+          summary: 'Global database asystole caused by unreleased pooled connections during upstream payment failure cascades, freezing billing and authentication clusters.',
+          impact: '24 minutes of complete inability to authenticate users or record transactions; 4,200 requests aborted with HTTP 503.',
+          rootCause: 'Failure to employ try-finally blocks or automatic resource disposers around pool.connect() handles.',
+          actionItems: [
+            'Deploy PgBouncer in transaction-pooling mode to multiplex 5,000 clients over 100 backend slots',
+            'Refactor all database access code to use withTransaction() disposable wrappers',
+            'Configure Prometheus alert for PgPool saturation exceeding 85% for > 60 seconds'
+          ]
+        },
+        timeline: [
+          { time: 'T-00:00:00', desc: 'Upstream payment processor experiences 3-second transient network degradation.', isFatal: false },
+          { time: 'T-00:00:45', desc: 'Unhandled exceptions leak 40 database clients per second during rollback failures.', isFatal: false },
+          { time: 'T-00:01:50', desc: 'PostgreSQL connection pool utilization hits 495/500 allocated slots.', isFatal: false },
+          { time: 'T-00:03:00', desc: 'Pool exhausted: FATAL: remaining connection slots are reserved for superusers.', isFatal: true }
+        ],
+        fiveWhys: [
+          { whyNumber: 1, question: 'Why did the API return HTTP 503 across all routes?', answer: 'Microservices could not establish database connections to verify user sessions.' },
+          { whyNumber: 2, question: 'Why were no database connections available?', answer: 'The PostgreSQL server rejected new connections with max_connections ceiling breach.' },
+          { whyNumber: 3, question: 'Why were 500 connections open with zero CPU utilization?', answer: 'Leaked client sockets remained in idle-in-transaction state indefinitely.' },
+          { whyNumber: 4, question: 'Why were sockets not closed upon transaction errors?', answer: 'The catch block threw an exception before calling client.release().' },
+          { whyNumber: 5, question: 'Why was connection pooling left unmanaged at the application layer?', answer: 'Architectural debt: the service connected directly to raw RDS instead of PgBouncer proxy.' }
+        ]
+      },
+      'oom-reaper': {
+        id: 'oom-reaper',
+        name: 'Memory Leak & Linux Kernel OOM Killer Flatline',
+        category: 'Kubernetes & Runtime Memory',
+        severity: 'P0',
+        badge: 'NODE.JS / K8S',
+        service: 'export-report-worker',
+        domain: 'compute',
+        status: 'TERMINATED (SIGKILL)',
+        timestamp: '14:02:19 UTC',
+        summary: 'Synchronous in-memory buffering of 1.4 million audit rows bloated heap allocations past container cgroup memory constraints, triggering instant Linux kernel termination with exit code 137.',
+        fatalEvent: 'Fatal Event: Kernel OOM reaper dispatched SIGKILL to process 41829.',
+        pathology: 'Unbounded heap allocation accumulating large dataset in single JavaScript array',
+        codeSnippet: `// Unbounded in-memory accumulation of 1.4M rows
+const exportData = [];
+dbStream.on('data', (chunk) => {
+  exportData.push(chunk); // Heap allocation explodes to 4.2GB
+});`,
+        stackTrace: `[14029.182049] Out of memory: Killed process 41829 (node) total-vm:4829104kB, anon-rss:2084920kB, file-rss:0kB
+[14029.182100] oom_reaper: reaped process 41829 (node), now anon-rss:0kB
+Killed (SIGKILL, exit code 137)`,
+        coronerVerdict: 'Linux kernel OOM Reaper executed process 41829 via SIGKILL after heap allocations violently breached container cgroup hard limit of 2048MB during full-table CSV exports.',
+        postMortem: {
+          summary: 'Sudden termination of report generation workers due to unbuffered batch loading into memory stateroom, triggering SIGKILL 137.',
+          impact: 'Corrupted financial exports for enterprise tier customers; continuous Pod crash-loop backoff for 42 minutes.',
+          rootCause: 'Buffering millions of historical ledger records in RAM arrays instead of streaming directly to S3 with backpressure.',
+          actionItems: [
+            'Enforce Node.js Streams with stream.pipeline and CSV transform streams',
+            'Set NODE_OPTIONS="--max-old-space-size=1536" inside 2GiB Kubernetes cgroup limits',
+            'Implement max row query limits on synchronous report generation endpoints'
+          ]
+        },
+        timeline: [
+          { time: 'T-00:00:00', desc: 'Enterprise client requests 5-year full ledger audit CSV export.', isFatal: false },
+          { time: 'T-00:01:20', desc: 'Heap memory usage climbs steadily from 320MB to 1.8GB.', isFatal: false },
+          { time: 'T-00:02:45', desc: 'V8 garbage collector locks event loop for 1,400ms in desperate scavenge cycle.', isFatal: false },
+          { time: 'T-00:03:10', desc: 'Container cgroup hard limit (2048MB) breached; kernel sends SIGKILL 137.', isFatal: true }
+        ],
+        fiveWhys: [
+          { whyNumber: 1, question: 'Why did the background worker Pod restart continuously?', answer: 'Kubernetes detected exit code 137 and put the container in CrashLoopBackOff.' },
+          { whyNumber: 2, question: 'Why did the container exit with code 137?', answer: 'The Linux kernel sent SIGKILL because the container exceeded its cgroup memory limit.' },
+          { whyNumber: 3, question: 'Why did the Node.js process consume over 2GB of RAM?', answer: 'It loaded 1.4 million database records into a single in-memory JavaScript array.' },
+          { whyNumber: 4, question: 'Why was data accumulated in memory instead of streamed?', answer: 'The export endpoint was implemented using Array.map() rather than Node.js stream.pipeline.' },
+          { whyNumber: 5, question: 'Why were memory limits configured without a swap/headroom buffer?', answer: 'The V8 heap size limit (--max-old-space-size) was set higher than the Kubernetes pod limit.' }
+        ]
+      },
+      'retry-storm': {
+        id: 'retry-storm',
+        name: 'Exponential Retry Storm & Thundering Herd DDOS',
+        category: 'Networking & Service Mesh',
+        severity: 'P0',
+        badge: 'DISTRIBUTED / NET',
+        service: 'payment-gateway-mesh',
+        domain: 'networking',
+        status: 'CRUSHED',
+        timestamp: '11:15:08 UTC',
+        summary: 'A 200ms network blip provoked 10,000 clients into firing aggressive 10x synchronous retries without jitter, generating a 140,000 RPS tidal wave that flattened edge reverse proxies.',
+        fatalEvent: 'Fatal Event: Edge ingress saturation provoked SYN flood protection, dropping all gateway pods.',
+        pathology: 'Static loop retry without exponential backoff or decorrelated randomization',
+        codeSnippet: `// Flawed immediate retry without jitter
+for (let i = 0; i < 10; i++) {
+  try {
+    return await http.post('/charge', payload);
+  } catch (e) {
+    await sleep(100); // Resonant synchronized thundering herd!
+  }
+}`,
+        stackTrace: `FetchError: request to https://payments.internal/charge failed, reason: connect ETIMEDOUT 10.0.4.18:443
+    at ClientRequest.<anonymous> (node_modules/node-fetch/lib/index.js:1491:11)
+    at Socket.emit (node:events:517:28)
+    at TCP.onStreamRead (node:net:592:20)`,
+        coronerVerdict: '10,000 edge clients experienced a 200ms network hiccup and simultaneously fired aggressive 10x retries with static 100ms backoff, multiplying ingress traffic by 1000% and completely crushing the payment gateway.',
+        postMortem: {
+          summary: 'Self-inflicted distributed denial-of-service attack provoked by un-jittered tight retry loops across all frontend clients during upstream payment micro-blip.',
+          impact: 'Payment processing gateway knocked offline for 31 minutes; 18,400 shopping carts abandoned.',
+          rootCause: 'Total absence of randomized exponential backoff (Full Jitter) and missing edge circuit breakers.',
+          actionItems: [
+            'Implement full decorrelated jitter backoff algorithm across client SDKs',
+            'Deploy Envoy circuit breakers to instantly trip and shed load when error rates cross 20%',
+            'Enforce rate limiting on internal service mesh ingress proxies'
+          ]
+        },
+        timeline: [
+          { time: 'T-00:00:00', desc: 'Core switch re-converges BGP routes, dropping packets for 250 milliseconds.', isFatal: false },
+          { time: 'T-00:00:10', desc: '12,000 concurrent client requests fail simultaneously.', isFatal: false },
+          { time: 'T-00:00:20', desc: 'Synchronized retries hit internal ingress with 140,000 RPS burst (12x normal peak).', isFatal: false },
+          { time: 'T-00:01:05', desc: 'Connection queues overflow; SYN flood protection drops gateway pods into asystole.', isFatal: true }
+        ],
+        fiveWhys: [
+          { whyNumber: 1, question: 'Why did the payment service stop responding?', answer: 'Ingress proxies dropped all connections due to CPU saturation and connection backlog overflow.' },
+          { whyNumber: 2, question: 'Why did traffic spike to 140,000 requests per second?', answer: 'Thousands of web and mobile clients fired retries simultaneously.' },
+          { whyNumber: 3, question: 'Why were the retries synchronized in a resonant wave?', answer: 'The retry logic used a static 100ms delay with zero random jitter.' },
+          { whyNumber: 4, question: 'Why did clients retry 10 times consecutively?', answer: 'The SDK retry count was configured to 10 to mask intermittent network jitter.' },
+          { whyNumber: 5, question: 'Why was there no circuit breaker to protect the upstream service?', answer: 'Circuit breaking was disabled during a recent service mesh migration and never re-enabled.' }
+        ]
+      },
+      'cors-nightmare': {
+        id: 'cors-nightmare',
+        name: 'Strict Origin CORS Rejection on Production Preflight',
+        category: 'Browser Security & Edge CDN',
+        severity: 'P1',
+        badge: 'SECURITY / BROWSER',
+        service: 'public-api-gateway',
+        domain: 'security',
+        status: 'STRANGULATED',
+        timestamp: '08:22:45 UTC',
+        summary: 'CDN edge caches served stale OPTIONS preflight responses containing staging domains, triggering browser CORS blocks that completely paralyzed customer logins.',
+        fatalEvent: 'Fatal Event: Browser security sandbox rejected 100% of API preflight handshakes.',
+        pathology: 'Missing Vary: Origin header on CDN-cached preflight responses',
+        codeSnippet: `// Preflight OPTIONS handler missing Vary: Origin
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    // Missing Allow-Credentials and dynamic origin reflection
+    res.header('Access-Control-Allow-Origin', 'https://staging.app');
+    return res.sendStatus(200);
+  }
+  next();
+});`,
+        stackTrace: `Access to fetch at 'https://api.bugmortem.io/v1/auth' from origin 'https://bugmortem.vercel.app' 
+has been blocked by CORS policy: Response to preflight request doesn't pass access control check: 
+The 'Access-Control-Allow-Origin' header has a value 'https://staging.app' that is not equal to the supplied origin.`,
+        coronerVerdict: 'Production frontend build was rejected at the edge by the browser security sandbox because an environment variable misconfiguration locked CORS preflight reflection to the staging environment URL.',
+        postMortem: {
+          summary: 'Complete lockout of production browser clients due to hardcoded staging origin reflection in CORS preflight responses.',
+          impact: 'Zero user logins possible from production domain for 55 minutes.',
+          rootCause: 'Static staging domain compiled into edge CDN cache rules without dynamic origin validation against trusted production patterns.',
+          actionItems: [
+            'Replace hardcoded origin strings with dynamic domain regex validation against allowed list',
+            'Add Vary: Origin header to prevent Cloudflare/CloudFront caching wrong preflight responses',
+            'Automate cross-origin preflight smoke tests in pre-deployment validation scripts'
+          ]
+        },
+        timeline: [
+          { time: 'T-00:00:00', desc: 'CDN cache warming script executes against staging endpoint prior to release.', isFatal: false },
+          { time: 'T-00:02:10', desc: 'Edge CDN caches OPTIONS response with Access-Control-Allow-Origin: staging.', isFatal: false },
+          { time: 'T-00:05:00', desc: 'Production release goes live on bugmortem.vercel.app.', isFatal: false },
+          { time: 'T-00:05:30', desc: '100% of browser OPTIONS preflight requests fail; client authentication asystole.', isFatal: true }
+        ],
+        fiveWhys: [
+          { whyNumber: 1, question: 'Why could users not log in to the production app?', answer: 'The browser blocked all fetch requests with a CORS policy violation error.' },
+          { whyNumber: 2, question: 'Why did the browser reject the preflight request?', answer: 'The Access-Control-Allow-Origin header returned https://staging.app instead of production.' },
+          { whyNumber: 3, question: 'Why did production return staging CORS headers?', answer: 'The edge CDN served a cached OPTIONS response that had been primed by staging verification tests.' },
+          { whyNumber: 4, question: 'Why did the CDN cache the OPTIONS response across origins?', answer: 'The API server was missing the Vary: Origin response header.' },
+          { whyNumber: 5, question: 'Why was the origin hardcoded in configuration?', answer: 'A developer used a static string instead of an environment variable lookup.' }
+        ]
+      },
+      's3-lambda-loop': {
+        id: 's3-lambda-loop',
+        name: 'Recursive S3 Event Trigger Loop & Lambda Explosion',
+        category: 'AWS & Serverless Architecture',
+        severity: 'P0',
+        badge: 'AWS / SERVERLESS',
+        service: 'media-thumbnail-pipeline',
+        domain: 'cloud',
+        status: 'INCINERATED',
+        timestamp: '02:04:51 UTC',
+        summary: 'A media worker written to process images saved output thumbnails directly into the monitored source bucket, initiating a runaway recursive cycle that triggered 4.8 million Lambdas and a $48,000 billing spike.',
+        fatalEvent: 'Fatal Event: AWS Account concurrency ceiling (10,000) reached; Lambda invocation throttling engaged globally.',
+        pathology: 'Destination bucket and source event trigger configured to identical S3 namespace',
+        codeSnippet: `// Infinite self-invocation loop
+export const handler = async (event) => {
+  for (const record of event.Records) {
+    const thumb = await resize(record.s3.object.key);
+    // BUG: Writing thumbnail back into SAME bucket fires this Lambda again!
+    await s3.putObject({ Bucket: record.s3.bucket.name, Key: 'thumb_' + record.s3.object.key, Body: thumb });
+  }
+};`,
+        stackTrace: `Rate Exceeded: Rate of invocation of function arn:aws:lambda:us-east-1:123456789:function:thumbnail-gen 
+exceeded account concurrency quota (10,000/10,000 concurrent executions).
+CloudWatch Billing Alarm: Estimated monthly charge: $48,219.42 USD.`,
+        coronerVerdict: 'A recursive serverless doom-loop was initiated when a thumbnail generator outputted its artifact back into the same S3 bucket configured as its ObjectCreated event source, spawning 4.8 million runaway Lambdas.',
+        postMortem: {
+          summary: 'Catastrophic recursive serverless invocation loop triggering account-wide concurrency exhaustion and a $48,000 billing spike within 38 minutes.',
+          impact: 'AWS account concurrency throttled for all production serverless functions; massive financial hemorrhage.',
+          rootCause: 'Writing output objects directly back into the input S3 bucket without prefix filtering or target separation.',
+          actionItems: [
+            'Strictly isolate input and output buckets into distinct physical S3 resources',
+            'Enforce S3 Event Notification prefix filters (uploads/ vs thumbnails/)',
+            'Configure AWS Lambda maximum concurrency limits and instantaneous billing kill-switches'
+          ]
+        },
+        timeline: [
+          { time: 'T-00:00:00', desc: 'User uploads profile photo avatar_72.png to media-storage bucket.', isFatal: false },
+          { time: 'T-00:00:03', desc: 'Lambda resizes photo and writes thumb_avatar_72.png to same bucket.', isFatal: false },
+          { time: 'T-00:00:08', desc: 'thumb_avatar_72.png creation triggers new Lambda execution (loop iteration 2).', isFatal: false },
+          { time: 'T-00:04:12', desc: '10,000 concurrent Lambdas saturate account quota; all cloud operations flatline.', isFatal: true }
+        ],
+        fiveWhys: [
+          { whyNumber: 1, question: 'Why did all serverless APIs stop responding globally?', answer: 'The AWS account hit its hard concurrency limit of 10,000 simultaneous Lambda executions.' },
+          { whyNumber: 2, question: 'Why were 10,000 Lambdas executing simultaneously?', answer: 'A single image upload spawned an exponential recursive loop of executions.' },
+          { whyNumber: 3, question: 'Why did the Lambda function trigger itself recursively?', answer: 'It saved its output thumbnail into the exact same S3 bucket that listened for new uploads.' },
+          { whyNumber: 4, question: 'Why did the S3 event trigger not filter out thumbnail files?', answer: 'The S3 notification rule lacked a prefix filter (e.g., uploads/) and listened to all ObjectCreated events.' },
+          { whyNumber: 5, question: 'Why were there no safety guardrails or circuit breakers?', answer: 'The Lambda function had no reserved concurrency limit or execution budget ceiling configured.' }
+        ]
+      },
+      'serverless-timeout': {
+        id: 'serverless-timeout',
+        name: 'Downstream Cold Start Cascading Serverless Timeout',
+        category: 'Serverless Edge & Relational DB',
+        severity: 'P1',
+        badge: 'EDGE / COLD START',
+        service: 'realtime-notification-edge',
+        domain: 'serverless',
+        status: 'TIME EXPIRED',
+        timestamp: '09:01:14 UTC',
+        summary: 'Synchronous edge routes waiting on cold-started relational database connection pools exceeded the 30-second API Gateway ceiling, terminating user analytics queries with 504 Gateway Timeout.',
+        fatalEvent: 'Fatal Event: API Gateway hard timeout (30,000 ms) breached during DB connection handshake.',
+        pathology: 'Heavy synchronous analytics execution coupled with cold container startup',
+        codeSnippet: `// 30s gateway timeout exceeded by cold relational query
+export const handler = async (event) => {
+  // Cold start initializes heavy ORM + establish SSL to remote DB: 14s
+  const db = await initDatabaseConnection();
+  // Complex analytics aggregation query: 18s
+  const data = await db.query('SELECT * FROM complex_analytics_view');
+  // Total execution: 32s -> Exceeds API Gateway 30s limit!
+  return { statusCode: 200, body: JSON.stringify(data) };
+};`,
+        stackTrace: `504 Gateway Time-out
+The server, while acting as a gateway or proxy, did not receive a timely response from the upstream server.
+X-Amzn-Trace-Id: Root=1-654a9b2c-84f923e10293847291038472
+Execution time: 30,002 ms exceeding function timeout of 30,000 ms.`,
+        coronerVerdict: 'Synchronous API Gateway terminated connections with HTTP 504 after a cold-started Lambda worker took 14 seconds to establish database SSL handshakes and 18 seconds to execute heavy aggregations, breaching the 30s hard limit.',
+        postMortem: {
+          summary: 'Cascading HTTP 504 gateway timeouts caused by monolithic analytics queries executed synchronously inside cold-started serverless functions.',
+          impact: 'Analytics dashboard unavailable for 35% of peak business users; upstream connection pool starvation.',
+          rootCause: 'Coupling heavy, long-running analytical queries with synchronous request-response edge gateway routes.',
+          actionItems: [
+            'Convert heavy report generation to asynchronous architecture using SQS and WebSocket/polling push',
+            'Enable Provisioned Concurrency on critical serverless endpoints to eliminate cold starts',
+            'Deploy read-replicas with pre-aggregated materialised views for reporting queries'
+          ]
+        },
+        timeline: [
+          { time: 'T-00:00:00', desc: 'Batch of 50 enterprise users open morning executive metrics dashboard.', isFatal: false },
+          { time: 'T-00:00:05', desc: 'Traffic spike forces AWS to spin up 25 new cold Lambda container instances.', isFatal: false },
+          { time: 'T-00:00:20', desc: 'Cold DB connection handshakes take 14.2s per container, saturating DB CPU.', isFatal: false },
+          { time: 'T-00:00:31', desc: 'API Gateway 30s hard limit reached; 504 Gateway Timeout flatline triggered.', isFatal: true }
+        ],
+        fiveWhys: [
+          { whyNumber: 1, question: 'Why did users see 504 Gateway Timeout errors?', answer: 'The API Gateway closed the connection after waiting 30 seconds for the backend.' },
+          { whyNumber: 2, question: 'Why did the backend take longer than 30 seconds to reply?', answer: 'The Lambda function cold start combined with the database query took 32 seconds.' },
+          { whyNumber: 3, question: 'Why did the cold start take 14 seconds?', answer: 'The function loaded a monolithic ORM and opened a new SSL connection to a distant RDS instance.' },
+          { whyNumber: 4, question: 'Why was a heavy analytical query executed synchronously in a web request?', answer: 'The endpoint was designed for MVP without an asynchronous job queue architecture.' },
+          { whyNumber: 5, question: 'Why was there no caching or read-replica for this analytics query?', answer: 'The dashboard feature was shipped directly to production without load testing or database optimization.' }
+        ]
+      }
+    }
+  },
+  codeSection: {
+    title: 'AUTOPSY SPECIMEN // LETHAL CODE DIFF',
+    subtitle: 'Side-by-side comparative inspection of pathological code and SRE curative patch',
+    fatalLabel: 'PATHOLOGICAL DEFECT (CRITICAL)',
+    curativeLabel: 'SRE REMEDIAL SPECIFICATION (CURED)',
+    copyLabel: 'Copy Diff Payload',
+    copiedLabel: 'Diff Copied to Clipboard',
+  },
+  stackTrace: {
+    title: 'KERNEL & RUNTIME TERMINATION TELEMETRY',
   },
   timeline: {
-    title: 'AUTOPSY TIMELINE & SEQUENCE OF EVENTS',
-    subtitle: 'Microsecond chronological reconstruction leading to service termination.',
-    btnReplay: 'Replay Forensic Chronology',
-    stepLabel: 'STEP',
-    fatalStepBadge: 'FATAL ANOMALY',
-    nominalStepBadge: 'NOMINAL DRIFT',
+    title: 'MORTEM CHRONOLOGY (STEP-BY-STEP REPLAY)',
   },
   replayer: {
     title: 'INCIDENT TIME-TRAVEL REPLAYER',
@@ -84,6 +421,16 @@ export const en: TranslationDictionary = {
     impactedSubsystems: 'Impacted Micro-Components',
     diagnosticConfidence: 'Forensic Confidence Index',
   },
+  blastRadius: {
+    title: 'SYSTEM BLAST RADIUS & TOPOLOGY IMPACT',
+    subtitle: 'Visual interactive dependency graph tracking cascading failures across distributed microservices',
+    severityLabel: 'Incident Blast Radius Tier',
+    nodeHealth: 'Subsystem Health Status',
+    upstreamImpact: 'Upstream Reverse-Dependency Cascades',
+    downstreamImpact: 'Downstream Partition Failures',
+    activeConnections: 'Degraded Sockets / Mesh Links',
+    resilienceRating: 'Current Mesh Resilience Index',
+  },
   chaos: {
     title: 'CHAOS ENGINEERING LAB & BLAST RADIUS SANDBOX',
     subtitle: 'Inject fault scenarios in an isolated sandbox to observe telemetry and trigger self-healing.',
@@ -106,6 +453,19 @@ export const en: TranslationDictionary = {
     metricMemoryUsage: 'Heap Memory Allocation',
     statusNominal: 'Sandbox Health: Nominal',
     statusDegraded: 'Sandbox Health: Cascading Failures Active',
+  },
+  chaosSandbox: {
+    title: 'CHAOS ENGINEERING BLAST RADIUS SANDBOX',
+    subtitle: 'Simulate architectural fault injection and observe self-healing recovery',
+    controlPanel: 'FAULT INJECTION CONTROL',
+    injectBtn: 'Inject Failure',
+    healBtn: 'Trigger Self-Healing',
+    healingState: 'Applying Self-Healing Mitigations...',
+    metricsTitle: 'SANDBOX TELEMETRY METRICS',
+    p99Latency: 'P99 Latency',
+    errorRate: '5xx Error Rate',
+    poolSaturation: 'Pool Saturation',
+    memoryUsage: 'Heap Memory',
   },
   prescription: {
     badge: 'SRE PRESCRIPTION (RX)',
@@ -590,344 +950,6 @@ resource "aws_lambda_alias" "live" {
       }
     }
   },
-  incidents: {
-    title: 'AUTOPSY CATALOG (SELECT PRESET)',
-    subtitle: '7 canonical engineering post-mortems with simulated forensic telemetry.',
-    items: {
-      'react-hydration': {
-        id: 'react-hydration',
-        title: 'React Hydration Mismatch & DOM Tree Collapse',
-        severity: 'P0',
-        badge: 'REACT 19 / SSR',
-        service: 'storefront-edge-ssr',
-        domain: 'frontend',
-        initialBpm: 145,
-        targetBpm: 0,
-        flatlineTriggerTime: 4200,
-        codeSnippet: `// Server: renderToString with timestamp
-const html = renderToString(
-  <Clock now={new Date()} />
-);
-
-// Client: hydrateRoot executes 120ms later
-hydrateRoot(
-  document.getElementById('root'),
-  <Clock now={new Date()} /> // MISMATCH!
-);`,
-        stackTrace: `Error: Hydration failed because the initial UI does not match what was rendered on the server.
-    at throwOnHydrationMismatch (react-dom-client.development.js:12480:11)
-    at tryToClaimNextHydratableInstance (react-dom-client.development.js:12602:9)
-    at updateHostComponent$1 (react-dom-client.development.js:14562:17)
-    at beginWork (react-dom-client.development.js:18942:14)`,
-        coronerVerdict: 'The client-side DOM violently disintegrated during hydration due to non-deterministic temporal rendering. Server and client drifted by 124 milliseconds, causing React 19 to discard the root hierarchy and trigger unrecoverable blank-screen death.',
-        postMortem: {
-          summary: 'High-severity client-side hydration collapse triggered by un-synchronized Date objects rendered during SSR, completely blinding 100% of incoming checkout traffic.',
-          impact: '100% bounce rate on storefront checkout route for 18 minutes; estimated revenue disruption of $142,000.',
-          rootCause: 'Direct invocation of new Date() inside the SSR component tree without a two-pass hydration boundary or client-only mounting guard.',
-          actionItems: [
-            'Introduce SafeClientOnly mounting boundary for temporal components',
-            'Enforce ESLint AST rule banning window/localStorage/Date directly in SSR render tree',
-            'Add automated Playwright visual regression assertions against hydration console warnings'
-          ]
-        },
-        timeline: [
-          { time: 'T-00:00:00', desc: 'Canary rollout of SSR Storefront v3.12.0 reaches 10% traffic.', isFatal: false },
-          { time: 'T-00:01:15', desc: 'Initial client telemetry records benign 12ms DOM variance warnings.', isFatal: false },
-          { time: 'T-00:02:40', desc: 'Traffic shifted to 100%. Client hydration mismatch errors spike to 45,000/min.', isFatal: false },
-          { time: 'T-00:04:12', desc: 'React 19 root container unmounts upon layout divergence; white-screen asystole.', isFatal: true }
-        ],
-        fiveWhys: [
-          { whyNumber: 1, question: 'Why did the storefront render a blank white screen?', answer: 'React 19 discarded the entire DOM tree and crashed client-side execution.' },
-          { whyNumber: 2, question: 'Why did React discard the DOM hierarchy?', answer: 'A fatal hydration mismatch error was thrown during root node reconciliation.' },
-          { whyNumber: 3, question: 'Why was there a mismatch between server and client?', answer: 'The server rendered a timestamp using UTC while the client hydrated in local browser timezone.' },
-          { whyNumber: 4, question: 'Why was time rendered directly in the shared SSR tree?', answer: 'The developer assumed renderToString and hydrateRoot execute simultaneously.' },
-          { whyNumber: 5, question: 'Why was this not detected in CI/CD pipeline?', answer: 'End-to-end synthetic tests executed with JavaScript disabled, masking client-side hydration crashes.' }
-        ]
-      },
-      'connection-pool': {
-        id: 'connection-pool',
-        title: 'PostgreSQL Connection Starvation & Pool Exhaustion',
-        severity: 'P0',
-        badge: 'POSTGRES / INFRA',
-        service: 'auth-billing-cluster',
-        domain: 'database',
-        initialBpm: 160,
-        targetBpm: 0,
-        flatlineTriggerTime: 3800,
-        codeSnippet: `// Missing client.release() in error catch block
-async function checkout(order) {
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
-    await processOrder(client, order);
-    await client.query('COMMIT');
-  } catch (err) {
-    // BUG: Connection never released back to pool on failure!
-    throw err;
-  }
-}`,
-        stackTrace: `error: remaining connection slots are reserved for non-replication superuser connections
-    at Parser.parseErrorMessage (pg-protocol/dist/parser.js:287:98)
-    at Connection.handlePacket (pg/lib/connection.js:128:19)
-    at Socket.emit (node:events:517:28)`,
-        coronerVerdict: 'PostgreSQL max_connections ceiling of 500 was breached after an unhandled payment gateway error leaked connection handles. Starved workers deadlocked in connection-acquisition queues, terminating all database transactions globally.',
-        postMortem: {
-          summary: 'Global database asystole caused by unreleased pooled connections during upstream payment failure cascades, freezing billing and authentication clusters.',
-          impact: '24 minutes of complete inability to authenticate users or record transactions; 4,200 requests aborted with HTTP 503.',
-          rootCause: 'Failure to employ try-finally blocks or automatic resource disposers around pool.connect() handles.',
-          actionItems: [
-            'Deploy PgBouncer in transaction-pooling mode to multiplex 5,000 clients over 100 backend slots',
-            'Refactor all database access code to use withTransaction() disposable wrappers',
-            'Configure Prometheus alert for PgPool saturation exceeding 85% for > 60 seconds'
-          ]
-        },
-        timeline: [
-          { time: 'T-00:00:00', desc: 'Upstream payment processor experiences 3-second transient network degradation.', isFatal: false },
-          { time: 'T-00:00:45', desc: 'Unhandled exceptions leak 40 database clients per second during rollback failures.', isFatal: false },
-          { time: 'T-00:01:50', desc: 'PostgreSQL connection pool utilization hits 495/500 allocated slots.', isFatal: false },
-          { time: 'T-00:03:00', desc: 'Pool exhausted: FATAL: remaining connection slots are reserved for superusers.', isFatal: true }
-        ],
-        fiveWhys: [
-          { whyNumber: 1, question: 'Why did the API return HTTP 503 across all routes?', answer: 'Microservices could not establish database connections to verify user sessions.' },
-          { whyNumber: 2, question: 'Why were no database connections available?', answer: 'The PostgreSQL server rejected new connections with max_connections ceiling breach.' },
-          { whyNumber: 3, question: 'Why were 500 connections open with zero CPU utilization?', answer: 'Leaked client sockets remained in idle-in-transaction state indefinitely.' },
-          { whyNumber: 4, question: 'Why were sockets not closed upon transaction errors?', answer: 'The catch block threw an exception before calling client.release().' },
-          { whyNumber: 5, question: 'Why was connection pooling left unmanaged at the application layer?', answer: 'Architectural debt: the service connected directly to raw RDS instead of PgBouncer proxy.' }
-        ]
-      },
-      'oom-reaper': {
-        id: 'oom-reaper',
-        title: 'Memory Leak & Linux Kernel OOM Killer Flatline',
-        severity: 'P0',
-        badge: 'NODE.JS / K8S',
-        service: 'export-report-worker',
-        domain: 'compute',
-        initialBpm: 175,
-        targetBpm: 0,
-        flatlineTriggerTime: 3500,
-        codeSnippet: `// Unbounded in-memory accumulation of 1.4M rows
-const exportData = [];
-dbStream.on('data', (chunk) => {
-  exportData.push(chunk); // Heap allocation explodes to 4.2GB
-});`,
-        stackTrace: `[14029.182049] Out of memory: Killed process 41829 (node) total-vm:4829104kB, anon-rss:2084920kB, file-rss:0kB
-[14029.182100] oom_reaper: reaped process 41829 (node), now anon-rss:0kB
-Killed (SIGKILL, exit code 137)`,
-        coronerVerdict: 'Linux kernel OOM Reaper executed process 41829 via SIGKILL after heap allocations violently breached container cgroup hard limit of 2048MB during full-table CSV exports.',
-        postMortem: {
-          summary: 'Sudden termination of report generation workers due to unbuffered batch loading into memory stateroom, triggering SIGKILL 137.',
-          impact: 'Corrupted financial exports for enterprise tier customers; continuous Pod crash-loop backoff for 42 minutes.',
-          rootCause: 'Buffering millions of historical ledger records in RAM arrays instead of streaming directly to S3 with backpressure.',
-          actionItems: [
-            'Enforce Node.js Streams with stream.pipeline and CSV transform streams',
-            'Set NODE_OPTIONS="--max-old-space-size=1536" inside 2GiB Kubernetes cgroup limits',
-            'Implement max row query limits on synchronous report generation endpoints'
-          ]
-        },
-        timeline: [
-          { time: 'T-00:00:00', desc: 'Enterprise client requests 5-year full ledger audit CSV export.', isFatal: false },
-          { time: 'T-00:01:20', desc: 'Heap memory usage climbs steadily from 320MB to 1.8GB.', isFatal: false },
-          { time: 'T-00:02:45', desc: 'V8 garbage collector locks event loop for 1,400ms in desperate scavenge cycle.', isFatal: false },
-          { time: 'T-00:03:10', desc: 'Container cgroup hard limit (2048MB) breached; kernel sends SIGKILL 137.', isFatal: true }
-        ],
-        fiveWhys: [
-          { whyNumber: 1, question: 'Why did the background worker Pod restart continuously?', answer: 'Kubernetes detected exit code 137 and put the container in CrashLoopBackOff.' },
-          { whyNumber: 2, question: 'Why did the container exit with code 137?', answer: 'The Linux kernel sent SIGKILL because the container exceeded its cgroup memory limit.' },
-          { whyNumber: 3, question: 'Why did the Node.js process consume over 2GB of RAM?', answer: 'It loaded 1.4 million database records into a single in-memory JavaScript array.' },
-          { whyNumber: 4, question: 'Why was data accumulated in memory instead of streamed?', answer: 'The export endpoint was implemented using Array.map() rather than Node.js stream.pipeline.' },
-          { whyNumber: 5, question: 'Why were memory limits configured without a swap/headroom buffer?', answer: 'The V8 heap size limit (--max-old-space-size) was set higher than the Kubernetes pod limit.' }
-        ]
-      },
-      'retry-storm': {
-        id: 'retry-storm',
-        title: 'Exponential Retry Storm & Thundering Herd DDOS',
-        severity: 'P0',
-        badge: 'DISTRIBUTED / NET',
-        service: 'payment-gateway-mesh',
-        domain: 'networking',
-        initialBpm: 190,
-        targetBpm: 0,
-        flatlineTriggerTime: 3200,
-        codeSnippet: `// Flawed immediate retry without jitter
-for (let i = 0; i < 10; i++) {
-  try {
-    return await http.post('/charge', payload);
-  } catch (e) {
-    await sleep(100); // Resonant synchronized thundering herd!
-  }
-}`,
-        stackTrace: `FetchError: request to https://payments.internal/charge failed, reason: connect ETIMEDOUT 10.0.4.18:443
-    at ClientRequest.<anonymous> (node_modules/node-fetch/lib/index.js:1491:11)
-    at Socket.emit (node:events:517:28)
-    at TCP.onStreamRead (node:net:592:20)`,
-        coronerVerdict: '10,000 edge clients experienced a 200ms network hiccup and simultaneously fired aggressive 10x retries with static 100ms backoff, multiplying ingress traffic by 1000% and completely crushing the payment gateway.',
-        postMortem: {
-          summary: 'Self-inflicted distributed denial-of-service attack provoked by un-jittered tight retry loops across all frontend clients during upstream payment micro-blip.',
-          impact: 'Payment processing gateway knocked offline for 31 minutes; 18,400 shopping carts abandoned.',
-          rootCause: 'Total absence of randomized exponential backoff (Full Jitter) and missing edge circuit breakers.',
-          actionItems: [
-            'Implement full decorrelated jitter backoff algorithm across client SDKs',
-            'Deploy Envoy circuit breakers to instantly trip and shed load when error rates cross 20%',
-            'Enforce rate limiting on internal service mesh ingress proxies'
-          ]
-        },
-        timeline: [
-          { time: 'T-00:00:00', desc: 'Core switch re-converges BGP routes, dropping packets for 250 milliseconds.', isFatal: false },
-          { time: 'T-00:00:10', desc: '12,000 concurrent client requests fail simultaneously.', isFatal: false },
-          { time: 'T-00:00:20', desc: 'Synchronized retries hit internal ingress with 140,000 RPS burst (12x normal peak).', isFatal: false },
-          { time: 'T-00:01:05', desc: 'Connection queues overflow; SYN flood protection drops gateway pods into asystole.', isFatal: true }
-        ],
-        fiveWhys: [
-          { whyNumber: 1, question: 'Why did the payment service stop responding?', answer: 'Ingress proxies dropped all connections due to CPU saturation and connection backlog overflow.' },
-          { whyNumber: 2, question: 'Why did traffic spike to 140,000 requests per second?', answer: 'Thousands of web and mobile clients fired retries simultaneously.' },
-          { whyNumber: 3, question: 'Why were the retries synchronized in a resonant wave?', answer: 'The retry logic used a static 100ms delay with zero random jitter.' },
-          { whyNumber: 4, question: 'Why did clients retry 10 times consecutively?', answer: 'The SDK retry count was configured to 10 to mask intermittent network jitter.' },
-          { whyNumber: 5, question: 'Why was there no circuit breaker to protect the upstream service?', answer: 'Circuit breaking was disabled during a recent service mesh migration and never re-enabled.' }
-        ]
-      },
-      'cors-nightmare': {
-        id: 'cors-nightmare',
-        title: 'Strict Origin CORS Rejection on Production Preflight',
-        severity: 'P1',
-        badge: 'SECURITY / BROWSER',
-        service: 'public-api-gateway',
-        domain: 'security',
-        initialBpm: 120,
-        targetBpm: 0,
-        flatlineTriggerTime: 4800,
-        codeSnippet: `// Preflight OPTIONS handler missing Vary: Origin
-app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    // Missing Allow-Credentials and dynamic origin reflection
-    res.header('Access-Control-Allow-Origin', 'https://staging.app');
-    return res.sendStatus(200);
-  }
-  next();
-});`,
-        stackTrace: `Access to fetch at 'https://api.bugmortem.io/v1/auth' from origin 'https://bugmortem.vercel.app' 
-has been blocked by CORS policy: Response to preflight request doesn't pass access control check: 
-The 'Access-Control-Allow-Origin' header has a value 'https://staging.app' that is not equal to the supplied origin.`,
-        coronerVerdict: 'Production frontend build was rejected at the edge by the browser security sandbox because an environment variable misconfiguration locked CORS preflight reflection to the staging environment URL.',
-        postMortem: {
-          summary: 'Complete lockout of production browser clients due to hardcoded staging origin reflection in CORS preflight responses.',
-          impact: 'Zero user logins possible from production domain for 55 minutes.',
-          rootCause: 'Static staging domain compiled into edge CDN cache rules without dynamic origin validation against trusted production patterns.',
-          actionItems: [
-            'Replace hardcoded origin strings with dynamic domain regex validation against allowed list',
-            'Add Vary: Origin header to prevent Cloudflare/CloudFront caching wrong preflight responses',
-            'Automate cross-origin preflight smoke tests in pre-deployment validation scripts'
-          ]
-        },
-        timeline: [
-          { time: 'T-00:00:00', desc: 'CDN cache warming script executes against staging endpoint prior to release.', isFatal: false },
-          { time: 'T-00:02:10', desc: 'Edge CDN caches OPTIONS response with Access-Control-Allow-Origin: staging.', isFatal: false },
-          { time: 'T-00:05:00', desc: 'Production release goes live on bugmortem.vercel.app.', isFatal: false },
-          { time: 'T-00:05:30', desc: '100% of browser OPTIONS preflight requests fail; client authentication asystole.', isFatal: true }
-        ],
-        fiveWhys: [
-          { whyNumber: 1, question: 'Why could users not log in to the production app?', answer: 'The browser blocked all fetch requests with a CORS policy violation error.' },
-          { whyNumber: 2, question: 'Why did the browser reject the preflight request?', answer: 'The Access-Control-Allow-Origin header returned https://staging.app instead of production.' },
-          { whyNumber: 3, question: 'Why did production return staging CORS headers?', answer: 'The edge CDN served a cached OPTIONS response that had been primed by staging verification tests.' },
-          { whyNumber: 4, question: 'Why did the CDN cache the OPTIONS response across origins?', answer: 'The API server was missing the Vary: Origin response header.' },
-          { whyNumber: 5, question: 'Why was the origin hardcoded in configuration?', answer: 'A developer used a static string instead of an environment variable lookup.' }
-        ]
-      },
-      's3-lambda-loop': {
-        id: 's3-lambda-loop',
-        title: 'Recursive S3 Event Trigger Loop & Lambda Explosion',
-        severity: 'P0',
-        badge: 'AWS / SERVERLESS',
-        service: 'media-thumbnail-pipeline',
-        domain: 'cloud',
-        initialBpm: 185,
-        targetBpm: 0,
-        flatlineTriggerTime: 2900,
-        codeSnippet: `// Infinite self-invocation loop
-export const handler = async (event) => {
-  for (const record of event.Records) {
-    const thumb = await resize(record.s3.object.key);
-    // BUG: Writing thumbnail back into SAME bucket fires this Lambda again!
-    await s3.putObject({ Bucket: record.s3.bucket.name, Key: 'thumb_' + record.s3.object.key, Body: thumb });
-  }
-};`,
-        stackTrace: `Rate Exceeded: Rate of invocation of function arn:aws:lambda:us-east-1:123456789:function:thumbnail-gen 
-exceeded account concurrency quota (10,000/10,000 concurrent executions).
-CloudWatch Billing Alarm: Estimated monthly charge: $48,219.42 USD.`,
-        coronerVerdict: 'A recursive serverless doom-loop was initiated when a thumbnail generator outputted its artifact back into the same S3 bucket configured as its ObjectCreated event source, spawning 4.8 million runaway Lambdas.',
-        postMortem: {
-          summary: 'Catastrophic recursive serverless invocation loop triggering account-wide concurrency exhaustion and a $48,000 billing spike within 38 minutes.',
-          impact: 'AWS account concurrency throttled for all production serverless functions; massive financial hemorrhage.',
-          rootCause: 'Writing output objects directly back into the input S3 bucket without prefix filtering or target separation.',
-          actionItems: [
-            'Strictly isolate input and output buckets into distinct physical S3 resources',
-            'Enforce S3 Event Notification prefix filters (uploads/ vs thumbnails/)',
-            'Configure AWS Lambda maximum concurrency limits and instantaneous billing kill-switches'
-          ]
-        },
-        timeline: [
-          { time: 'T-00:00:00', desc: 'User uploads profile photo avatar_72.png to media-storage bucket.', isFatal: false },
-          { time: 'T-00:00:03', desc: 'Lambda resizes photo and writes thumb_avatar_72.png to same bucket.', isFatal: false },
-          { time: 'T-00:00:08', desc: 'thumb_avatar_72.png creation triggers new Lambda execution (loop iteration 2).', isFatal: false },
-          { time: 'T-00:04:12', desc: '10,000 concurrent Lambdas saturate account quota; all cloud operations flatline.', isFatal: true }
-        ],
-        fiveWhys: [
-          { whyNumber: 1, question: 'Why did all serverless APIs stop responding globally?', answer: 'The AWS account hit its hard concurrency limit of 10,000 simultaneous Lambda executions.' },
-          { whyNumber: 2, question: 'Why were 10,000 Lambdas executing simultaneously?', answer: 'A single image upload spawned an exponential recursive loop of executions.' },
-          { whyNumber: 3, question: 'Why did the Lambda function trigger itself recursively?', answer: 'It saved its output thumbnail into the exact same S3 bucket that listened for new uploads.' },
-          { whyNumber: 4, question: 'Why did the S3 event trigger not filter out thumbnail files?', answer: 'The S3 notification rule lacked a prefix filter (e.g., uploads/) and listened to all ObjectCreated events.' },
-          { whyNumber: 5, question: 'Why were there no safety guardrails or circuit breakers?', answer: 'The Lambda function had no reserved concurrency limit or execution budget ceiling configured.' }
-        ]
-      },
-      'serverless-timeout': {
-        id: 'serverless-timeout',
-        title: 'Downstream Cold Start Cascading Serverless Timeout',
-        severity: 'P1',
-        badge: 'EDGE / COLD START',
-        service: 'realtime-notification-edge',
-        domain: 'serverless',
-        initialBpm: 130,
-        targetBpm: 0,
-        flatlineTriggerTime: 4600,
-        codeSnippet: `// 30s gateway timeout exceeded by cold relational query
-export const handler = async (event) => {
-  // Cold start initializes heavy ORM + establish SSL to remote DB: 14s
-  const db = await initDatabaseConnection();
-  // Complex analytics aggregation query: 18s
-  const data = await db.query('SELECT * FROM complex_analytics_view');
-  // Total execution: 32s -> Exceeds API Gateway 30s limit!
-  return { statusCode: 200, body: JSON.stringify(data) };
-};`,
-        stackTrace: `504 Gateway Time-out
-The server, while acting as a gateway or proxy, did not receive a timely response from the upstream server.
-X-Amzn-Trace-Id: Root=1-654a9b2c-84f923e10293847291038472
-Execution time: 30,002 ms exceeding function timeout of 30,000 ms.`,
-        coronerVerdict: 'Synchronous API Gateway terminated connections with HTTP 504 after a cold-started Lambda worker took 14 seconds to establish database SSL handshakes and 18 seconds to execute heavy aggregations, breaching the 30s hard limit.',
-        postMortem: {
-          summary: 'Cascading HTTP 504 gateway timeouts caused by monolithic analytics queries executed synchronously inside cold-started serverless functions.',
-          impact: 'Analytics dashboard unavailable for 35% of peak business users; upstream connection pool starvation.',
-          rootCause: 'Coupling heavy, long-running analytical queries with synchronous request-response edge gateway routes.',
-          actionItems: [
-            'Convert heavy report generation to asynchronous architecture using SQS and WebSocket/polling push',
-            'Enable Provisioned Concurrency on critical serverless endpoints to eliminate cold starts',
-            'Deploy read-replicas with pre-aggregated materialised views for reporting queries'
-          ]
-        },
-        timeline: [
-          { time: 'T-00:00:00', desc: 'Batch of 50 enterprise users open morning executive metrics dashboard.', isFatal: false },
-          { time: 'T-00:00:05', desc: 'Traffic spike forces AWS to spin up 25 new cold Lambda container instances.', isFatal: false },
-          { time: 'T-00:00:20', desc: 'Cold DB connection handshakes take 14.2s per container, saturating DB CPU.', isFatal: false },
-          { time: 'T-00:00:31', desc: 'API Gateway 30s hard limit reached; 504 Gateway Timeout flatline triggered.', isFatal: true }
-        ],
-        fiveWhys: [
-          { whyNumber: 1, question: 'Why did users see 504 Gateway Timeout errors?', answer: 'The API Gateway closed the connection after waiting 30 seconds for the backend.' },
-          { whyNumber: 2, question: 'Why did the backend take longer than 30 seconds to reply?', answer: 'The Lambda function cold start combined with the database query took 32 seconds.' },
-          { whyNumber: 3, question: 'Why did the cold start take 14 seconds?', answer: 'The function loaded a monolithic ORM and opened a new SSL connection to a distant RDS instance.' },
-          { whyNumber: 4, question: 'Why was a heavy analytical query executed synchronously in a web request?', answer: 'The endpoint was designed for MVP without an asynchronous job queue architecture.' },
-          { whyNumber: 5, question: 'Why was there no caching or read-replica for this analytics query?', answer: 'The dashboard feature was shipped directly to production without load testing or database optimization.' }
-        ]
-      }
-    }
-  },
   postMortem: {
     title: 'OFFICIAL INCIDENT AUTOPSY REPORT',
     executiveSummary: 'EXECUTIVE SUMMARY',
@@ -1001,24 +1023,16 @@ Execution time: 30,002 ms exceeding function timeout of 30,000 ms.`,
     termsSection2Title: 'Hackathon Submission Licensing',
     termsSection2Text: 'Built for the Devpost KIROWEEN 2026 Hackathon under the Spooky & Distinctive Developer Tools category. Distributed under the permissive open-source Apache 2.0 license.',
   },
-  pdf: {
-    certificateHeader: 'OFFICIAL SOURCE CODE DEATH CERTIFICATE',
-    subHeader: 'POST-MORTEM FORENSIC CORONER REPORT • PRODUCTION INCIDENT DIVISION',
-    fieldIncidentId: 'INCIDENT IDENTIFIER',
-    fieldTimeOfDeath: 'TIME OF SYSTEM FLATLINE',
-    fieldSeverity: 'SEVERITY GRADE',
-    fieldService: 'DECEASED SERVICE / WORKLOAD',
-    fieldCoroner: 'CHIEF SRE CORONER',
-    fieldPathology: 'PRIMARY CODE PATHOLOGY',
-    section1Title: '1. EXECUTIVE AUTOPSY SUMMARY',
-    section2Title: '2. BLAST RADIUS & ANATOMICAL IMPACT',
-    section3Title: '3. 5-WHYS SYSTEMIC CAUSAL PATHOLOGY',
-    section4Title: '4. IMMEDIATE RESUSCITATION & REMEDIAL PRESCRIPTION',
-    watermarkDead: 'TERMINATED IN PROD',
-    watermarkResurrected: 'RESURRECTED BY DEFIBRILLATOR',
-    statusResurrected: 'RESURRECTED',
-    fatalEvent: 'Fatal Event: Asystole flatline detected across telemetry monitors.',
-    coronerSignature: 'AUTHORIZED FORENSIC SRE CORONER SIGNATURE',
-    footerNotice: 'Document generated by BugMortem Digital Morgue • SRE Incident Response Unit',
-  }
+  cookies: {
+    bannerTitle: 'SRE TELEMETRY & PRIVACY PREFERENCES',
+    bannerText: 'BugMortem uses localized client cookies and session storage strictly for maintaining incident forensics state, user locale, and audio synthesizer preferences. Zero third-party ad tracking scripts.',
+    acceptAll: 'Acknowledge & Accept Telemetry',
+    essentialOnly: 'Essential Forensics Only',
+    customize: 'Configure Preferences',
+  },
+  footer: {
+    copyright: '© 2026 BugMortem. Developed by Adam Gierczak (@AdamBabinicz) for KIROWEEN 2026.',
+    disclaimer: 'All production crashes depicted are based on actual canonical distributed system post-mortems.',
+    statusAllOperational: 'All Diagnostic Systems Operational',
+  },
 };
