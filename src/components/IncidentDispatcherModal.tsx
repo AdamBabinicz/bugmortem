@@ -10,7 +10,7 @@ interface IncidentDispatcherModalProps {
   incident: IncidentPreset;
   postMortem: PostMortemReport | null;
   isResurrected: boolean;
-  t: Dictionary;
+  t: Dictionary | any;
 }
 
 type TabType = "slack" | "pagerduty" | "github";
@@ -27,33 +27,39 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
   const [copied, setCopied] = useState<boolean>(false);
   const titleId = useId();
 
-  if (!isOpen) return null;
+  if (!isOpen || !incident) return null;
+
+  const d = t?.dispatcher || {};
+  const dm = t?.dispatcherModal || {};
+  const pdf = t?.pdf || {};
 
   const serviceName = (incident as any).service || incident.badge || 'production-core';
   const domainName = (incident as any).domain || incident.badge || 'infra';
   const incidentRef = `INC-${incident.id.toUpperCase()}-${incident.severity}`;
-  const statusLabel = isResurrected ? t.pdf.statusResurrected : incident.badge;
+  const statusLabel = isResurrected 
+    ? (pdf.statusResurrected || 'RESURRECTED') 
+    : incident.badge;
   const summaryText = postMortem?.summary || incident.title;
-  const impactText = postMortem?.impact || t.pdf.fatalEvent;
+  const impactText = postMortem?.impact || pdf.fatalEvent || 'Severe service outage';
   const warRoomUrl = "https://bugmortem.vercel.app";
 
   // Format 1: Slack / Discord War Room Alert
   const generateSlackAlert = (): string => {
     return [
-      `🚨 *[${incident.severity}] ${t.dispatcher.slackHeader}*`,
-      `*${t.dispatcher.fieldIncidentId}:* \`${incidentRef}\``,
-      `*${t.dispatcher.fieldService}:* \`${serviceName}\` (${domainName})`,
-      `*${t.dispatcher.fieldStatus}:* ${statusLabel}`,
-      `*${t.dispatcher.fieldSeverity}:* *${incident.severity}*`,
+      `🚨 *[${incident.severity}] ${d.slackHeader || 'PRODUCTION INCIDENT ESCALATION'}*`,
+      `*${d.fieldIncidentId || 'Incident Ref'}:* \`${incidentRef}\``,
+      `*${d.fieldService || dm.serviceLabel || 'Service'}:* \`${serviceName}\` (${domainName})`,
+      `*${d.fieldStatus || 'Status'}:* ${statusLabel}`,
+      `*${d.fieldSeverity || dm.severityLabel || 'Severity'}:* *${incident.severity}*`,
       "",
-      `*${t.pdf.section1Title}:*`,
+      `*${pdf.section1Title || 'Summary'}:*`,
       `> ${summaryText}`,
       "",
-      `*${t.pdf.section2Title}:*`,
+      `*${pdf.section2Title || 'Impact'}:*`,
       `> ${impactText}`,
       "",
-      `⚡ *${t.dispatcher.fieldWarRoom}:* <${warRoomUrl}|${t.dispatcher.slackJoinWarRoom}>`,
-      `cc: @channel • ${t.dispatcher.slackActionRequired}`,
+      `⚡ *${d.fieldWarRoom || dm.channelLabel || 'War Room'}:* <${warRoomUrl}|${d.slackJoinWarRoom || 'Join War Room Live'}>`,
+      `cc: @channel • ${d.slackActionRequired || 'Immediate SRE triage required'}`,
     ].join("\n");
   };
 
@@ -98,13 +104,13 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
       `| **Status** | ${statusLabel} |`,
       `| **Category** | ${domainName} |`,
       "",
-      `### 1. ${t.pdf.section1Title}`,
+      `### 1. ${pdf.section1Title || 'Executive Summary'}`,
       summaryText,
       "",
-      `### 2. ${t.pdf.section2Title}`,
+      `### 2. ${pdf.section2Title || 'Blast Radius & Impact'}`,
       impactText,
       "",
-      `### 3. ${t.dispatcher.fieldChecklist}`,
+      `### 3. ${d.fieldChecklist || 'Remedial Checklist'}`,
       `- [ ] Verify edge routing and traffic rerouting`,
       `- [ ] Rollback or hotfix deployed commit`,
       `- [ ] Drain saturated database / queue connection pools`,
@@ -116,7 +122,7 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
       incident.stackTrace || "No trace available.",
       "```",
       "",
-      `_${t.dispatcher.githubLabels}_`,
+      `_${d.githubLabels || 'Labels: incident, bugmortem, p0-outage'}_`,
     ].join("\n");
   };
 
@@ -162,17 +168,17 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
             <div className="flex items-center gap-2">
               <span className="flex h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
               <h2 id={titleId} className="text-base font-bold text-stone-900 dark:text-stone-100">
-                {t.dispatcher.modalTitle}
+                {d.modalTitle || dm.title || 'INCIDENT DISPATCHER & ESCALATION'}
               </h2>
             </div>
             <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
-              {t.dispatcher.modalSubtitle} • <span className="font-mono font-semibold text-rose-600 dark:text-rose-400">{incidentRef}</span>
+              {d.modalSubtitle || dm.subtitle || 'Direct bridge to War Room and SRE on-call rotations'} • <span className="font-mono font-semibold text-rose-600 dark:text-rose-400">{incidentRef}</span>
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label={t.dispatcher.closeBtn}
+            aria-label={d.closeBtn || dm.closeCta || 'Close'}
             className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-200/60 dark:hover:bg-stone-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -191,7 +197,7 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
             }`}
           >
             <MessageSquare className="w-3.5 h-3.5" />
-            {t.dispatcher.tabSlack}
+            {d.tabSlack || 'Slack / Discord'}
           </button>
           <button
             type="button"
@@ -203,7 +209,7 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
             }`}
           >
             <AlertTriangle className="w-3.5 h-3.5" />
-            {t.dispatcher.tabPagerDuty}
+            {d.tabPagerDuty || 'PagerDuty (Events API)'}
           </button>
           <button
             type="button"
@@ -215,7 +221,7 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
             }`}
           >
             <GitPullRequest className="w-3.5 h-3.5" />
-            {t.dispatcher.tabGithub}
+            {d.tabGithub || 'GitHub Issue'}
           </button>
         </div>
 
@@ -223,7 +229,7 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
         <div className="p-5 flex-1 overflow-y-auto">
           {activeTab === "pagerduty" && (
             <p className="text-xs text-amber-600 dark:text-amber-400/90 mb-2 font-mono bg-amber-50 dark:bg-amber-950/30 p-2 rounded border border-amber-200 dark:border-amber-900/50">
-              💡 {t.dispatcher.pdRoutingKeyNotice}
+              💡 {d.pdRoutingKeyNotice || 'Replace SERVICE_INTEGRATION_KEY with your real PagerDuty service key.'}
             </p>
           )}
 
@@ -246,7 +252,7 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
-                {t.dispatcher.openGithubBtn}
+                {d.openGithubBtn || 'Open GitHub Issue'}
               </button>
             )}
 
@@ -256,7 +262,7 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-colors cursor-pointer"
             >
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              {copied ? t.dispatcher.copiedBtn : t.dispatcher.copyBtn}
+              {copied ? (d.copiedBtn || 'Copied!') : (d.copyBtn || 'Copy Payload')}
             </button>
           </div>
         </div>
