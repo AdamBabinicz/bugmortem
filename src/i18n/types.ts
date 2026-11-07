@@ -1,5 +1,4 @@
 export type Severity = 'P0' | 'P1';
-
 export type Locale = 'pl' | 'en';
 
 export interface TimelineEvent {
@@ -124,6 +123,36 @@ export interface ChaosDictionary {
   [key: string]: any;
 }
 
+export interface SreConfigFile {
+  filename: string;
+  language: string;
+  description: string;
+  content: string;
+}
+
+export interface PrescriptionItem {
+  doctorOrder: string;
+  dosage: string;
+  preventionRule: string;
+  files: SreConfigFile[];
+}
+
+export interface SrePrescriptionDictionary {
+  modalTitle: string;
+  resilienceBadge: string;
+  doctorOrdersTitle: string;
+  rxNumberPrefix: string;
+  dosageLabel: string;
+  preventionRuleLabel: string;
+  copyFileCta: string;
+  copiedNotice: string;
+  downloadCta: string;
+  verifiedFooter: string;
+  closeCta: string;
+  items: Record<string, PrescriptionItem>;
+  [key: string]: any;
+}
+
 export interface LegalDictionary {
   privacyTitle?: string;
   termsTitle?: string;
@@ -175,7 +204,6 @@ export interface LegalDictionary {
   // Cookie Policy
   cookiesUsageHeader?: string;
   cookiesUsageText?: string;
-
   [key: string]: any;
 }
 
@@ -248,6 +276,7 @@ export interface TranslationDictionary {
     recoveringCta: string;
     [key: string]: any;
   };
+  prescription?: SrePrescriptionDictionary;
   postMortem: {
     title: string;
     executiveSummary: string;
