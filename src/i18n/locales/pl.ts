@@ -16,6 +16,8 @@ export const pl: TranslationDictionary = {
     langPl: 'Polski (PL)',
     langEn: 'English (EN)',
     toggleTheme: 'Zmień Motyw',
+    enableAudio: 'Włącz efekty dźwiękowe',
+    disableAudio: 'Wyłącz efekty dźwiękowe',
   },
   presets: {
     sectionTitle: 'ARCHIWUM SEKCJI ZWŁOK AWARII',
@@ -788,6 +790,21 @@ Throttled functions: image-processor, auth-token-refresher, order-processor, pay
     telemetryLatency: 'Opóźnienie P99',
     telemetryErrors: 'Wskaźnik Błędów',
     telemetryRps: 'Przepustowość',
+    // Etykiety UI używane bezpośrednio w komponencie
+    btnPlay: 'Odtwórz',
+    btnPause: 'Wstrzymaj',
+    btnReset: 'Resetuj oś czasu',
+    speedLabel: 'Prędkość odtwarzania',
+    liveBadge: 'LIVE',
+    statusInitial: 'Start',
+    statusDegrading: 'Degradacja',
+    statusTerminus: 'ZGON SYSTEMU',
+    stepPrefix: 'Krok',
+    // Dostępne aria-label dla przycisków z samymi ikonami
+    ariaPlay: 'Odtwórz sekwencję awarii',
+    ariaPause: 'Wstrzymaj symulację',
+    ariaReset: 'Zresetuj oś czasu do początku',
+    ariaSpeed: 'Przełącz prędkość odtwarzania',
   },
   fiveWhys: {
     sectionTitle: 'BEZSTRONNE DRZEWO PRZYCZYN 5-WHYS',

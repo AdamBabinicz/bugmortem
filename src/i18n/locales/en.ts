@@ -16,6 +16,8 @@ export const en: TranslationDictionary = {
     langPl: 'Polski (PL)',
     langEn: 'English (EN)',
     toggleTheme: 'Toggle Theme',
+    enableAudio: 'Enable audio effects',
+    disableAudio: 'Disable audio effects',
   },
   presets: {
     sectionTitle: 'INCIDENT AUTOPSY ARCHIVE',
@@ -1305,6 +1307,21 @@ Throttled functions: image-processor, auth-token-refresher, order-processor, pay
     telemetryLatency: 'P99 Latency',
     telemetryErrors: 'Error Rate',
     telemetryRps: 'Throughput',
+    // UI labels used directly in component
+    btnPlay: 'Play',
+    btnPause: 'Pause',
+    btnReset: 'Reset Timeline',
+    speedLabel: 'Playback speed',
+    liveBadge: 'LIVE',
+    statusInitial: 'Initial',
+    statusDegrading: 'Degrading',
+    statusTerminus: 'FATAL CRASH',
+    stepPrefix: 'Step',
+    // Accessible aria-labels for icon-only buttons
+    ariaPlay: 'Play failure sequence',
+    ariaPause: 'Pause simulation',
+    ariaReset: 'Reset timeline to start',
+    ariaSpeed: 'Toggle playback speed',
   },
   fiveWhys: {
     sectionTitle: 'BLAMELESS 5-WHYS ROOT CAUSE TREE',

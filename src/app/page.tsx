@@ -317,8 +317,14 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={toggleAudio}
-                  aria-label={audioEnabled ? 'Mute' : 'Unmute'}
-                  title={audioEnabled ? 'Mute' : 'Unmute'}
+                  aria-label={audioEnabled
+                    ? (t?.navigation?.disableAudio || 'Disable audio effects')
+                    : (t?.navigation?.enableAudio || 'Enable audio effects')
+                  }
+                  title={audioEnabled
+                    ? (t?.navigation?.disableAudio || 'Disable audio effects')
+                    : (t?.navigation?.enableAudio || 'Enable audio effects')
+                  }
                   className={`p-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
                     audioEnabled
                       ? 'bg-emerald-100 border-emerald-400 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-950/60 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/60 shadow-[0_0_8px_rgba(16,185,129,0.35)]'

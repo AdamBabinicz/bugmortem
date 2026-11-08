@@ -126,7 +126,7 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
       {/* Live Telemetry Bar */}
       <div className="grid grid-cols-3 gap-3 p-3.5 rounded-xl bg-stone-50 dark:bg-stone-950/60 border border-stone-200 dark:border-stone-800/80">
         <div>
-          <span className="block text-[10px] font-mono uppercase text-stone-500 dark:text-stone-400 font-semibold">
+          <span className="block text-[10px] font-mono uppercase text-stone-600 dark:text-stone-400 font-semibold">
             {c?.metricRps || "PRZEPUSTOWOŚĆ"}
           </span>
           <span className="text-sm sm:text-base font-mono font-bold text-stone-900 dark:text-stone-100">
@@ -134,7 +134,7 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
           </span>
         </div>
         <div>
-          <span className="block text-[10px] font-mono uppercase text-stone-500 dark:text-stone-400 font-semibold">
+          <span className="block text-[10px] font-mono uppercase text-stone-600 dark:text-stone-400 font-semibold">
             {c?.metricLatency || "OPÓŹNIENIE P99"}
           </span>
           <span
@@ -148,7 +148,7 @@ export const ChaosSandbox: React.FC<ChaosSandboxProps> = ({
           </span>
         </div>
         <div>
-          <span className="block text-[10px] font-mono uppercase text-stone-500 dark:text-stone-400 font-semibold">
+          <span className="block text-[10px] font-mono uppercase text-stone-600 dark:text-stone-400 font-semibold">
             {c?.metricErrorRate || "WSKAŹNIK BŁĘDÓW"}
           </span>
           <span

@@ -113,7 +113,7 @@ ${steps
             <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100">
               {fw?.sectionTitle || 'DRZEWO PRZYCZYN ŹRÓDŁOWYCH (BLAMELESS 5-WHYS)'}
             </h2>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
               {fw?.blamelessBadge || 'KULTURA BEZ OBWINIANIA'}
             </span>
           </div>
@@ -189,7 +189,7 @@ ${steps
                     <span
                       className={`text-[10px] font-mono font-bold tracking-wider uppercase px-2 py-0.5 rounded ${
                         isRootCause
-                          ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 font-black'
+                          ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200 border border-emerald-400 dark:border-emerald-600 font-black'
                           : 'bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300'
                       }`}
                     >
@@ -197,8 +197,8 @@ ${steps
                     </span>
 
                     {isRootCause && (
-                      <span className="text-[9px] font-mono font-extrabold tracking-widest px-2 py-0.5 rounded bg-emerald-600 text-white uppercase flex items-center gap-1 shadow-sm">
-                        <CheckCircle2 className="w-3 h-3" />
+                      <span className="text-[10px] font-mono font-extrabold tracking-widest px-2 py-0.5 rounded bg-emerald-700 dark:bg-emerald-600 text-white uppercase flex items-center gap-1 shadow-sm">
+                        <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
                         {fw?.rootCauseBadge || 'PRZYCZYNA ŹRÓDŁOWA'}
                       </span>
                     )}

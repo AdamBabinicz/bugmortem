@@ -100,6 +100,21 @@ export interface ReplayerDictionary {
   telemetryLatency?: string;
   telemetryErrors?: string;
   telemetryRps?: string;
+  // UI labels used directly in component
+  btnPlay?: string;
+  btnPause?: string;
+  btnReset?: string;
+  speedLabel?: string;
+  liveBadge?: string;
+  statusInitial?: string;
+  statusDegrading?: string;
+  statusTerminus?: string;
+  stepPrefix?: string;
+  // Accessible aria-labels for icon-only buttons
+  ariaPlay?: string;
+  ariaPause?: string;
+  ariaReset?: string;
+  ariaSpeed?: string;
   [key: string]: any;
 }
 
@@ -226,6 +241,8 @@ export interface TranslationDictionary {
     langPl: string;
     langEn: string;
     toggleTheme: string;
+    enableAudio?: string;
+    disableAudio?: string;
     [key: string]: any;
   };
   presets: {
