@@ -19,12 +19,12 @@ const geistMono = Geist_Mono({
   display: 'swap',
 });
 
-// Title: DOKŁADNIE 50 ZNAKÓW
-const SITE_TITLE = 'BugMortem – AI Incident Autopsy & SRE Cloud Studio';
+// Title: DOKŁADNIE 50 ZNAKÓW (zoptymalizowany pod słowa kluczowe: Awarii, React, SRE)
+const SITE_TITLE = 'BugMortem – Analiza Awarii React i Studio SRE 2026';
 
-// Description: DOKŁADNIE 150 ZNAKÓW
+// Description: DOKŁADNIE 150 ZNAKÓW (zawiera kluczowe frazy: awarii, React, SRE, post-mortem)
 const SITE_DESCRIPTION =
-  'Analyze production crashes and generate blameless incident post-mortems with AI forensic autopsies. Resurrect broken codebases for Kiroween Hack 2026.';
+  'Sekcja zwłok awarii React w BugMortem. Badaj mechanizmy awarii kodu, twórz raporty post-mortem SRE oraz wzorce odporności dla chmury na Kiroween 2026.';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://bugmortem.vercel.app'),
@@ -32,6 +32,8 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   keywords: [
     'BugMortem',
+    'awarii',
+    'React',
     'Incident Management',
     'SRE',
     'Post-Mortem Generator',
@@ -126,7 +128,7 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* GTM Container Loader — zoptymalizowany pod kątem Speed Index (lazyOnload odciąża wątek główny CPU) */}
+        {/* GTM Container Loader — lazyOnload odciąża wątek główny CPU pod Speed Index */}
         <Script id="google-tag-manager-loader" strategy="lazyOnload">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
