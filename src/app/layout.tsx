@@ -111,7 +111,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
         {/* Google Consent Mode v2 */}
-        <Script id="google-consent-mode-init" strategy="beforeInteractive">
+        <Script id="google-consent-mode-init" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
@@ -126,8 +126,8 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* GTM Container Loader */}
-        <Script id="google-tag-manager-loader" strategy="afterInteractive">
+        {/* GTM Container Loader — zoptymalizowany pod kątem Speed Index (lazyOnload odciąża wątek główny CPU) */}
+        <Script id="google-tag-manager-loader" strategy="lazyOnload">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
