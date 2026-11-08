@@ -19,12 +19,54 @@ const geistMono = Geist_Mono({
   display: 'swap',
 });
 
-// Title: DOKŁADNIE 50 ZNAKÓW (zoptymalizowany pod słowa kluczowe: Awarii, React, SRE)
+// Title: DOKŁADNIE 50 ZNAKÓW
 const SITE_TITLE = 'BugMortem – Analiza Awarii React i Studio SRE 2026';
 
-// Description: DOKŁADNIE 150 ZNAKÓW (zawiera kluczowe frazy: awarii, React, SRE, post-mortem)
+// Description: DOKŁADNIE 150 ZNAKÓW
 const SITE_DESCRIPTION =
   'Sekcja zwłok awarii React w BugMortem. Badaj mechanizmy awarii kodu, twórz raporty post-mortem SRE oraz wzorce odporności dla chmury na Kiroween 2026.';
+
+// Dane ustrukturyzowane Schema.org (Identity: Person + Organization + WebApplication)
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebApplication',
+      '@id': 'https://bugmortem.vercel.app/#webapp',
+      name: 'BugMortem',
+      url: 'https://bugmortem.vercel.app',
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'All',
+      description: SITE_DESCRIPTION,
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+      author: {
+        '@id': 'https://bugmortem.vercel.app/#author',
+      },
+    },
+    {
+      '@type': 'Organization',
+      '@id': 'https://bugmortem.vercel.app/#organization',
+      name: 'BugMortem',
+      url: 'https://bugmortem.vercel.app',
+      logo: 'https://bugmortem.vercel.app/web-app-manifest-512x512.png',
+      founder: {
+        '@id': 'https://bugmortem.vercel.app/#author',
+      },
+    },
+    {
+      '@type': 'Person',
+      '@id': 'https://bugmortem.vercel.app/#author',
+      name: 'Adam Gierczak',
+      alternateName: 'AdamBabinicz',
+      url: 'https://github.com/AdamBabinicz',
+      sameAs: ['https://github.com/AdamBabinicz'],
+    },
+  ],
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://bugmortem.vercel.app'),
@@ -108,6 +150,14 @@ export default function RootLayout({
           }}
         />
 
+        {/* Schema.org JSON-LD Structured Data (Identity & SoftwareApplication) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
+
         {/* Preconnect do Google Tag Managera */}
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
@@ -145,7 +195,7 @@ export default function RootLayout({
             src="https://www.googletagmanager.com/ns.html?id=GTM-K77D4NHB"
             height="0"
             width="0"
-            style={{ display: 'none', visibility: 'hidden' }}
+            
           />
         </noscript>
 
