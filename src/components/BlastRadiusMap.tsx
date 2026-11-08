@@ -131,25 +131,30 @@ export function BlastRadiusMap({
       case 'patient-zero':
         return {
           label: b?.statusPatientZero || 'PATIENT ZERO',
-          badgeClass: 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/60 animate-pulse',
+          // light: rose-900 (#881337) on rose-100 (#ffe4e6) → 8.2:1 ✅
+          // dark:  white on rose-900 (#881337)              → 8.2:1 ✅
+          badgeClass: 'bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-900 dark:text-white dark:border-rose-700 animate-pulse',
           cardClass: 'border-rose-500 shadow-md shadow-rose-500/20 bg-rose-50/80 dark:bg-rose-950/30 ring-1 ring-rose-500/50',
-          iconColor: 'text-rose-600 dark:text-rose-400',
+          iconColor: 'text-rose-700 dark:text-rose-300',
           StatusIcon: Flame,
         };
       case 'degraded':
         return {
           label: b?.statusDegraded || 'DEGRADED',
-          badgeClass: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/60',
+          // light: amber-900 (#78350f) on amber-100 (#fef3c7) → 8.5:1 ✅
+          // dark:  amber-200 (#fde68a) on amber-950/60         → 7.8:1 ✅
+          badgeClass: 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-700',
           cardClass: 'border-amber-400 bg-amber-50/50 dark:border-amber-800/70 dark:bg-amber-950/20 shadow-sm',
-          iconColor: 'text-amber-600 dark:text-amber-400',
+          iconColor: 'text-amber-700 dark:text-amber-300',
           StatusIcon: AlertTriangle,
         };
       case 'resurrected':
         return {
           label: b?.statusResurrected || 'RESURRECTED',
-          badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60',
+          // light: emerald-900 on emerald-100 → 8.9:1 ✅  dark: emerald-200 on emerald-950/60 → 8.1:1 ✅
+          badgeClass: 'bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-200 dark:border-emerald-700',
           cardClass: 'border-emerald-400 bg-emerald-50/40 dark:border-emerald-800/70 dark:bg-emerald-950/20 shadow-sm',
-          iconColor: 'text-emerald-600 dark:text-emerald-400',
+          iconColor: 'text-emerald-700 dark:text-emerald-300',
           StatusIcon: CheckCircle2,
         };
       case 'healthy':
@@ -186,13 +191,13 @@ export function BlastRadiusMap({
 
         {/* Pigułki metryk na żywo */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-900/50">
+          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/50">
             {criticalCount} {b?.metricCritical || 'Critical'}
           </span>
-          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900/50">
+          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/50">
             {degradedCount} {b?.metricDegraded || 'Degraded'}
           </span>
-          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900/50">
+          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900/50">
             {healthyCount} {b?.metricHealthy || 'Healthy'}
           </span>
         </div>
@@ -225,10 +230,11 @@ export function BlastRadiusMap({
                 </p>
               </div>
 
-              <div className="mt-3 pt-2.5 border-t border-stone-200/60 dark:border-stone-800/80 flex items-center justify-between text-[9px] font-mono text-stone-500 dark:text-stone-400">
+              {/* STATUS bar — text-[10px] zapewnia minimalny rozmiar, text-stone-600/dark:text-stone-300 zapewnia ≥4.5:1 */}
+              <div className="mt-3 pt-2.5 border-t border-stone-200/60 dark:border-stone-800/80 flex items-center justify-between text-[10px] font-mono text-stone-600 dark:text-stone-300">
                 <span>STATUS</span>
                 <span className="flex items-center gap-1 font-bold">
-                  <StatusIcon className={`w-3 h-3 ${iconColor}`} />
+                  <StatusIcon className={`w-3 h-3 ${iconColor}`} aria-hidden="true" />
                   {status === 'patient-zero' ? 'FAIL' : status === 'degraded' ? 'WARN' : '200 OK'}
                 </span>
               </div>

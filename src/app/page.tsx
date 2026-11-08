@@ -349,7 +349,7 @@ export default function Home() {
                       ? 'text-emerald-600 dark:text-emerald-400'
                       : waveformState === 'p1-heartbeat'
                       ? 'text-amber-600 dark:text-amber-400'
-                      : 'text-rose-600 dark:text-rose-500'
+                      : 'text-rose-600 dark:text-rose-400'
                   }`}>
                     <span className={`inline-block w-2 h-2 rounded-full shrink-0 animate-pulse ${
                       waveformState === 'resurrected'

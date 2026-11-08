@@ -112,7 +112,7 @@ export const IncidentReplayer: React.FC<IncidentReplayerProps> = ({
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
+            <p className="text-[11px] text-stone-600 dark:text-stone-400 mt-0.5">
               {t.replayer.subtitle}
             </p>
           </div>
@@ -201,7 +201,7 @@ export const IncidentReplayer: React.FC<IncidentReplayerProps> = ({
                       : "bg-amber-500 border-white dark:border-stone-900 text-white ring-4 ring-amber-500/30 scale-110"
                     : isPassed
                     ? "bg-stone-700 dark:bg-stone-800 border-stone-500 dark:border-stone-600 text-white dark:text-stone-200"
-                    : "bg-stone-200 dark:bg-stone-800 border-stone-300 dark:border-stone-700 text-stone-500"
+                    : "bg-stone-200 dark:bg-stone-800 border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-400"
                 }`}
                 aria-label={`${t.replayer.stepPrefix || 'Step'} ${idx + 1}: [${evt.time}] ${evt.desc}`}
                 aria-current={isCurrent ? 'step' : undefined}
@@ -214,7 +214,7 @@ export const IncidentReplayer: React.FC<IncidentReplayerProps> = ({
         </div>
 
         {/* Etykiety pod osią */}
-        <div className="flex justify-between text-[10px] font-mono text-stone-500 dark:text-stone-400 px-1">
+        <div className="flex justify-between text-[10px] font-mono text-stone-600 dark:text-stone-400 px-1">
           <span>{t.replayer.statusInitial}</span>
           {totalSteps > 2 && <span>{t.replayer.statusDegrading}</span>}
           <span className="text-rose-600 dark:text-rose-400 font-bold">{t.replayer.statusTerminus}</span>

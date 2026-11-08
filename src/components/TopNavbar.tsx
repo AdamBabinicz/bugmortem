@@ -35,10 +35,10 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
             <span className="text-xl sm:text-2xl select-none" aria-hidden="true">💀</span>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-black text-base sm:text-lg tracking-wider text-rose-600 dark:text-rose-500 uppercase">
+                <span className="font-black text-base sm:text-lg tracking-wider text-rose-600 dark:text-rose-400 uppercase">
                   BugMortem
                 </span>
-                <span className="hidden sm:inline-flex text-[9px] sm:text-[10px] uppercase font-bold tracking-widest px-1.5 sm:px-2 py-0.5 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30 whitespace-nowrap">
+                <span className="hidden sm:inline-flex text-[10px] uppercase font-bold tracking-widest px-1.5 sm:px-2 py-0.5 rounded bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/30 whitespace-nowrap">
                   KIROWEEN 2026
                 </span>
               </div>
