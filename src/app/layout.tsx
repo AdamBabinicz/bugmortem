@@ -99,10 +99,10 @@ export default function RootLayout({
       <head>
         <meta name="theme-color" content="#0c0a09" />
 
-        {/* Krytyczny inline CSS dla FCP */}
+        {/* Krytyczny inline CSS dla FCP — zapobiega błyskowi białego tła przy pierwszym ładowaniu w dark mode */}
         <style
           dangerouslySetInnerHTML={{
-            __html: `html{background-color:#0c0a09;color:#fafaf9;}body{background-color:#0c0a09;color:#fafaf9;}`,
+            __html: `html.dark,html.dark body{background-color:#0c0a09;color:#fafaf9;}`,
           }}
         />
 

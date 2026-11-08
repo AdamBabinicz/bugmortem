@@ -197,7 +197,7 @@ ${steps
                     </span>
 
                     {isRootCause && (
-                      <span className="text-[10px] font-mono font-extrabold tracking-widest px-2 py-0.5 rounded bg-emerald-700 dark:bg-emerald-600 text-white uppercase flex items-center gap-1 shadow-sm">
+                      <span className="text-[10px] font-mono font-extrabold tracking-widest px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-800 text-emerald-950 dark:text-white border border-emerald-300 dark:border-emerald-600 uppercase flex items-center gap-1 shadow-sm">
                         <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
                         {fw?.rootCauseBadge || 'PRZYCZYNA ŹRÓDŁOWA'}
                       </span>
