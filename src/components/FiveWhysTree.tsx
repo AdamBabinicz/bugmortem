@@ -162,9 +162,9 @@ ${steps
               <div
                 className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all shrink-0 ${
                   isRootCause
-                    ? 'bg-emerald-950 border-emerald-500 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.5)] ring-2 ring-emerald-500/30'
+                    ? 'bg-emerald-100 dark:bg-emerald-950 border-emerald-500 text-emerald-700 dark:text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.3)] dark:shadow-[0_0_12px_rgba(16,185,129,0.5)] ring-2 ring-emerald-500/30'
                     : index === 0
-                    ? 'bg-rose-950 border-rose-500 text-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.4)]'
+                    ? 'bg-rose-100 dark:bg-rose-950 border-rose-500 text-rose-700 dark:text-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.2)] dark:shadow-[0_0_10px_rgba(244,63,94,0.4)]'
                     : 'bg-stone-100 dark:bg-stone-900 border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300'
                 }`}
               >

@@ -233,7 +233,7 @@ export const IncidentDispatcherModal: React.FC<IncidentDispatcherModalProps> = (
             </p>
           )}
 
-          <pre className="p-4 rounded-lg text-xs font-mono bg-stone-900 text-stone-100 overflow-x-auto whitespace-pre-wrap leading-relaxed border border-stone-800 select-all">
+          <pre className="p-4 rounded-lg text-xs font-mono bg-stone-100 text-stone-800 dark:bg-stone-900 dark:text-stone-100 overflow-x-auto whitespace-pre-wrap leading-relaxed border border-stone-200 dark:border-stone-800 select-all">
             {currentContent}
           </pre>
         </div>

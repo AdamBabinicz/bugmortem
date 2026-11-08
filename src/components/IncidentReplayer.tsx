@@ -194,7 +194,7 @@ export const IncidentReplayer: React.FC<IncidentReplayerProps> = ({
                       ? "bg-rose-600 border-white dark:border-stone-900 text-white ring-4 ring-rose-500/30 scale-110"
                       : "bg-amber-500 border-white dark:border-stone-900 text-white ring-4 ring-amber-500/30 scale-110"
                     : isPassed
-                    ? "bg-stone-800 border-stone-600 text-stone-200"
+                    ? "bg-stone-700 dark:bg-stone-800 border-stone-500 dark:border-stone-600 text-white dark:text-stone-200"
                     : "bg-stone-200 dark:bg-stone-800 border-stone-300 dark:border-stone-700 text-stone-500"
                 }`}
                 title={`[${evt.time}] ${evt.desc}`}
