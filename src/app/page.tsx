@@ -276,25 +276,31 @@ export default function Home() {
         t={t}
       />
 
+      {/* Floating Success Toast (Fixed HUD Alert) */}
+      {successToast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-5 right-5 z-50 max-w-md w-[calc(100vw-2.5rem)] p-4 rounded-xl bg-white/95 dark:bg-stone-900/95 border border-emerald-500/50 text-stone-900 dark:text-emerald-200 text-xs font-mono flex items-center justify-between gap-3 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-300"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0 shadow-[0_0_8px_#10b981]" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="font-semibold leading-relaxed truncate">{successToast}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSuccessToast(null)}
+            className="text-stone-400 hover:text-stone-900 dark:hover:text-white cursor-pointer p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors shrink-0 font-bold"
+            aria-label={locale === 'pl' ? 'Zamknij powiadomienie' : 'Close notification'}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
-        {/* Floating Success Toast */}
-        {successToast && (
-          <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-950 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-200 text-xs font-mono flex items-center justify-between gap-3 shadow-xl transition-all">
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span className="font-semibold">{successToast}</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setSuccessToast(null)}
-              className="text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white cursor-pointer px-1 text-sm font-bold"
-            >
-              ✕
-            </button>
-          </div>
-        )}
-
         {/* 2. Hero Section */}
         <div className="bg-white border-stone-200 text-stone-900 dark:bg-stone-900/60 dark:border-stone-800 dark:text-white rounded-2xl border p-5 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden shadow-xl dark:shadow-2xl">
           <div className="space-y-3 z-10">
