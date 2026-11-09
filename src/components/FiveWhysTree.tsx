@@ -46,40 +46,80 @@ export const FiveWhysTree: React.FC<FiveWhysTreeProps> = ({ incident, t }) => {
   });
 
   const fw = t?.fiveWhys || {};
-  const levels: string[] = Array.isArray(fw?.levels) && fw.levels.length === 5
-    ? fw.levels
-    : [
-        '1. Objaw Powierzchowny',
-        '2. Bezpośredni Wyzwalacz',
-        '3. Mechanizm Awarii',
-        '4. Luka Architektoniczna',
-        '5. Przyczyna Źródłowa',
-      ];
 
-  const steps: string[] = Array.isArray(incident?.fiveWhys) && incident.fiveWhys.length === 5
-    ? incident.fiveWhys
-    : [
-        `${incident?.title || 'Incydent produkcyjny'} powoduje niestabilność i degradację usług.`,
-        `Wykryto anomalię w warstwie ${incident?.badge || 'systemowej'} pod obciążeniem roboczym.`,
-        'Brak izolacji błędu spowodował kaskadowe propagowanie wyjątku w dół stosu wywołań.',
-        'Niewystarczające limity bezpieczeństwa, brak circuit breakera i brak defensywnego throttlingu.',
-        'Brak automatycznych testów regresji oraz brak polityki odporności (SRE resilience) w pipeline CI/CD.',
-      ];
+  // Detekcja aktywnego języka na podstawie słownika tłumaczeń
+  const isEn = Boolean(
+    fw?.blamelessBadge?.toLowerCase().includes('blameless') ||
+    fw?.copyChain?.toLowerCase().includes('copy') ||
+    fw?.sectionTitle?.toLowerCase().includes('root cause')
+  );
+
+  const defaultLevelsPl = [
+    '1. Objaw Powierzchowny',
+    '2. Bezpośredni Wyzwalacz',
+    '3. Mechanizm Awarii',
+    '4. Luka Architektoniczna',
+    '5. Przyczyna Źródłowa',
+  ];
+
+  const defaultLevelsEn = [
+    '1. SURFACE SYMPTOM',
+    '2. DIRECT TRIGGER',
+    '3. DAMAGE MECHANISM',
+    '4. ARCHITECTURAL FLAW',
+    '5. SYSTEMIC ROOT CAUSE',
+  ];
+
+  const levels: string[] =
+    Array.isArray(fw?.levels) && fw.levels.length === 5
+      ? fw.levels
+      : isEn
+      ? defaultLevelsEn
+      : defaultLevelsPl;
+
+  const defaultStepsPl = [
+    `${incident?.title || 'Incydent produkcyjny'} powoduje niestabilność i degradację usług.`,
+    `Wykryto anomalię w warstwie ${incident?.badge || 'systemowej'} pod obciążeniem roboczym.`,
+    'Brak izolacji błędu spowodował kaskadowe propagowanie wyjątku w dół stosu wywołań.',
+    'Niewystarczające limity bezpieczeństwa, brak circuit breakera i brak defensywnego throttlingu.',
+    'Brak automatycznych testów regresji oraz brak polityki odporności (SRE resilience) w pipeline CI/CD.',
+  ];
+
+  const defaultStepsEn = [
+    `${incident?.title || 'Production incident'} causes service instability and degradation.`,
+    `Anomaly detected in the ${incident?.badge || 'system'} tier under active workload.`,
+    'Lack of fault isolation caused cascading exception propagation down the call stack.',
+    'Insufficient safety margins, missing circuit breaker, and lack of defensive throttling.',
+    'Absence of automated regression tests and missing SRE resilience policy in the CI/CD pipeline.',
+  ];
+
+  const steps: string[] =
+    Array.isArray(incident?.fiveWhys) && incident.fiveWhys.length === 5
+      ? incident.fiveWhys
+      : isEn
+      ? defaultStepsEn
+      : defaultStepsPl;
 
   const toggleStep = (idx: number) => {
     setExpandedSteps((prev) => ({ ...prev, [idx]: !prev[idx] }));
   };
 
   const handleCopyChain = async () => {
+    const whyLabel = isEn ? 'Why?' : 'Dlaczego?';
+    const incidentLabel = isEn ? 'Incident:' : 'Incydent:';
+    const footerText = isEn
+      ? '*Automatically generated in BugMortem (Kiroween 2026).*'
+      : '*Wygenerowano automatycznie w BugMortem (Kiroween 2026).*';
+
     const chainMarkdown = `### 🔍 BugMortem – Blameless 5-Whys Root-Cause Tree
-**Incydent:** ${incident?.title || ''} (${incident?.badge || 'N/A'} - ${incident?.severity || 'P0'})
+**${incidentLabel}** ${incident?.title || ''} (${incident?.badge || 'N/A'} - ${incident?.severity || 'P0'})
 
 ${steps
-  .map((step, idx) => `**Dlaczego? (${levels[idx]}):**\n> ${step}`)
+  .map((step, idx) => `**${whyLabel} (${levels[idx]}):**\n> ${step}`)
   .join('\n\n')}
 
 ---
-*Wygenerowano automatycznie w BugMortem (Kiroween 2026).*`;
+${footerText}`;
 
     try {
       if (navigator.clipboard && window.isSecureContext) {
@@ -111,16 +151,18 @@ ${steps
               <GitCommitHorizontal className="w-4 h-4" />
             </span>
             <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100">
-              {fw?.sectionTitle || 'DRZEWO PRZYCZYN ŹRÓDŁOWYCH (BLAMELESS 5-WHYS)'}
+              {fw?.sectionTitle || (isEn ? 'BLAMELESS 5-WHYS ROOT CAUSE TREE' : 'DRZEWO PRZYCZYN ŹRÓDŁOWYCH (BLAMELESS 5-WHYS)')}
             </h2>
             <span className="text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
-              {fw?.blamelessBadge || 'KULTURA BEZ OBWINIANIA'}
+              {fw?.blamelessBadge || (isEn ? 'BLAMELESS SRE CULTURE' : 'KULTURA BEZ OBWINIANIA')}
             </span>
           </div>
           <p className="text-xs text-stone-600 dark:text-stone-400 mt-1">
             {fixOrphans(
               fw?.sectionSubtitle ||
-                'Systemowe śledztwo inżynieryjne od powierzchownego objawu do luki architektonicznej.'
+                (isEn
+                  ? 'Systematic engineering investigation from the surface symptom down to the architectural gap.'
+                  : 'Systemowe śledztwo inżynieryjne od powierzchownego objawu do luki architektonicznej.')
             )}
           </p>
         </div>
@@ -133,12 +175,12 @@ ${steps
           {copied ? (
             <>
               <Check className="w-3.5 h-3.5 text-emerald-500" />
-              <span>{fw?.copied || 'Skopiowano Ścieżkę!'}</span>
+              <span>{fw?.copied || (isEn ? 'Chain Copied!' : 'Skopiowano Ścieżkę!')}</span>
             </>
           ) : (
             <>
               <Copy className="w-3.5 h-3.5 text-stone-500" />
-              <span>{fw?.copyChain || 'Kopiuj Ścieżkę Dochodzenia'}</span>
+              <span>{fw?.copyChain || (isEn ? 'Copy Cause Chain' : 'Kopiuj Ścieżkę Dochodzenia')}</span>
             </>
           )}
         </button>
@@ -199,7 +241,7 @@ ${steps
                     {isRootCause && (
                       <span className="text-[10px] font-mono font-extrabold tracking-widest px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-800 text-emerald-950 dark:text-white border border-emerald-300 dark:border-emerald-600 uppercase flex items-center gap-1 shadow-sm">
                         <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
-                        {fw?.rootCauseBadge || 'PRZYCZYNA ŹRÓDŁOWA'}
+                        {fw?.rootCauseBadge || (isEn ? 'ROOT CAUSE' : 'PRZYCZYNA ŹRÓDŁOWA')}
                       </span>
                     )}
                   </div>
