@@ -6,6 +6,7 @@
 *Track: Costume Contest · Spooky & Distinctive Developer Tools*
 
 [![Live Demo](https://img.shields.io/badge/Demo-bugmortem.vercel.app-10b981?style=flat-square&logo=vercel)](https://bugmortem.vercel.app/)
+[![Video Walkthrough](https://img.shields.io/badge/YouTube-Video_Walkthrough-red?style=flat-square&logo=youtube)](https://youtu.be/CRz6urZ7TWE)
 [![Next.js](https://img.shields.io/badge/Next.js-16.4-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38bdf8?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
@@ -22,6 +23,8 @@ Every SRE engineer knows the nightmare: production is dead, the monitor is **fla
 **BugMortem** is an interactive, cyber-gothic digital morgue and automated post-mortem studio for software incidents. Instead of panic in the console, it conducts a forensic autopsy of catastrophic production bugs — complete with a reactive ECG heart monitor, procedural audio telemetry, architectural blast radius heatmap, live chaos engineering sandbox, time-to-death incident replayer, blameless 5-whys root-cause tree, SRE forensic voice verdict, on-call dispatcher, downloadable IaC remediation prescriptions, and one-click post-mortem exports (Markdown & printable PDF Death Certificate).
 
 > *"Where dead services come for their autopsy."*
+
+> 📺 **Watch the Official 1080p60 SRE Walkthrough on YouTube:** [BugMortem: Where Dead Services Come for Their Autopsy (2m 54s)](https://youtu.be/CRz6urZ7TWE)
 
 ---
 
